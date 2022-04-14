@@ -14,7 +14,7 @@ module.exports = merge(
       path: path.resolve(__dirname, '../', 'lib'),
       publicPath: '/',
       library: {
-        name: 'reactQuery',
+        name: 'react-query',
         type: 'umd',
       },
       filename: 'module.js',
