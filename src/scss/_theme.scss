@@ -1,0 +1,24 @@
+$theme-color: #009ac9;
+$theme-color-primary: $theme-color;
+$theme-color-secondary: #f8d948;
+$theme-color-tertiary: #8eb3a7;
+$theme-color-quaternary: black;
+$theme-color-transparency: 0.5;
+$theme-color-overlay: rgba(0, 0, 0, 0.08);
+$theme-color-primary-overlay: rgba(black, 0.2);
+$theme-color-background: rgba($theme-color, 0.05);
+$theme-box-color: white;
+$theme-box-shadow: 0 0 2px $theme-color;
+
+$theme-gradient: linear-gradient(to right, $theme-color-secondary, $theme-color-tertiary, $theme-color-tertiary);
+
+$theme-color-press: rgb(239, 239, 239);
+$theme-color-button: #8fb3a7;
+$theme-color-valid: green;
+$theme-color-invalid: rgb(163, 19, 19);
+$theme-color-ignore: black;
+
+$theme-color-inside: #c3c3c3;
+$theme-color-box: #f0f0f0;
+
+$theme-hover-filter: brightness(80%);

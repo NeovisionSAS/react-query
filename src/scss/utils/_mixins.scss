@@ -1,0 +1,22 @@
+@mixin flex($dir: null, $justify: null, $align: null, $wrap: null) {
+  display: flex;
+  flex-direction: $dir;
+  flex-wrap: $wrap;
+  justify-content: $justify;
+  align-items: $align;
+}
+
+@mixin pm($padding: 0, $margin: 0) {
+  padding: $padding;
+  margin: $margin;
+}
+
+@mixin size($all: null, $w: null, $h: null) {
+  @if $all != null {
+    width: $all;
+    height: $all;
+  } @else {
+    width: $w;
+    height: $h;
+  }
+}

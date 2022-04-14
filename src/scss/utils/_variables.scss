@@ -1,0 +1,37 @@
+@import 'scss/theme.scss';
+
+$color: black;
+$color-inverse: white;
+$background-color: white;
+
+$large-padding: 40px;
+$big-padding: 20px;
+$normal-padding: 10px;
+$small-padding: 5px;
+
+$large-margin: $large-padding;
+$big-margin: $big-padding;
+$normal-margin: $normal-padding;
+$small-margin: $small-padding;
+
+$footer-color: black;
+
+$font-primary: Arial;
+$font-secondary: Arial;
+
+$font-size-big: 3.1em;
+$font-size-normal: 2.5em;
+$font-size-default: 1.5em;
+$font-size-small: 1.2em;
+
+$grid-color-primary: $theme-color-inside;
+$grid-color-secondary: $theme-color-box;
+
+$default-border-size: 4px;
+$default-border-radius: 5px;
+
+$default-background-hover-opacity: 0.8;
+$default-transition-time: 0.5s;
+
+$default-image-size: 250px;
+$default-big-image-size: 350px;

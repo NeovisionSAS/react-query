@@ -1,0 +1,69 @@
+@import 'scss/utils/variables.scss';
+@import 'scss/theme.scss';
+
+.button-default {
+  border-radius: $default-border-radius;
+  cursor: pointer;
+  font-size: 1.4em;
+  padding: $normal-padding $big-padding;
+  background-color: $theme-color-press;
+  font-family: $font-primary;
+  transition: 0.3s;
+  color: $color;
+  &:disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
+}
+
+.button-inverse {
+  @extend .button-default;
+  color: $color-inverse;
+}
+
+.button-valid {
+  @extend .button-inverse;
+  background-color: $theme-color-valid;
+  &:hover {
+    background-color: rgba($color: $theme-color-valid, $alpha: $default-background-hover-opacity);
+  }
+}
+
+.button-invalid {
+  @extend .button-inverse;
+  background-color: $theme-color-invalid;
+  &:hover {
+    background-color: rgba($color: $theme-color-invalid, $alpha: $default-background-hover-opacity);
+  }
+}
+
+.button-ignore {
+  @extend .button-inverse;
+  background-color: $theme-color-ignore;
+  &:hover {
+    background-color: rgba($color: $theme-color-ignore, $alpha: $default-background-hover-opacity);
+  }
+}
+
+.button-validate {
+  @extend .button-default;
+  background-color: $theme-color-button;
+  color: white;
+  font-family: $font-secondary;
+
+  &:hover {
+    background-color: rgba($color: $theme-color-button, $alpha: $default-background-hover-opacity);
+  }
+}
+
+.button-primary {
+  @extend .button-default;
+  color: white;
+  background-color: $theme-color-primary;
+}
+
+.button-selected {
+  @extend .button-default;
+  background-color: $theme-color-secondary;
+  color: $color;
+}
