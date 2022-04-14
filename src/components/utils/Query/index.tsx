@@ -1,7 +1,7 @@
-import { useQueryOptions } from '../Context';
-import ErrorBoundary from '../ErrorBoundary';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Query as QueryType } from '../../../utils/util';
+import ErrorBoundary from '../ErrorBoundary';
+import { useQueryOptions } from '../QueryOptionsProvider';
 
 interface QueryProps<T = any> {
   children: (

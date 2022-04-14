@@ -1,19 +1,19 @@
-import { useQueryOptions } from '../Context';
-import ErrorBoundary from '../ErrorBoundary';
-import Query from '../Query';
 import React, { FormEvent, Fragment, SyntheticEvent } from 'react';
 import { Method, setData } from '../../../utils/api';
-import { Query as QueryType, getFormData } from '../../../utils/util';
+import { getFormData, Query as QueryType } from '../../../utils/util';
+import ErrorBoundary from '../ErrorBoundary';
+import Query from '../Query';
+import { useQueryOptions } from '../QueryOptionsProvider';
 
 interface CRUDProps<T = any> {
   children: (object: CRUDObject<T>, forceRefresh: () => void) => JSX.Element;
   endPoints:
     | { create?: string; read: string; update?: string; delete?: string }
     | string;
-  onCreated?: () => void;
-  onRead?: (data: T) => void;
-  onUpdated?: () => boolean | void;
-  onDeleted?: () => void;
+  onCreated?: () => any;
+  onRead?: (data: T) => any;
+  onUpdated?: () => boolean | any;
+  onDeleted?: () => any;
   delay?: number;
   type?: 'array' | 'item';
 }

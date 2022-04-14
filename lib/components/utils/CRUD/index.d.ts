@@ -9,10 +9,10 @@ interface CRUDProps<T = any> {
         update?: string;
         delete?: string;
     } | string;
-    onCreated?: () => void;
-    onRead?: (data: T) => void;
-    onUpdated?: () => boolean | void;
-    onDeleted?: () => void;
+    onCreated?: () => any;
+    onRead?: (data: T) => any;
+    onUpdated?: () => boolean | any;
+    onDeleted?: () => any;
     delay?: number;
     type?: 'array' | 'item';
 }
