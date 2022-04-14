@@ -10,7 +10,7 @@
     "start": "webpack serve --config ./env/webpack.dev.js --open",
     "lib": "webpack --config ./env/webpack.lib.js"
   },
-  "main": "./src/index.tsx",
+  "main": "./src/module.ts",
   "module": "./src/module.ts",
   "types": "./src/module.d.ts",
   "files": [
