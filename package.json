@@ -11,8 +11,8 @@
     "lib": "tsconfig-replace-paths --project tsconfig.json && webpack --config ./env/webpack.lib.js"
   },
   "main": "./src/module.ts",
-  "module": "./src/module.ts",
-  "types": "./src/module.d.ts",
+  "module": "./lib/module.ts",
+  "types": "./lib/module.d.ts",
   "files": [
     "lib/"
   ],
