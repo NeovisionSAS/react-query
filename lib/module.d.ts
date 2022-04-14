@@ -1,3 +1,3 @@
-import CRUD from './components/utils/CRUD';
+import CRUD, { CRUDObject } from './components/utils/CRUD';
 import Query from './components/utils/Query';
-export { CRUD, Query };
+export { CRUD, Query, CRUDObject };

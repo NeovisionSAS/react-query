@@ -1,6 +1,6 @@
 {
   "name": "@neovision/react-query",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "author": {
     "email": "alan.blanchet@neovision.fr",
@@ -8,9 +8,11 @@
   },
   "scripts": {
     "start": "webpack serve --config ./env/webpack.dev.js --open",
-    "lib": "tsconfig-replace-paths --project tsconfig.json && webpack --config ./env/webpack.lib.js"
+    "lib": "tsconfig-replace-paths --project tsconfig.json && webpack --config ./env/webpack.lib.js",
+    "patch": "npm version --no-git-tag-version patch",
+    "postversion": "npm run lib && git add . && git commit && git push"
   },
-  "main": "./src/module.ts",
+  "main": "./src/index.tsx",
   "module": "./lib/module.ts",
   "types": "./lib/module.d.ts",
   "files": [
