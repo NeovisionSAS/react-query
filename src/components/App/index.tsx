@@ -1,18 +1,18 @@
-import { CRUD, ErrorBoundary } from '../utils';
-import { QueryOptionsProvider } from '../utils/Context';
+import { QueryOptionsProvider } from '../utils/QueryOptionsProvider';
 import '../../scss/main.scss';
+import { CRUD, ErrorBoundary } from '../utils';
 
 function App(): JSX.Element {
   return (
     <ErrorBoundary>
       <QueryOptionsProvider
         value={{
-          domain: 'localhost:8000',
+          domain: 'google.fr',
           parameterType: 'path',
-          protocol: 'http',
+          protocol: 'https',
         }}
       >
-        <CRUD endPoints={'api/websitesToScrap'}>
+        <CRUD endPoints={''}>
           {(crud) => {
             const { data, loading } = crud.read;
             if (loading) return <div>Loading..</div>;

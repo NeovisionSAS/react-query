@@ -9,7 +9,7 @@ module.exports = merge(common, {
   entry: path.resolve(__dirname, '../src', 'index.tsx'),
   mode: 'development',
   devServer: {
-    port: 3000,
+    port: 8080,
   },
   module: {
     rules: [
