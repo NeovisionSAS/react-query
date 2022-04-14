@@ -1,6 +1,6 @@
 {
   "name": "@neovision/react-query",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "private": true,
   "author": {
     "email": "alan.blanchet@neovision.fr",
@@ -19,7 +19,8 @@
     "lib/"
   ],
   "dependencies": {
-    "react": "^18.0.0"
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.17.9",
@@ -35,7 +36,6 @@
     "file-loader": "^6.2.0",
     "html-webpack-plugin": "^5.4.0",
     "mini-css-extract-plugin": "^2.6.0",
-    "react-dom": "^18.0.0",
     "sass": "^1.50.0",
     "sass-loader": "^12.6.0",
     "style-loader": "^3.3.1",

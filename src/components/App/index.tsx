@@ -1,6 +1,7 @@
-import { QueryOptionsProvider } from '../utils/QueryOptionsProvider';
+import { Test } from '../Test';
 import '../../scss/main.scss';
 import { CRUD, ErrorBoundary } from '../utils';
+import { QueryOptionsProvider } from '../utils/QueryOptionsProvider';
 
 function App(): JSX.Element {
   return (
@@ -12,6 +13,7 @@ function App(): JSX.Element {
           protocol: 'https',
         }}
       >
+        <Test />
         <CRUD endPoints={''}>
           {(crud) => {
             const { data, loading } = crud.read;
