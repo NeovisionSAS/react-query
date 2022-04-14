@@ -21,32 +21,33 @@
     "jsx": "react-jsx",
     "declaration": true,
     "declarationDir": "lib",
-    "baseUrl": "src"
+    "baseUrl": "src",
+    "outDir": "./",
+    "paths": {
+      "components/*": [
+        "./components/*"
+      ],
+      "interfaces/*": [
+        "./interfaces/*"
+      ],
+      "utils/*": [
+        "./utils/*"
+      ],
+      "scss/*": [
+        "./scss/*"
+      ],
+      "fonts/*": [
+        "./fonts/*"
+      ],
+      "src/*": [
+        "./*"
+      ],
+      "assets/*": [
+        "./assets/*"
+      ]
+    }
   },
   "include": [
     "src"
-  ],
-  "paths": {
-    "components/*": [
-      "./components/*"
-    ],
-    "interfaces/*": [
-      "./interfaces/*"
-    ],
-    "utils/*": [
-      "./utils/*"
-    ],
-    "scss/*": [
-      "./scss/*"
-    ],
-    "fonts/*": [
-      "./fonts/*"
-    ],
-    "src/*": [
-      "./*"
-    ],
-    "assets/*": [
-      "./assets/*"
-    ]
-  }
+  ]
 }

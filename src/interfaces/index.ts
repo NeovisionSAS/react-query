@@ -1,1 +1,1 @@
-export * from 'interfaces/common';
+export * from './common';

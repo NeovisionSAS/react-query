@@ -1,5 +1,5 @@
-import CRUD, { CRUDObject } from 'components/utils/CRUD';
-import ErrorBoundary from 'components/utils/ErrorBoundary';
-import Query from 'components/utils/Query';
+import CRUD, { CRUDObject } from './CRUD';
+import ErrorBoundary from './ErrorBoundary';
+import Query from './Query';
 
 export { CRUD, CRUDObject, ErrorBoundary, Query };

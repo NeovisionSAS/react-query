@@ -1,6 +1,6 @@
-import { CRUD, ErrorBoundary } from 'components/utils';
-import { QueryOptionsProvider } from 'components/utils/Context';
-import 'scss/main.scss';
+import { CRUD, ErrorBoundary } from '../utils';
+import { QueryOptionsProvider } from '../utils/Context';
+import '../../scss/main.scss';
 
 function App(): JSX.Element {
   return (

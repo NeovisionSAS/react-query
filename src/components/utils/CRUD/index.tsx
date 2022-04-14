@@ -1,9 +1,9 @@
-import { useQueryOptions } from 'components/utils/Context';
-import ErrorBoundary from 'components/utils/ErrorBoundary';
-import Query from 'components/utils/Query';
+import { useQueryOptions } from '../Context';
+import ErrorBoundary from '../ErrorBoundary';
+import Query from '../Query';
 import React, { FormEvent, Fragment, SyntheticEvent } from 'react';
-import { Method, setData } from 'utils/api';
-import { Query as QueryType, getFormData } from 'utils/util';
+import { Method, setData } from '../../../utils/api';
+import { Query as QueryType, getFormData } from '../../../utils/util';
 
 interface CRUDProps<T = any> {
   children: (object: CRUDObject<T>, forceRefresh: () => void) => JSX.Element;

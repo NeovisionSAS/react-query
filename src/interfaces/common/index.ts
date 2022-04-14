@@ -1,4 +1,4 @@
-import Entity from "interfaces/common/Entity"
-import NamedEntity from "interfaces/common/NamedEntity"
+import Entity from "./Entity"
+import NamedEntity from "./NamedEntity"
 
 export { Entity, NamedEntity };
