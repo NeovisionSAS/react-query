@@ -24,11 +24,14 @@ interface UpdateParams extends GeneralParams {
     name?: string;
 }
 declare type CreateParams = GeneralParams;
+interface DeleteParams extends GeneralParams {
+    index: number;
+}
 export interface CRUDObject<T = any> {
     handleCreate: <T>(e: FormEvent, params?: CreateParams) => Promise<any>;
     read: QueryType<T>;
     handleUpdate: <T>(e: FormEvent, params?: UpdateParams) => Promise<any>;
-    handleDelete: <T>(e: FormEvent | undefined, index: number, pathTail: number) => Promise<any>;
+    handleDelete: <T>(e: FormEvent | undefined, params: DeleteParams) => Promise<any>;
 }
 declare const CRUD: <T = any>(p: CRUDProps<T>) => React.ReactElement<CRUDProps<T>>;
 export default CRUD;

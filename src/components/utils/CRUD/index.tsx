@@ -30,14 +30,17 @@ interface UpdateParams extends GeneralParams {
 
 type CreateParams = GeneralParams;
 
+interface DeleteParams extends GeneralParams {
+  index: number;
+}
+
 export interface CRUDObject<T = any> {
   handleCreate: <T>(e: FormEvent, params?: CreateParams) => Promise<any>;
   read: QueryType<T>;
   handleUpdate: <T>(e: FormEvent, params?: UpdateParams) => Promise<any>;
   handleDelete: <T>(
     e: FormEvent | undefined,
-    index: number,
-    pathTail: number
+    params: DeleteParams
   ) => Promise<any>;
 }
 
@@ -73,7 +76,8 @@ const CRUD: <T = any>(p: CRUDProps<T>) => React.ReactElement<CRUDProps<T>> = ({
                     e.preventDefault();
                     const { method, pathTail } = params;
                     const formData = getFormData<T>(e.target);
-                    if (mode == 'development') queryLog('[create]', formData);
+                    if (mode == 'development')
+                      queryLog(`[create][${method}]`, formData);
 
                     return setData(
                       domain,
@@ -103,7 +107,8 @@ const CRUD: <T = any>(p: CRUDProps<T>) => React.ReactElement<CRUDProps<T>> = ({
                     e.preventDefault();
                     const { method, pathTail, name } = params;
                     const formData = getFormData<T>(e.target);
-                    if (mode == 'development') queryLog('[update]', formData);
+                    if (mode == 'development')
+                      queryLog(`[update][${method}]`, formData);
 
                     const id = (formData as any)[name!];
 
@@ -139,14 +144,14 @@ const CRUD: <T = any>(p: CRUDProps<T>) => React.ReactElement<CRUDProps<T>> = ({
                   },
                   handleDelete: <T,>(
                     e: SyntheticEvent | undefined,
-                    index: number,
-                    pathTail: string | number
+                    params: DeleteParams
                   ) => {
                     e?.preventDefault();
                     e?.stopPropagation();
+                    const { method, pathTail, index } = params;
                     if (mode == 'development')
                       queryLog(
-                        '[delete]',
+                        `[delete][${method}]`,
                         `index: ${index}`,
                         `pathTail: ${pathTail}`
                       );
