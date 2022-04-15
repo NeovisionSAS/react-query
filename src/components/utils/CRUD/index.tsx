@@ -60,7 +60,7 @@ const CRUD: <T = any>(p: CRUDProps<T>) => React.ReactElement<CRUDProps<T>> = ({
 }) => {
   const [createEndpoint, readEndpoint, updateEndpoint, deleteEndpoint] =
     typeof endPoints == 'string'
-      ? new Array(4).fill(endPoints, 0, -1)
+      ? new Array(4).fill(endPoints)
       : [endPoints.create, endPoints.read, endPoints.update, endPoints.delete];
 
   const { parameterType, domain, requestMiddleware, mode } = useQueryOptions();
@@ -69,10 +69,10 @@ const CRUD: <T = any>(p: CRUDProps<T>) => React.ReactElement<CRUDProps<T>> = ({
     if (mode == 'development')
       queryLog(
         `[endpoints]`,
-        createEndpoint,
-        readEndpoint,
-        updateEndpoint,
-        deleteEndpoint
+        `[C]${createEndpoint}`,
+        `[R]${readEndpoint}`,
+        `[U]${updateEndpoint}`,
+        `[D]${deleteEndpoint}`
       );
   }, [createEndpoint, readEndpoint, updateEndpoint, deleteEndpoint]);
 
