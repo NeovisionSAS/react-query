@@ -21,16 +21,20 @@ interface CRUDProps<T = any> {
 
 interface GeneralParams {
   pathTail?: string | number;
-  method?: Method;
+  method: Method;
 }
 
-interface UpdateParams extends GeneralParams {
+interface IdentifiableParams extends GeneralParams {
   name?: string;
 }
 
-type CreateParams = GeneralParams;
+interface UpdateParams extends Partial<IdentifiableParams> {
+  name?: string;
+}
 
-interface DeleteParams extends UpdateParams {
+type CreateParams = Partial<IdentifiableParams>;
+
+interface DeleteParams extends IdentifiableParams {
   id?: number;
 }
 

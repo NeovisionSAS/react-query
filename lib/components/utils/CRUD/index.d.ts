@@ -18,13 +18,16 @@ interface CRUDProps<T = any> {
 }
 interface GeneralParams {
     pathTail?: string | number;
-    method?: Method;
+    method: Method;
 }
-interface UpdateParams extends GeneralParams {
+interface IdentifiableParams extends GeneralParams {
     name?: string;
 }
-declare type CreateParams = GeneralParams;
-interface DeleteParams extends UpdateParams {
+interface UpdateParams extends Partial<IdentifiableParams> {
+    name?: string;
+}
+declare type CreateParams = Partial<IdentifiableParams>;
+interface DeleteParams extends IdentifiableParams {
     id?: number;
 }
 export interface CRUDObject<T = any> {
