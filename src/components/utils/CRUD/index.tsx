@@ -151,7 +151,11 @@ const CRUD: <T = any>(p: CRUDProps<T>) => React.ReactElement<CRUDProps<T>> = ({
                     const { method, pathTail, name, id } = params;
                     if (mode == 'development') queryLog(`[delete][${method}]`);
 
-                    return setData(domain, `${deleteEndpoint}/${pathTail}/`, {
+                    let tail;
+                    if (parameterType == 'path' && id != null) tail = id;
+                    else tail = pathTail;
+
+                    return setData(domain, `${deleteEndpoint}/${tail}/`, {
                       method: 'DELETE',
                     }).then(() => {
                       if (type == 'array') {
