@@ -27,7 +27,7 @@ interface UpdateParams extends Partial<IdentifiableParams> {
     name?: string;
 }
 declare type CreateParams = Partial<IdentifiableParams>;
-interface DeleteParams extends IdentifiableParams {
+interface DeleteParams extends Partial<IdentifiableParams> {
     id?: number;
 }
 export interface CRUDObject<T = any> {

@@ -34,7 +34,7 @@ interface UpdateParams extends Partial<IdentifiableParams> {
 
 type CreateParams = Partial<IdentifiableParams>;
 
-interface DeleteParams extends IdentifiableParams {
+interface DeleteParams extends Partial<IdentifiableParams> {
   id?: number;
 }
 
@@ -155,14 +155,16 @@ const CRUD: <T = any>(p: CRUDProps<T>) => React.ReactElement<CRUDProps<T>> = ({
                     e?.preventDefault();
                     e?.stopPropagation();
                     const { method, pathTail, name, id } = params;
-                    if (mode == 'development') queryLog(`[delete][${method}]`);
+                    const realMethod = method ?? 'DELETE';
+                    if (mode == 'development')
+                      queryLog(`[delete][${realMethod}]`);
 
                     let tail;
                     if (parameterType == 'path' && id != null) tail = id;
                     else tail = pathTail;
 
                     return setData(domain, `${deleteEndpoint}/${tail}/`, {
-                      method: 'DELETE',
+                      method: realMethod,
                     }).then(() => {
                       if (type == 'array') {
                         const index = (data as any[]).findIndex(
