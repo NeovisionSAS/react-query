@@ -20,7 +20,7 @@ interface CRUDProps<T = any> {
 
 interface GeneralParams {
   pathTail?: string | number;
-  name: string;
+  name?: string;
 }
 
 interface UpdateParams extends GeneralParams {
@@ -89,7 +89,7 @@ const CRUD: <T = any>(p: CRUDProps<T>) => React.ReactElement<CRUDProps<T>> = ({
                     const { method, pathTail, name } = params;
                     const formData = getFormData<T>(e.target);
 
-                    const id = (formData as any)[name];
+                    const id = (formData as any)[name!];
 
                     let tail;
                     if (parameterType == 'path' && id != '' && id != null)
@@ -107,7 +107,7 @@ const CRUD: <T = any>(p: CRUDProps<T>) => React.ReactElement<CRUDProps<T>> = ({
                       let newData;
                       if (type == 'array') {
                         const index = (data as any[]).findIndex(
-                          (val) => val[name] == id
+                          (val) => val[name!] == id
                         );
                         newData = [...(data as any[])];
                         if (index != undefined)

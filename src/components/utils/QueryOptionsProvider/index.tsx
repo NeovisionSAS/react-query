@@ -3,13 +3,11 @@ import { createContext, useContext } from 'react';
 interface QueryOptions {
   requestMiddleware?: () => Promise<HeadersInit | undefined>;
   domain: string;
-  protocol?: 'http' | 'https';
   parameterType?: 'path' | 'queryString';
 }
 
 const queryOptionsContext = createContext<QueryOptions>({
   domain: '',
-  protocol: 'https',
 });
 
 export const useQueryOptions = () => {

@@ -60,7 +60,7 @@ const Query: <T = any>(
     timeout != null && window.clearTimeout(timeout);
     setTimeout(
       window.setTimeout(() => {
-        const { requestMiddleware, domain, protocol } = queryOptions;
+        const { requestMiddleware, domain } = queryOptions;
 
         // Fetch request handler
         const req = (headers: HeadersInit | undefined) => {
@@ -71,7 +71,7 @@ const Query: <T = any>(
           );
           controller && controller.abort();
           controller = new AbortController();
-          fetch(`${protocol ?? 'https'}://${domain}/${query}`, {
+          fetch(`${domain}/${query}`, {
             headers: filteredHeaders,
             signal: controller.signal,
           })

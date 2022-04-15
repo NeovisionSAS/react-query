@@ -2,7 +2,6 @@
 interface QueryOptions {
     requestMiddleware?: () => Promise<HeadersInit | undefined>;
     domain: string;
-    protocol?: 'http' | 'https';
     parameterType?: 'path' | 'queryString';
 }
 export declare const useQueryOptions: () => QueryOptions;

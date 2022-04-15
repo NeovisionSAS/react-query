@@ -16,9 +16,8 @@ function App(): JSX.Element {
     <ErrorBoundary>
       <QueryOptionsProvider
         value={{
-          domain: 'api.publicapis.org',
+          domain: 'https://api.publicapis.org',
           parameterType: 'path',
-          protocol: 'https',
           requestMiddleware: () => p,
         }}
       >

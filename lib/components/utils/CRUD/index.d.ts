@@ -18,7 +18,7 @@ interface CRUDProps<T = any> {
 }
 interface GeneralParams {
     pathTail?: string | number;
-    name: string;
+    name?: string;
 }
 interface UpdateParams extends GeneralParams {
     method?: Method;
