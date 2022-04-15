@@ -63,17 +63,20 @@ const CRUD: <T = any>(p: CRUDProps<T>) => React.ReactElement<CRUDProps<T>> = ({
       ? new Array(4).fill(endPoints)
       : [endPoints.create, endPoints.read, endPoints.update, endPoints.delete];
 
-  const { parameterType, domain, requestMiddleware, mode } = useQueryOptions();
+  const { parameterType, domain, requestMiddleware, mode, verbosity } =
+    useQueryOptions();
 
   useEffect(() => {
-    if (mode == 'development')
-      queryLog(
-        `[endpoints]`,
-        `[C]${createEndpoint}`,
-        `[R]${readEndpoint}`,
-        `[U]${updateEndpoint}`,
-        `[D]${deleteEndpoint}`
-      );
+    queryLog(
+      mode!,
+      verbosity!,
+      4,
+      `[endpoints]`,
+      `[C]${createEndpoint}`,
+      `[R]${readEndpoint}`,
+      `[U]${updateEndpoint}`,
+      `[D]${deleteEndpoint}`
+    );
   }, [createEndpoint, readEndpoint, updateEndpoint, deleteEndpoint]);
 
   return (
@@ -91,8 +94,13 @@ const CRUD: <T = any>(p: CRUDProps<T>) => React.ReactElement<CRUDProps<T>> = ({
                     e.preventDefault();
                     const { method, pathTail } = params;
                     const formData = getFormData<T>(e.target);
-                    if (mode == 'development')
-                      queryLog(`[create][${method}]`, formData);
+                    queryLog(
+                      mode!,
+                      verbosity!,
+                      1,
+                      `[create][${method}]`,
+                      formData
+                    );
 
                     return setData(
                       domain,
@@ -131,8 +139,13 @@ const CRUD: <T = any>(p: CRUDProps<T>) => React.ReactElement<CRUDProps<T>> = ({
                       delete (formData as any)[name!];
                     } else tail = pathTail;
 
-                    if (mode == 'development')
-                      queryLog(`[update][${method}]`, formData);
+                    queryLog(
+                      mode!,
+                      verbosity!,
+                      1,
+                      `[update][${method}]`,
+                      formData
+                    );
 
                     return setData(
                       domain,
@@ -168,7 +181,7 @@ const CRUD: <T = any>(p: CRUDProps<T>) => React.ReactElement<CRUDProps<T>> = ({
                     const { method, pathTail, name, id } = params;
                     const realMethod = method ?? 'DELETE';
                     if (mode == 'development')
-                      queryLog(`[delete][${realMethod}]`);
+                      queryLog(mode!, verbosity!, 1, `[delete][${realMethod}]`);
 
                     let tail;
                     if (parameterType == 'path' && id != null) tail = id;
@@ -183,10 +196,23 @@ const CRUD: <T = any>(p: CRUDProps<T>) => React.ReactElement<CRUDProps<T>> = ({
                           (val) => val[name!] == id
                         );
                         const typedData = data as unknown as any[];
-                        manualUpdate?.([
+                        queryLog(
+                          mode!,
+                          verbosity!,
+                          3,
+                          `Removing index ${index}`
+                        );
+                        const newArr = [
                           ...typedData.slice(0, index),
                           ...typedData.slice(index + 1, typedData.length),
-                        ] as any);
+                        ];
+                        queryLog(
+                          mode!,
+                          verbosity!,
+                          4,
+                          `Array updated ${newArr}`
+                        );
+                        manualUpdate?.(newArr as any);
                       } else {
                         manualUpdate?.(data as any);
                       }

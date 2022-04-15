@@ -5,12 +5,14 @@ interface QueryOptions {
   domain: string;
   parameterType?: 'path' | 'queryString';
   mode?: 'development' | 'production';
+  verbosity?: number;
 }
 
 const queryOptionsContext = createContext<QueryOptions>({
   domain: '',
   parameterType: 'path',
   mode: 'production',
+  verbosity: 1,
 });
 
 export const useQueryOptions = () => {
