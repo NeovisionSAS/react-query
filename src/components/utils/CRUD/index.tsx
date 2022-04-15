@@ -1,4 +1,4 @@
-import React, { FormEvent, Fragment, SyntheticEvent } from 'react';
+import React, { FormEvent, Fragment, SyntheticEvent, useEffect } from 'react';
 import { Method, setData } from '../../../utils/api';
 import { queryLog } from '../../../utils/log';
 import { getFormData, Query as QueryType } from '../../../utils/util';
@@ -64,6 +64,17 @@ const CRUD: <T = any>(p: CRUDProps<T>) => React.ReactElement<CRUDProps<T>> = ({
       : [endPoints.create, endPoints.read, endPoints.update, endPoints.delete];
 
   const { parameterType, domain, requestMiddleware, mode } = useQueryOptions();
+
+  useEffect(() => {
+    if (mode == 'development')
+      queryLog(
+        `[endpoints]`,
+        createEndpoint,
+        readEndpoint,
+        updateEndpoint,
+        deleteEndpoint
+      );
+  }, [createEndpoint, readEndpoint, updateEndpoint, deleteEndpoint]);
 
   return (
     <ErrorBoundary>
