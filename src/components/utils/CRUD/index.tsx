@@ -53,7 +53,7 @@ const CRUD: <T = any>(p: CRUDProps<T>) => React.ReactElement<CRUDProps<T>> = ({
       ? new Array(4).fill(endPoints, 0, -1)
       : [endPoints.create, endPoints.read, endPoints.update, endPoints.delete];
 
-  const { parameterType, domain } = useQueryOptions();
+  const { parameterType, domain, requestMiddleware } = useQueryOptions();
 
   return (
     <ErrorBoundary>
@@ -102,6 +102,7 @@ const CRUD: <T = any>(p: CRUDProps<T>) => React.ReactElement<CRUDProps<T>> = ({
                       {
                         body: JSON.stringify(formData),
                         method,
+                        middleware: requestMiddleware?.(),
                       }
                     ).then(() => {
                       let newData;
