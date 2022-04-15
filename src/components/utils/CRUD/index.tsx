@@ -206,12 +206,7 @@ const CRUD: <T = any>(p: CRUDProps<T>) => React.ReactElement<CRUDProps<T>> = ({
                           ...typedData.slice(0, index),
                           ...typedData.slice(index + 1, typedData.length),
                         ];
-                        queryLog(
-                          mode!,
-                          verbosity!,
-                          4,
-                          `Array updated ${newArr}`
-                        );
+                        queryLog(mode!, verbosity!, 4, `Array updated`, newArr);
                         manualUpdate?.(newArr as any);
                       } else {
                         manualUpdate?.(data as any);

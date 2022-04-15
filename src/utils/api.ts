@@ -19,7 +19,14 @@ export const setData = function <T = any>(
       headers,
       body,
     }).then((res: Response) => {
-      if (res.ok) return res.json();
+      if (res.ok) {
+        try {
+          return res.json();
+        } catch (e) {
+        } finally {
+          return '';
+        }
+      }
       throw new Error('Something went wrong');
     });
 
