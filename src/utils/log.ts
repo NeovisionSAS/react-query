@@ -4,5 +4,6 @@ export const queryLog = (
   limitVerbosity: number,
   ...s: any
 ) => {
-  console.log(`[react-query]`, ...s);
+  if (mode == 'development' && limitVerbosity <= paramVerbosity)
+    console.log(`[react-query]`, ...s);
 };
