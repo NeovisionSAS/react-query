@@ -4,10 +4,13 @@ interface QueryOptions {
   requestMiddleware?: () => Promise<HeadersInit | undefined>;
   domain: string;
   parameterType?: 'path' | 'queryString';
+  mode?: 'development' | 'production';
 }
 
 const queryOptionsContext = createContext<QueryOptions>({
   domain: '',
+  parameterType: 'path',
+  mode: 'production',
 });
 
 export const useQueryOptions = () => {

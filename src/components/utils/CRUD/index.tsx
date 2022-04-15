@@ -53,7 +53,7 @@ const CRUD: <T = any>(p: CRUDProps<T>) => React.ReactElement<CRUDProps<T>> = ({
       ? new Array(4).fill(endPoints, 0, -1)
       : [endPoints.create, endPoints.read, endPoints.update, endPoints.delete];
 
-  const { parameterType, domain, requestMiddleware } = useQueryOptions();
+  const { parameterType, domain, requestMiddleware, mode } = useQueryOptions();
 
   return (
     <ErrorBoundary>
@@ -88,6 +88,8 @@ const CRUD: <T = any>(p: CRUDProps<T>) => React.ReactElement<CRUDProps<T>> = ({
                     e.preventDefault();
                     const { method, pathTail, name } = params;
                     const formData = getFormData<T>(e.target);
+                    if (mode == 'development')
+                      console.log('formData received', formData);
 
                     const id = (formData as any)[name!];
 

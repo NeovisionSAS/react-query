@@ -18,6 +18,7 @@ function App(): JSX.Element {
         value={{
           domain: 'https://api.publicapis.org',
           parameterType: 'path',
+          mode: 'development',
           requestMiddleware: () => p,
         }}
       >
