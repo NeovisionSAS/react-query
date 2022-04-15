@@ -89,7 +89,7 @@ const CRUD: <T = any>(p: CRUDProps<T>) => React.ReactElement<CRUDProps<T>> = ({
                     const { method, pathTail, name } = params;
                     const formData = getFormData<T>(e.target);
                     if (mode == 'development')
-                      console.log('formData received', formData);
+                      console.log('formData to send', formData);
 
                     const id = (formData as any)[name!];
 
@@ -100,7 +100,7 @@ const CRUD: <T = any>(p: CRUDProps<T>) => React.ReactElement<CRUDProps<T>> = ({
 
                     return setData(
                       domain,
-                      `${updateEndpoint}/${pathTail ? `${pathTail}/` : ''}`,
+                      `${updateEndpoint}/${tail ? `${tail}/` : ''}`,
                       {
                         body: JSON.stringify(formData),
                         method,
