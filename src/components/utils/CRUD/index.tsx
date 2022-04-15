@@ -81,6 +81,7 @@ const CRUD: <T = any>(p: CRUDProps<T>) => React.ReactElement<CRUDProps<T>> = ({
                       {
                         body: JSON.stringify(formData),
                         method,
+                        middleware: requestMiddleware?.(),
                       }
                     )
                       .then((created) => {
