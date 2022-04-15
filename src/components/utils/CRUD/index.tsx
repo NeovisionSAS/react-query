@@ -73,8 +73,7 @@ const CRUD: <T = any>(p: CRUDProps<T>) => React.ReactElement<CRUDProps<T>> = ({
                     e.preventDefault();
                     const { method, pathTail } = params;
                     const formData = getFormData<T>(e.target);
-                    if (mode == 'development')
-                      queryLog('formData to send', formData);
+                    if (mode == 'development') queryLog('[create]', formData);
 
                     return setData(
                       domain,
@@ -103,8 +102,7 @@ const CRUD: <T = any>(p: CRUDProps<T>) => React.ReactElement<CRUDProps<T>> = ({
                     e.preventDefault();
                     const { method, pathTail, name } = params;
                     const formData = getFormData<T>(e.target);
-                    if (mode == 'development')
-                      queryLog('formData to send', formData);
+                    if (mode == 'development') queryLog('[update]', formData);
 
                     const id = (formData as any)[name!];
 
@@ -145,6 +143,13 @@ const CRUD: <T = any>(p: CRUDProps<T>) => React.ReactElement<CRUDProps<T>> = ({
                   ) => {
                     e?.preventDefault();
                     e?.stopPropagation();
+                    if (mode == 'development')
+                      queryLog(
+                        '[delete]',
+                        `index: ${index}`,
+                        `pathTail: ${pathTail}`
+                      );
+
                     return setData(domain, `${deleteEndpoint}/${pathTail}/`, {
                       method: 'DELETE',
                     }).then(() => {
