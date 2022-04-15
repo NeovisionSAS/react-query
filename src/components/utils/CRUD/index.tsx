@@ -107,8 +107,6 @@ const CRUD: <T = any>(p: CRUDProps<T>) => React.ReactElement<CRUDProps<T>> = ({
                     e.preventDefault();
                     const { method, pathTail, name } = params;
                     const formData = getFormData<T>(e.target);
-                    if (mode == 'development')
-                      queryLog(`[update][${method}]`, formData);
 
                     const id = (formData as any)[name!];
 
@@ -117,6 +115,9 @@ const CRUD: <T = any>(p: CRUDProps<T>) => React.ReactElement<CRUDProps<T>> = ({
                       tail = id;
                       delete (formData as any)[name!];
                     } else tail = pathTail;
+
+                    if (mode == 'development')
+                      queryLog(`[update][${method}]`, formData);
 
                     return setData(
                       domain,
