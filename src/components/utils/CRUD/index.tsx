@@ -113,9 +113,10 @@ const CRUD: <T = any>(p: CRUDProps<T>) => React.ReactElement<CRUDProps<T>> = ({
                     const id = (formData as any)[name!];
 
                     let tail;
-                    if (parameterType == 'path' && id != '' && id != null)
+                    if (parameterType == 'path' && id != '' && id != null) {
                       tail = id;
-                    else tail = pathTail;
+                      delete (formData as any)[name!];
+                    } else tail = pathTail;
 
                     return setData(
                       domain,
