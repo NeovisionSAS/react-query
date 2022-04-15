@@ -18,13 +18,14 @@ interface CRUDProps<T = any> {
 }
 interface GeneralParams {
     pathTail?: string | number;
-    name?: string;
-}
-interface UpdateParams extends GeneralParams {
     method?: Method;
 }
+interface UpdateParams extends GeneralParams {
+    name?: string;
+}
+declare type CreateParams = GeneralParams;
 export interface CRUDObject<T = any> {
-    handleCreate: <T>(e: FormEvent) => Promise<any>;
+    handleCreate: <T>(e: FormEvent, params?: CreateParams) => Promise<any>;
     read: QueryType<T>;
     handleUpdate: <T>(e: FormEvent, params?: UpdateParams) => Promise<any>;
     handleDelete: <T>(e: FormEvent | undefined, index: number, pathTail: number) => Promise<any>;

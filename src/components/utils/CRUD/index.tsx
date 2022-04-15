@@ -1,6 +1,6 @@
 import React, { FormEvent, Fragment, SyntheticEvent } from 'react';
-import { queryLog } from '../../../utils/log';
 import { Method, setData } from '../../../utils/api';
+import { queryLog } from '../../../utils/log';
 import { getFormData, Query as QueryType } from '../../../utils/util';
 import ErrorBoundary from '../ErrorBoundary';
 import Query from '../Query';
@@ -21,15 +21,17 @@ interface CRUDProps<T = any> {
 
 interface GeneralParams {
   pathTail?: string | number;
-  name?: string;
-}
-
-interface UpdateParams extends GeneralParams {
   method?: Method;
 }
 
+interface UpdateParams extends GeneralParams {
+  name?: string;
+}
+
+type CreateParams = GeneralParams;
+
 export interface CRUDObject<T = any> {
-  handleCreate: <T>(e: FormEvent) => Promise<any>;
+  handleCreate: <T>(e: FormEvent, params?: CreateParams) => Promise<any>;
   read: QueryType<T>;
   handleUpdate: <T>(e: FormEvent, params?: UpdateParams) => Promise<any>;
   handleDelete: <T>(
@@ -64,12 +66,24 @@ const CRUD: <T = any>(p: CRUDProps<T>) => React.ReactElement<CRUDProps<T>> = ({
             <Fragment>
               {children(
                 {
-                  handleCreate: <T,>(e: FormEvent) => {
+                  handleCreate: <T,>(
+                    e: FormEvent,
+                    params: CreateParams = { method: 'POST' }
+                  ) => {
                     e.preventDefault();
+                    const { method, pathTail } = params;
                     const formData = getFormData<T>(e.target);
-                    return setData(domain, `${createEndpoint}/`, {
-                      body: JSON.stringify(formData),
-                    })
+                    if (mode == 'development')
+                      queryLog('formData to send', formData);
+
+                    return setData(
+                      domain,
+                      `${createEndpoint}/${pathTail ? `${pathTail}/` : ''}`,
+                      {
+                        body: JSON.stringify(formData),
+                        method,
+                      }
+                    )
                       .then((created) => {
                         manualUpdate?.([...(data as any), created] as any);
                         onCreated?.() && queryRefresh?.();
