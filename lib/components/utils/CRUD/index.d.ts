@@ -24,8 +24,8 @@ interface UpdateParams extends GeneralParams {
     name?: string;
 }
 declare type CreateParams = GeneralParams;
-interface DeleteParams extends GeneralParams {
-    index: number;
+interface DeleteParams extends UpdateParams {
+    id?: number;
 }
 export interface CRUDObject<T = any> {
     handleCreate: <T>(e: FormEvent, params?: CreateParams) => Promise<any>;

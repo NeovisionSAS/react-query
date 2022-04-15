@@ -30,8 +30,8 @@ interface UpdateParams extends GeneralParams {
 
 type CreateParams = GeneralParams;
 
-interface DeleteParams extends GeneralParams {
-  index: number;
+interface DeleteParams extends UpdateParams {
+  id?: number;
 }
 
 export interface CRUDObject<T = any> {
@@ -144,22 +144,20 @@ const CRUD: <T = any>(p: CRUDProps<T>) => React.ReactElement<CRUDProps<T>> = ({
                   },
                   handleDelete: <T,>(
                     e: SyntheticEvent | undefined,
-                    params: DeleteParams
+                    params: DeleteParams = { method: 'DELETE' }
                   ) => {
                     e?.preventDefault();
                     e?.stopPropagation();
-                    const { method, pathTail, index } = params;
-                    if (mode == 'development')
-                      queryLog(
-                        `[delete][${method}]`,
-                        `index: ${index}`,
-                        `pathTail: ${pathTail}`
-                      );
+                    const { method, pathTail, name, id } = params;
+                    if (mode == 'development') queryLog(`[delete][${method}]`);
 
                     return setData(domain, `${deleteEndpoint}/${pathTail}/`, {
                       method: 'DELETE',
                     }).then(() => {
                       if (type == 'array') {
+                        const index = (data as any[]).findIndex(
+                          (val) => val[name!] == id
+                        );
                         const typedData = data as unknown as any[];
                         manualUpdate?.([
                           ...typedData.slice(0, index),
