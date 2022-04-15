@@ -64,10 +64,15 @@ const Query: <T = any>(
 
         // Fetch request handler
         const req = (headers: HeadersInit | undefined) => {
+          const filteredHeaders = Object.fromEntries<any>(
+            Object.entries(headers as any).filter(
+              ([key]) => !key.includes('Content-Type')
+            )
+          );
           controller && controller.abort();
           controller = new AbortController();
           fetch(`${protocol ?? 'https'}://${domain}/${query}`, {
-            headers,
+            headers: filteredHeaders,
             signal: controller.signal,
           })
             .then((res) => {
