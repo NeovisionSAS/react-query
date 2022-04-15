@@ -32,7 +32,7 @@ export const getFormData = <T>(target: EventTarget): T => {
       .reduce((acc, cur) => {
         const { name, value, tagName, checked, type, required } = cur;
 
-        const isCheckbox = type == 'checkbox';
+        const isCheckbox = type == 'hidden' && value == '';
         const isValEmpty = value == '' || value == null;
 
         if (required && isValEmpty)
