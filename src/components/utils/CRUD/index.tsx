@@ -1,4 +1,5 @@
 import React, { FormEvent, Fragment, SyntheticEvent } from 'react';
+import { queryLog } from '../../../utils/log';
 import { Method, setData } from '../../../utils/api';
 import { getFormData, Query as QueryType } from '../../../utils/util';
 import ErrorBoundary from '../ErrorBoundary';
@@ -89,7 +90,7 @@ const CRUD: <T = any>(p: CRUDProps<T>) => React.ReactElement<CRUDProps<T>> = ({
                     const { method, pathTail, name } = params;
                     const formData = getFormData<T>(e.target);
                     if (mode == 'development')
-                      console.log('formData to send', formData);
+                      queryLog('formData to send', formData);
 
                     const id = (formData as any)[name!];
 
