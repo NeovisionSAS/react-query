@@ -176,6 +176,7 @@ const CRUD: <T = any>(p: CRUDProps<T>) => React.ReactElement<CRUDProps<T>> = ({
 
                     return setData(domain, `${deleteEndpoint}/${tail}/`, {
                       method: realMethod,
+                      middleware: requestMiddleware?.(),
                     }).then(() => {
                       if (type == 'array') {
                         const index = (data as any[]).findIndex(
