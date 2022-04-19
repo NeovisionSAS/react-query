@@ -94,24 +94,26 @@ const CRUD: <T = any>(p: CRUDProps<T>) => React.ReactElement<CRUDProps<T>> = ({
                     e.preventDefault();
                     const { method, pathTail } = params;
                     const formData = getFormData<T>(e.target);
+
+                    const endpoint = `${createEndpoint}/${
+                      pathTail ? `${pathTail}/` : ''
+                    }`;
+
                     queryLog(
                       mode,
                       verbosity,
                       1,
                       `[create][${method}]`,
+                      `${domain}/${endpoint}`,
                       formData
                     );
 
-                    return setData(
-                      domain,
-                      `${createEndpoint}/${pathTail ? `${pathTail}/` : ''}`,
-                      {
-                        body: JSON.stringify(formData),
-                        method,
-                        middleware: requestMiddleware?.(),
-                        mode,
-                      }
-                    )
+                    return setData(domain, endpoint, {
+                      body: JSON.stringify(formData),
+                      method,
+                      middleware: requestMiddleware?.(),
+                      mode,
+                    })
                       .then((created) => {
                         manualUpdate?.([...(data as any), created] as any);
                         onCreated?.() && queryRefresh?.();
@@ -140,24 +142,25 @@ const CRUD: <T = any>(p: CRUDProps<T>) => React.ReactElement<CRUDProps<T>> = ({
                       delete (formData as any)[name!];
                     } else tail = pathTail;
 
+                    const endpoint = `${updateEndpoint}/${
+                      tail ? `${tail}/` : ''
+                    }`;
+
                     queryLog(
                       mode,
                       verbosity,
                       1,
                       `[update][${method}]`,
+                      `${domain}/${endpoint}`,
                       formData
                     );
 
-                    return setData(
-                      domain,
-                      `${updateEndpoint}/${tail ? `${tail}/` : ''}`,
-                      {
-                        body: JSON.stringify(formData),
-                        method,
-                        middleware: requestMiddleware?.(),
-                        mode,
-                      }
-                    ).then(() => {
+                    return setData(domain, endpoint, {
+                      body: JSON.stringify(formData),
+                      method,
+                      middleware: requestMiddleware?.(),
+                      mode,
+                    }).then(() => {
                       let newData;
                       if (type == 'array') {
                         const index = (data as any[]).findIndex(
@@ -182,14 +185,23 @@ const CRUD: <T = any>(p: CRUDProps<T>) => React.ReactElement<CRUDProps<T>> = ({
                     e?.stopPropagation();
                     const { method, pathTail, name, id } = params;
                     const realMethod = method ?? 'DELETE';
-                    if (mode == 'development')
-                      queryLog(mode, verbosity, 1, `[delete][${realMethod}]`);
 
                     let tail;
                     if (parameterType == 'path' && id != null) tail = id;
                     else tail = pathTail;
 
-                    return setData(domain, `${deleteEndpoint}/${tail}/`, {
+                    const endpoint = `${deleteEndpoint}/${tail}/`;
+
+                    if (mode == 'development')
+                      queryLog(
+                        mode,
+                        verbosity,
+                        1,
+                        `[delete][${realMethod}]`,
+                        `${domain}/${endpoint}`
+                      );
+
+                    return setData(domain, endpoint, {
                       method: realMethod,
                       middleware: requestMiddleware?.(),
                       mode,
