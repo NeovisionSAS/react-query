@@ -12,6 +12,7 @@
     "patch": "npm version --no-git-tag-version patch",
     "minor": "npm version --no-git-tag-version minor",
     "major": "npm version --no-git-tag-version major",
+    "amend": "npm run lib && git add . && git commit --amend && git push -f",
     "postversion": "npm run lib && git add . && git commit && git push"
   },
   "main": "./src/index.tsx",
