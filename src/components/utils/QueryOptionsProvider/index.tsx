@@ -15,10 +15,10 @@ const queryOptionsContext = createContext<QueryOptions>({
   verbosity: 1,
 });
 
-export const useQueryOptions = () => {
+export const useQueryOptions = (): Required<QueryOptions> => {
   const ctx = useContext(queryOptionsContext);
   if (!ctx) throw new Error("No context for 'useQueryOptions'");
-  return ctx;
+  return ctx as Required<QueryOptions>;
 };
 
 export const QueryOptionsProvider = queryOptionsContext.Provider;

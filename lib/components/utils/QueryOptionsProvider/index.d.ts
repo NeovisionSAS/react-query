@@ -6,6 +6,6 @@ interface QueryOptions {
     mode?: 'development' | 'production';
     verbosity?: number;
 }
-export declare const useQueryOptions: () => QueryOptions;
+export declare const useQueryOptions: () => Required<QueryOptions>;
 export declare const QueryOptionsProvider: import("react").Provider<QueryOptions>;
 export {};

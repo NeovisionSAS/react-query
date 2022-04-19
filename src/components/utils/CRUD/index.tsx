@@ -68,8 +68,8 @@ const CRUD: <T = any>(p: CRUDProps<T>) => React.ReactElement<CRUDProps<T>> = ({
 
   useEffect(() => {
     queryLog(
-      mode!,
-      verbosity!,
+      mode,
+      verbosity,
       4,
       `[endpoints]`,
       `[C]${createEndpoint}`,
@@ -95,8 +95,8 @@ const CRUD: <T = any>(p: CRUDProps<T>) => React.ReactElement<CRUDProps<T>> = ({
                     const { method, pathTail } = params;
                     const formData = getFormData<T>(e.target);
                     queryLog(
-                      mode!,
-                      verbosity!,
+                      mode,
+                      verbosity,
                       1,
                       `[create][${method}]`,
                       formData
@@ -141,8 +141,8 @@ const CRUD: <T = any>(p: CRUDProps<T>) => React.ReactElement<CRUDProps<T>> = ({
                     } else tail = pathTail;
 
                     queryLog(
-                      mode!,
-                      verbosity!,
+                      mode,
+                      verbosity,
                       1,
                       `[update][${method}]`,
                       formData
@@ -183,7 +183,7 @@ const CRUD: <T = any>(p: CRUDProps<T>) => React.ReactElement<CRUDProps<T>> = ({
                     const { method, pathTail, name, id } = params;
                     const realMethod = method ?? 'DELETE';
                     if (mode == 'development')
-                      queryLog(mode!, verbosity!, 1, `[delete][${realMethod}]`);
+                      queryLog(mode, verbosity, 1, `[delete][${realMethod}]`);
 
                     let tail;
                     if (parameterType == 'path' && id != null) tail = id;
@@ -199,17 +199,12 @@ const CRUD: <T = any>(p: CRUDProps<T>) => React.ReactElement<CRUDProps<T>> = ({
                           (val) => val[name!] == id
                         );
                         const typedData = data as unknown as any[];
-                        queryLog(
-                          mode!,
-                          verbosity!,
-                          3,
-                          `Removing index ${index}`
-                        );
+                        queryLog(mode, verbosity, 3, `Removing index ${index}`);
                         const newArr = [
                           ...typedData.slice(0, index),
                           ...typedData.slice(index + 1, typedData.length),
                         ];
-                        queryLog(mode!, verbosity!, 4, `Array updated`, newArr);
+                        queryLog(mode, verbosity, 4, `Array updated`, newArr);
                         manualUpdate?.(newArr as any);
                       } else {
                         manualUpdate?.(data as any);
