@@ -109,6 +109,7 @@ const CRUD: <T = any>(p: CRUDProps<T>) => React.ReactElement<CRUDProps<T>> = ({
                         body: JSON.stringify(formData),
                         method,
                         middleware: requestMiddleware?.(),
+                        mode,
                       }
                     )
                       .then((created) => {
@@ -154,6 +155,7 @@ const CRUD: <T = any>(p: CRUDProps<T>) => React.ReactElement<CRUDProps<T>> = ({
                         body: JSON.stringify(formData),
                         method,
                         middleware: requestMiddleware?.(),
+                        mode,
                       }
                     ).then(() => {
                       let newData;
@@ -190,6 +192,7 @@ const CRUD: <T = any>(p: CRUDProps<T>) => React.ReactElement<CRUDProps<T>> = ({
                     return setData(domain, `${deleteEndpoint}/${tail}/`, {
                       method: realMethod,
                       middleware: requestMiddleware?.(),
+                      mode,
                     }).then(() => {
                       if (type == 'array') {
                         const index = (data as any[]).findIndex(
