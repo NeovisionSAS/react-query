@@ -1,5 +1,5 @@
-import { Mode } from '../types/global';
 import { queryWarn } from './log';
+import { Mode } from '../types/global';
 
 export type Method = 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
@@ -25,18 +25,20 @@ export const setData = function <T = any>(
     }).then(
       (res: Response) => {
         if (res.ok) {
-          try {
-            return res.json();
-          } catch (e) {
-            queryWarn(
-              mode ?? 'production',
-              0,
-              0,
-              `Could not parse response to json`,
-              res
-            );
-            return res.text();
-          }
+          return res.text().then((t) => {
+            try {
+              return JSON.parse(t);
+            } catch (e) {
+              queryWarn(
+                mode ?? 'production',
+                0,
+                0,
+                `Could not parse response to json`,
+                res
+              );
+              return t;
+            }
+          });
         }
         return res.text().then((t) => {
           throw new Error(t);
