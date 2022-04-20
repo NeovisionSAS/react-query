@@ -1,7 +1,13 @@
+import equal from 'fast-deep-equal';
 import React, { FormEvent, Fragment, SyntheticEvent, useEffect } from 'react';
 import { Method, setData } from '../../../utils/api';
 import { queryLog } from '../../../utils/log';
-import { getFormData, Query as QueryType } from '../../../utils/util';
+import {
+  formExtractor,
+  getFormData,
+  getPathTail,
+  Query as QueryType,
+} from '../../../utils/util';
 import ErrorBoundary from '../ErrorBoundary';
 import Query from '../Query';
 import { useQueryOptions } from '../QueryOptionsProvider';
@@ -35,7 +41,7 @@ interface UpdateParams extends Partial<IdentifiableParams> {
 type CreateParams = Partial<IdentifiableParams>;
 
 interface DeleteParams extends Partial<IdentifiableParams> {
-  id?: number;
+  id?: number | string;
 }
 
 export interface CRUDObject<T = any> {
@@ -93,7 +99,7 @@ const CRUD: <T = any>(p: CRUDProps<T>) => React.ReactElement<CRUDProps<T>> = ({
                   ) => {
                     e.preventDefault();
                     const { method, pathTail } = params;
-                    const formData = getFormData<T>(e.target);
+                    const formData = getFormData(e.target);
 
                     const endpoint = `${createEndpoint}/${
                       pathTail ? `${pathTail}/` : ''
@@ -132,47 +138,64 @@ const CRUD: <T = any>(p: CRUDProps<T>) => React.ReactElement<CRUDProps<T>> = ({
                   ) => {
                     e.preventDefault();
                     const { method, pathTail, name } = params;
-                    const formData = getFormData<T>(e.target);
 
-                    const id = (formData as any)[name!];
+                    const formDatas = formExtractor(e.target, name!);
 
-                    let tail;
-                    if (parameterType == 'path' && id != '' && id != null) {
-                      tail = id;
-                      delete (formData as any)[name!];
-                    } else tail = pathTail;
+                    let newData: any;
+                    if (type == 'array') newData = [...(data as any[])];
+                    else newData = data;
 
-                    const endpoint = `${updateEndpoint}/${
-                      tail ? `${tail}/` : ''
-                    }`;
+                    const promises: Promise<any>[] = [];
+                    formDatas.forEach((formData) => {
+                      const tail = getPathTail(
+                        formData,
+                        parameterType,
+                        name!,
+                        pathTail
+                      );
 
-                    queryLog(
-                      mode,
-                      verbosity,
-                      1,
-                      `[update][${method}]`,
-                      `${domain}/${endpoint}`,
-                      formData
-                    );
+                      const endpoint = `${updateEndpoint}/${
+                        tail ? `${tail}/` : ''
+                      }`;
 
-                    return setData(domain, endpoint, {
-                      body: JSON.stringify(formData),
-                      method,
-                      middleware: requestMiddleware?.(),
-                      mode,
-                    }).then(() => {
-                      let newData;
+                      let hasChanged = false;
                       if (type == 'array') {
-                        const index = (data as any[]).findIndex(
-                          (val) => val[name!] == id
+                        const index = (newData as any[]).findIndex(
+                          (val) => val[name!] == tail
                         );
-                        newData = [...(data as any[])];
-                        if (index != undefined)
-                          newData[index] = { ...newData[index], ...formData };
-                        else newData.push(formData);
+                        if (index != undefined) {
+                          const mergedData = {
+                            ...newData[index],
+                            ...formData,
+                          };
+                          hasChanged = !equal(newData[index], mergedData);
+                          newData[index] = mergedData;
+                        } else newData.push(formData);
                       } else {
-                        newData = data;
+                        hasChanged = !equal(newData, data);
+                        newData = { ...newData, ...formData };
                       }
+
+                      if (hasChanged) {
+                        queryLog(
+                          mode,
+                          verbosity,
+                          1,
+                          `[update][${method}]`,
+                          `${domain}/${endpoint}`,
+                          formData
+                        );
+                        promises.push(
+                          setData(domain, endpoint, {
+                            body: JSON.stringify(formData),
+                            method,
+                            middleware: requestMiddleware?.(),
+                            mode,
+                          })
+                        );
+                      }
+                    });
+                    return Promise.all(promises).then(() => {
                       manualUpdate?.(newData as any);
                       onUpdated?.() && queryRefresh?.();
                     });
@@ -186,20 +209,22 @@ const CRUD: <T = any>(p: CRUDProps<T>) => React.ReactElement<CRUDProps<T>> = ({
                     const { method, pathTail, name, id } = params;
                     const realMethod = method ?? 'DELETE';
 
-                    let tail;
-                    if (parameterType == 'path' && id != null) tail = id;
-                    else tail = pathTail;
+                    const tail = getPathTail(
+                      { [name!]: id!.toString() },
+                      parameterType,
+                      name!,
+                      pathTail
+                    );
 
                     const endpoint = `${deleteEndpoint}/${tail}/`;
 
-                    if (mode == 'development')
-                      queryLog(
-                        mode,
-                        verbosity,
-                        1,
-                        `[delete][${realMethod}]`,
-                        `${domain}/${endpoint}`
-                      );
+                    queryLog(
+                      mode,
+                      verbosity,
+                      1,
+                      `[delete][${realMethod}]`,
+                      `${domain}/${endpoint}`
+                    );
 
                     return setData(domain, endpoint, {
                       method: realMethod,

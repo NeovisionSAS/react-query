@@ -3,10 +3,12 @@ import { createContext, useContext } from 'react';
 interface QueryOptions {
   requestMiddleware?: () => Promise<HeadersInit | undefined>;
   domain: string;
-  parameterType?: 'path' | 'queryString';
+  parameterType?: QueryType;
   mode?: 'development' | 'production';
   verbosity?: number;
 }
+
+export type QueryType = 'path' | 'queryString';
 
 const queryOptionsContext = createContext<QueryOptions>({
   domain: '',

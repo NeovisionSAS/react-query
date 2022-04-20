@@ -28,7 +28,7 @@ interface UpdateParams extends Partial<IdentifiableParams> {
 }
 declare type CreateParams = Partial<IdentifiableParams>;
 interface DeleteParams extends Partial<IdentifiableParams> {
-    id?: number;
+    id?: number | string;
 }
 export interface CRUDObject<T = any> {
     handleCreate: <T>(e: FormEvent, params?: CreateParams) => Promise<any>;
