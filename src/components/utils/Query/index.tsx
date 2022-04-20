@@ -1,7 +1,7 @@
-import React, { useCallback, useEffect, useState } from 'react';
 import { Query as QueryType } from '../../../utils/util';
 import ErrorBoundary from '../ErrorBoundary';
 import { useQueryOptions } from '../QueryOptionsProvider';
+import React, { useCallback, useEffect, useState } from 'react';
 
 interface QueryProps<T = any> {
   children: (
@@ -37,11 +37,10 @@ const Query: <T = any>(
     loading: true,
     error: null,
   });
-  const [timeout, setTimeout] = useState<number>();
+  const [controller, setController] = useState<AbortController>();
   const [refresh, setRefresh] = useState(false);
-  const queryOptions = useQueryOptions();
 
-  let controller: AbortController | null;
+  const { requestMiddleware, domain } = useQueryOptions();
 
   const manualUpdate = useCallback(
     (data: any) =>
@@ -52,52 +51,55 @@ const Query: <T = any>(
       }),
     [dataLoadErr]
   );
-  const forceRefresh = useCallback(() => setRefresh(!refresh), [refresh]);
 
   // Check if the query prop has changed
   useEffect(() => {
-    setDataLoadErr({ data: null, loading: true, error: null });
-    timeout != null && window.clearTimeout(timeout);
-    setTimeout(
-      window.setTimeout(() => {
-        const { requestMiddleware, domain } = queryOptions;
-
-        // Fetch request handler
-        const req = (headers: HeadersInit | undefined) => {
-          const filteredHeaders = Object.fromEntries<any>(
-            Object.entries(headers as any).filter(
-              ([key]) => !key.includes('Content-Type')
-            )
-          );
-          controller && controller.abort();
-          controller = new AbortController();
-          fetch(`${domain}/${query}`, {
-            headers: filteredHeaders,
-            signal: controller.signal,
+    controller?.abort();
+    const ctrl = new AbortController();
+    const timeout = window.setTimeout(() => {
+      // Fetch request handler
+      const req = (headers: HeadersInit | undefined) => {
+        const filteredHeaders = Object.fromEntries<any>(
+          Object.entries(headers as any).filter(
+            ([key]) => !key.includes('Content-Type')
+          )
+        );
+        fetch(`${domain}/${query}`, {
+          headers: filteredHeaders,
+          signal: ctrl.signal,
+        })
+          .then((res) => {
+            if (res.status != 200) throw Error(res.statusText ?? 'Error');
+            return res.json();
           })
-            .then((res) => {
-              if (res.status != 200) throw Error(res.statusText ?? 'Error');
-              return res.json();
-            })
-            .then((res) => {
-              setDataLoadErr({ data: res, loading: false, error: null });
-              onRead?.(res);
-            })
-            .catch((err) => {
-              if (err.name == 'AbortError') return;
-              console.error('Query', err);
-              setDataLoadErr({
-                data: null,
-                loading: false,
-                error: err.toString(),
-              });
-            });
-        };
+          .then((res) => {
+            setDataLoadErr({ data: res, loading: false, error: null });
+            onRead?.(res);
+          })
+          .catch((err) => {
+            console.log('ERROR', err.toString());
 
-        // Launch de middlware if there is one
-        requestMiddleware ? requestMiddleware().then(req) : req({});
-      }, delay ?? 0)
-    );
+            if (err.name == 'AbortError') {
+              return;
+            }
+            setDataLoadErr({
+              data: null,
+              loading: false,
+              error: err.toString(),
+            });
+          });
+      };
+
+      // Launch de middlware if there is one
+      requestMiddleware ? requestMiddleware().then(req) : req({});
+    }, delay ?? 0);
+    setController(ctrl);
+    setDataLoadErr({ data: null, loading: true, error: null });
+
+    return () => {
+      ctrl?.abort();
+      window.clearTimeout(timeout);
+    };
   }, [query, refresh]);
 
   return (
@@ -107,7 +109,7 @@ const Query: <T = any>(
         dataLoadErr.loading,
         dataLoadErr.error,
         manualUpdate,
-        forceRefresh
+        () => setRefresh(!refresh)
       )}
     </ErrorBoundary>
   );
