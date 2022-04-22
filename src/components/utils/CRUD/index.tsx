@@ -1,5 +1,3 @@
-import equal from 'fast-deep-equal';
-import React, { FormEvent, Fragment, SyntheticEvent, useEffect } from 'react';
 import { Method, setData } from '../../../utils/api';
 import { queryLog } from '../../../utils/log';
 import {
@@ -11,6 +9,8 @@ import {
 import ErrorBoundary from '../ErrorBoundary';
 import Query from '../Query';
 import { useQueryOptions } from '../QueryOptionsProvider';
+import equal from 'fast-deep-equal';
+import React, { FormEvent, Fragment, SyntheticEvent, useEffect } from 'react';
 
 interface CRUDProps<T = any> {
   children: (object: CRUDObject<T>, forceRefresh: () => void) => JSX.Element;
@@ -69,7 +69,7 @@ const CRUD: <T = any>(p: CRUDProps<T>) => React.ReactElement<CRUDProps<T>> = ({
       ? new Array(4).fill(endPoints)
       : [endPoints.create, endPoints.read, endPoints.update, endPoints.delete];
 
-  const { parameterType, domain, requestMiddleware, mode, verbosity } =
+  const { parameterType, domain, requestMiddleware, mode, verbosity, idName } =
     useQueryOptions();
 
   useEffect(() => {
@@ -98,7 +98,7 @@ const CRUD: <T = any>(p: CRUDProps<T>) => React.ReactElement<CRUDProps<T>> = ({
                     params: CreateParams = { method: 'POST' }
                   ) => {
                     e.preventDefault();
-                    const { method, pathTail } = params;
+                    const { method = 'POST', pathTail } = params;
                     const formData = getFormData(e.target);
 
                     const endpoint = `${createEndpoint}/${
@@ -134,10 +134,10 @@ const CRUD: <T = any>(p: CRUDProps<T>) => React.ReactElement<CRUDProps<T>> = ({
                   read: { data, loading, error },
                   handleUpdate: <T,>(
                     e: FormEvent,
-                    params: UpdateParams = { method: 'PUT', name: 'id' }
+                    params: UpdateParams = { method: 'PUT', name: idName }
                   ) => {
                     e.preventDefault();
-                    const { method, pathTail, name } = params;
+                    const { method = 'PUT', pathTail, name = idName } = params;
 
                     const formDatas = formExtractor(e.target, name!);
 
@@ -202,17 +202,21 @@ const CRUD: <T = any>(p: CRUDProps<T>) => React.ReactElement<CRUDProps<T>> = ({
                   },
                   handleDelete: <T,>(
                     e: SyntheticEvent | undefined,
-                    params: DeleteParams = { method: 'DELETE' }
+                    params: DeleteParams = { method: 'DELETE', name: idName }
                   ) => {
                     e?.preventDefault();
                     e?.stopPropagation();
-                    const { method, pathTail, name, id } = params;
-                    const realMethod = method ?? 'DELETE';
+                    const {
+                      method = 'DELETE',
+                      pathTail,
+                      name = idName,
+                      id,
+                    } = params;
 
                     const tail = getPathTail(
-                      { [name!]: id!.toString() },
+                      { [name]: id!.toString() },
                       parameterType,
-                      name!,
+                      name,
                       pathTail
                     );
 
@@ -222,18 +226,18 @@ const CRUD: <T = any>(p: CRUDProps<T>) => React.ReactElement<CRUDProps<T>> = ({
                       mode,
                       verbosity,
                       1,
-                      `[delete][${realMethod}]`,
+                      `[delete][${method}]`,
                       `${domain}/${endpoint}`
                     );
 
                     return setData(domain, endpoint, {
-                      method: realMethod,
+                      method,
                       middleware: requestMiddleware?.(),
                       mode,
                     }).then(() => {
                       if (type == 'array') {
                         const index = (data as any[]).findIndex(
-                          (val) => val[name!] == id
+                          (val) => val[name] == id
                         );
                         const typedData = data as unknown as any[];
                         queryLog(mode, verbosity, 3, `Removing index ${index}`);

@@ -1,6 +1,6 @@
-import React, { FormEvent } from 'react';
 import { Method } from '../../../utils/api';
 import { Query as QueryType } from '../../../utils/util';
+import React, { FormEvent } from 'react';
 interface CRUDProps<T = any> {
     children: (object: CRUDObject<T>, forceRefresh: () => void) => JSX.Element;
     endPoints: {

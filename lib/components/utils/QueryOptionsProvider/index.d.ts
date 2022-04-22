@@ -5,6 +5,7 @@ interface QueryOptions {
     parameterType?: QueryType;
     mode?: 'development' | 'production';
     verbosity?: number;
+    idName?: string;
 }
 export declare type QueryType = 'path' | 'queryString';
 export declare const useQueryOptions: () => Required<QueryOptions>;

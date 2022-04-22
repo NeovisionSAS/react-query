@@ -6,6 +6,7 @@ interface QueryOptions {
   parameterType?: QueryType;
   mode?: 'development' | 'production';
   verbosity?: number;
+  idName?: string;
 }
 
 export type QueryType = 'path' | 'queryString';
@@ -15,6 +16,7 @@ const queryOptionsContext = createContext<QueryOptions>({
   parameterType: 'path',
   mode: 'production',
   verbosity: 1,
+  idName: 'id',
 });
 
 export const useQueryOptions = (): Required<QueryOptions> => {
