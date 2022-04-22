@@ -22,6 +22,7 @@ const queryOptionsContext = createContext<QueryOptions>({
 export const useQueryOptions = (): Required<QueryOptions> => {
   const ctx = useContext(queryOptionsContext);
   if (!ctx) throw new Error("No context for 'useQueryOptions'");
+  if (!ctx.idName) ctx.idName = 'id';
   return ctx as Required<QueryOptions>;
 };
 
