@@ -76,7 +76,7 @@ const CRUD: <T = any>(p: CRUDProps<T>) => React.ReactElement<CRUDProps<T>> = ({
     queryLog(
       mode,
       verbosity,
-      4,
+      5,
       `[endpoints]`,
       `[C]${createEndpoint}`,
       `[R]${readEndpoint}`,
