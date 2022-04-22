@@ -1,5 +1,5 @@
-import { useReducer } from 'react';
 import { QueryType } from '../components/utils/QueryOptionsProvider';
+import { useReducer } from 'react';
 
 type TypedTarget = EventTarget & {
   [key: string]: {
@@ -41,8 +41,8 @@ export const getFormData = <T = { [key: string]: string | number }>(
         if (required && isValEmpty)
           throw new Error(`Can't use an empty value for ${name}`);
 
-        const v = parseInt(value);
-        let finalValue = isNaN(v) ? value : v;
+        const v = new Number(value);
+        let finalValue = isNaN(v as number) ? value : v;
 
         return {
           ...acc,
