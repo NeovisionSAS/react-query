@@ -46,7 +46,7 @@ export const getFormData = <T = { [key: string]: string | number }>(
 
         return {
           ...acc,
-          [name]: isCheckbox ? checked : finalValue,
+          [name]: isCheckbox ? checked : finalValue.valueOf(),
         };
       }, {}) as T
   );
