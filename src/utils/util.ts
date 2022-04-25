@@ -41,12 +41,11 @@ export const getFormData = <T = { [key: string]: string | number }>(
         if (required && isValEmpty)
           throw new Error(`Can't use an empty value for ${name}`);
 
-        const v = new Number(value);
-        let finalValue = isNaN(v as number) ? value : v;
+        let finalValue = type == 'number' ? new Number(value).valueOf() : value;
 
         return {
           ...acc,
-          [name]: isCheckbox ? checked : finalValue.valueOf(),
+          [name]: isCheckbox ? checked : finalValue,
         };
       }, {}) as T
   );
