@@ -1,6 +1,6 @@
 {
   "name": "@neovision/react-query",
-  "version": "1.2.6",
+  "version": "1.2.7",
   "private": true,
   "author": {
     "email": "alan.blanchet@neovision.fr",
@@ -13,7 +13,7 @@
     "minor": "npm version --no-git-tag-version minor",
     "major": "npm version --no-git-tag-version major",
     "amend": "npm run lib && git add . && git commit --amend && git push -f",
-    "postversion": "npm run lib && git add . && git commit && git push"
+    "postversion": "npm run lib && git add . && git commit && git tag v$(npx -c 'node -p \"process.env.npm_package_version\"') && git push"
   },
   "main": "./src/index.tsx",
   "module": "./lib/module.js",
