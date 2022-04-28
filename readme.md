@@ -7,7 +7,7 @@
 ### SSH
 
 ```bash
-npm i git+ssh://git@bitbucket.org:neovision/apv11_backend.git
+npm i git+ssh://git@bitbucket.org:neovision/react-query.git
 ```
 
 ### HTTPS (not recommended)
