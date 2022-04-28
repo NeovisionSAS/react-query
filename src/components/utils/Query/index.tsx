@@ -77,11 +77,7 @@ const Query: <T = any>(
             onRead?.(res);
           })
           .catch((err) => {
-            console.log('ERROR', err.toString());
-
-            if (err.name == 'AbortError') {
-              return;
-            }
+            if (err.name == 'AbortError') return;
             setDataLoadErr({
               data: null,
               loading: false,
