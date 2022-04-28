@@ -22,7 +22,7 @@ npm i git+https://username:password@bitbucket.org/neovision/react-query.git
 ## Add issues
 
 You can add issues to :
-https://neovision-sas.atlassian.net/jira/software/c/projects/RQU/issues
+https://neovision-sas.atlassian.net/jira/software/projects/LRQ/boards/11
 
 ## Examples
 
@@ -115,3 +115,5 @@ The CRUD component is one of the best since it can handle all API operations and
   }}
 </CRUD>
 ```
+
+Go to the [QueryOptionsProvider examples directory](https://bitbucket.org/neovision/react-query/src/master/src/examples/CRUD) to see examples
