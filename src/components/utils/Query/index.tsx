@@ -60,9 +60,9 @@ const Query: <T = any>(
       // Fetch request handler
       const req = (headers: HeadersInit | undefined) => {
         const filteredHeaders = Object.fromEntries<any>(
-          Object.entries(headers as any).filter(
+          Object.entries((headers as any) ?? {}).filter(
             ([key]) => !key.includes('Content-Type')
-          )
+          ) ?? []
         );
         fetch(`${domain}/${query}`, {
           headers: filteredHeaders,

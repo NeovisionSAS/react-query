@@ -1,7 +1,7 @@
 import { Mode } from '../types/global';
 export declare type Method = 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 interface SetDataOptions {
-    middleware?: Promise<HeadersInit | undefined>;
+    headers?: Promise<HeadersInit | undefined>;
     method?: Method;
     body?: string;
     mode?: Mode;

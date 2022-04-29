@@ -4,7 +4,7 @@ import { queryWarn } from './log';
 export type Method = 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
 interface SetDataOptions {
-  header?: Promise<HeadersInit | undefined>;
+  headers?: Promise<HeadersInit | undefined>;
   method?: Method;
   body?: string;
   mode?: Mode;
@@ -15,12 +15,12 @@ export const setData = function <T = any>(
   path: string,
   options: SetDataOptions = { method: 'POST' }
 ): Promise<T> {
-  const { body, method, header, mode } = options;
+  const { body, method, headers, mode } = options;
 
   const req = (headers: HeadersInit | undefined) =>
     fetch(`${domain}/${path}`, {
       method,
-      headers,
+      headers: headers ? headers : {},
       body,
     }).then(
       (res: Response) => {
@@ -49,5 +49,5 @@ export const setData = function <T = any>(
       }
     );
 
-  return header ? header.then(req) : req({});
+  return headers ? headers.then(req) : req({});
 };
