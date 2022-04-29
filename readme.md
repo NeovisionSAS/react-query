@@ -36,7 +36,7 @@ https://neovision-sas.atlassian.net/jira/software/projects/LRQ/boards/11
     domain: 'https://api.publicapis.org',
     parameterType: 'path',
     mode: 'development',
-    requestMiddleware: () => p,
+    requestMiddleware: () => promiseReturningHeader,
   }}
 >
   <CRUD endPoints={'entries'}>

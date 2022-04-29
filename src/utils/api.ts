@@ -1,10 +1,10 @@
-import { queryWarn } from './log';
 import { Mode } from '../types/global';
+import { queryWarn } from './log';
 
 export type Method = 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
 interface SetDataOptions {
-  middleware?: Promise<HeadersInit | undefined>;
+  header?: Promise<HeadersInit | undefined>;
   method?: Method;
   body?: string;
   mode?: Mode;
@@ -15,7 +15,7 @@ export const setData = function <T = any>(
   path: string,
   options: SetDataOptions = { method: 'POST' }
 ): Promise<T> {
-  const { body, method, middleware, mode } = options;
+  const { body, method, header, mode } = options;
 
   const req = (headers: HeadersInit | undefined) =>
     fetch(`${domain}/${path}`, {
@@ -49,5 +49,5 @@ export const setData = function <T = any>(
       }
     );
 
-  return middleware ? middleware.then(req) : req({});
+  return header ? header.then(req) : req({});
 };

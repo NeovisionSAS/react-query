@@ -203,7 +203,7 @@ const CRUD: <T = any>(p: CRUDProps<T>) => React.ReactElement<CRUDProps<T>> = ({
                     return setData(domain, endpoint, {
                       body: JSON.stringify(formData),
                       method,
-                      middleware: requestMiddleware?.(),
+                      header: requestMiddleware?.(),
                       mode,
                     })
                       .then((created) => {
@@ -275,7 +275,7 @@ const CRUD: <T = any>(p: CRUDProps<T>) => React.ReactElement<CRUDProps<T>> = ({
                           setData(domain, endpoint, {
                             body: JSON.stringify(formData),
                             method,
-                            middleware: requestMiddleware?.(),
+                            header: requestMiddleware?.(),
                             mode,
                           })
                         );
@@ -318,7 +318,7 @@ const CRUD: <T = any>(p: CRUDProps<T>) => React.ReactElement<CRUDProps<T>> = ({
 
                     return setData(domain, endpoint, {
                       method,
-                      middleware: requestMiddleware?.(),
+                      header: requestMiddleware?.(),
                       mode,
                     }).then(() => {
                       if (type == 'array') {
