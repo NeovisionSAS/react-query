@@ -1,4 +1,5 @@
 import { createContext, useContext } from 'react';
+import { request, RequestOptions } from '../../../utils/api';
 
 interface QueryOptions {
   requestMiddleware?: () => Promise<HeadersInit | undefined>;
@@ -24,6 +25,24 @@ export const useQueryOptions = (): Required<QueryOptions> => {
   if (!ctx) throw new Error("No context for 'useQueryOptions'");
   if (!ctx.idName) ctx.idName = 'id';
   return ctx as Required<QueryOptions>;
+};
+
+export const useRequest = () => {
+  const {
+    domain,
+    mode: qMode,
+    requestMiddleware: qRequestMiddleware,
+  } = useQueryOptions();
+  return (path: string, options: RequestOptions = { method: 'GET' }) => {
+    const {
+      headers = qRequestMiddleware(),
+      body,
+      method = 'GET',
+      mode = qMode,
+      signal,
+    } = options;
+    return request(domain, path, { body, headers, method, mode, signal });
+  };
 };
 
 export const QueryOptionsProvider = queryOptionsContext.Provider;

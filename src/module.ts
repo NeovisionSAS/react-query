@@ -3,6 +3,7 @@ import Query from './components/utils/Query';
 import {
   QueryOptionsProvider,
   useQueryOptions,
+  useRequest,
 } from './components/utils/QueryOptionsProvider';
 import { request } from './utils/api';
 
@@ -12,5 +13,6 @@ export {
   CRUDObject,
   QueryOptionsProvider,
   request,
+  useRequest,
   useQueryOptions,
 };

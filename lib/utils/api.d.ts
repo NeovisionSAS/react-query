@@ -1,6 +1,6 @@
 import { Mode } from '../types/global';
 export declare type Method = 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'GET';
-interface RequestOptions {
+export interface RequestOptions {
     headers?: Promise<HeadersInit | undefined>;
     method?: Method;
     body?: string;
@@ -8,4 +8,3 @@ interface RequestOptions {
     signal?: AbortSignal;
 }
 export declare const request: <T = any>(domain: string, path: string, options?: RequestOptions) => Promise<T>;
-export {};
