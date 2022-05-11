@@ -1,5 +1,5 @@
-import { Method, setData } from '../../../utils/api';
-import { queryLog } from '../../../utils/log';
+import { Method, request } from '../../../utils/api';
+import { requestLog } from '../../../utils/log';
 import {
   formExtractor,
   getFormData,
@@ -159,7 +159,7 @@ const CRUD: <T = any>(p: CRUDProps<T>) => React.ReactElement<CRUDProps<T>> = ({
     useQueryOptions();
 
   useEffect(() => {
-    queryLog(
+    requestLog(
       mode,
       verbosity,
       5,
@@ -191,7 +191,7 @@ const CRUD: <T = any>(p: CRUDProps<T>) => React.ReactElement<CRUDProps<T>> = ({
                       pathTail ? `${pathTail}/` : ''
                     }`;
 
-                    queryLog(
+                    requestLog(
                       mode,
                       verbosity,
                       1,
@@ -200,7 +200,7 @@ const CRUD: <T = any>(p: CRUDProps<T>) => React.ReactElement<CRUDProps<T>> = ({
                       formData
                     );
 
-                    return setData(domain, endpoint, {
+                    return request(domain, endpoint, {
                       body: JSON.stringify(formData),
                       method,
                       headers: requestMiddleware?.(),
@@ -263,7 +263,7 @@ const CRUD: <T = any>(p: CRUDProps<T>) => React.ReactElement<CRUDProps<T>> = ({
                       }
 
                       if (hasChanged) {
-                        queryLog(
+                        requestLog(
                           mode,
                           verbosity,
                           1,
@@ -272,7 +272,7 @@ const CRUD: <T = any>(p: CRUDProps<T>) => React.ReactElement<CRUDProps<T>> = ({
                           formData
                         );
                         promises.push(
-                          setData(domain, endpoint, {
+                          request(domain, endpoint, {
                             body: JSON.stringify(formData),
                             method,
                             headers: requestMiddleware?.(),
@@ -308,7 +308,7 @@ const CRUD: <T = any>(p: CRUDProps<T>) => React.ReactElement<CRUDProps<T>> = ({
 
                     const endpoint = `${deleteEndpoint}/${tail}/`;
 
-                    queryLog(
+                    requestLog(
                       mode,
                       verbosity,
                       1,
@@ -316,7 +316,7 @@ const CRUD: <T = any>(p: CRUDProps<T>) => React.ReactElement<CRUDProps<T>> = ({
                       `${domain}/${endpoint}`
                     );
 
-                    return setData(domain, endpoint, {
+                    return request(domain, endpoint, {
                       method,
                       headers: requestMiddleware?.(),
                       mode,
@@ -326,12 +326,17 @@ const CRUD: <T = any>(p: CRUDProps<T>) => React.ReactElement<CRUDProps<T>> = ({
                           (val) => val[name] == id
                         );
                         const typedData = data as unknown as any[];
-                        queryLog(mode, verbosity, 3, `Removing index ${index}`);
+                        requestLog(
+                          mode,
+                          verbosity,
+                          3,
+                          `Removing index ${index}`
+                        );
                         const newArr = [
                           ...typedData.slice(0, index),
                           ...typedData.slice(index + 1, typedData.length),
                         ];
-                        queryLog(mode, verbosity, 4, `Array updated`, newArr);
+                        requestLog(mode, verbosity, 4, `Array updated`, newArr);
                         manualUpdate?.(newArr as any);
                       } else {
                         manualUpdate?.(data as any);

@@ -30,7 +30,7 @@ https://neovision-sas.atlassian.net/jira/software/projects/LRQ/boards/11
 
 #### Query Options Provider
 
-```jsx
+```tsx
 <QueryOptionsProvider
   value={{
     domain: 'https://api.publicapis.org',
@@ -117,3 +117,29 @@ The CRUD component is one of the best since it can handle all API operations and
 ```
 
 Go to the [QueryOptionsProvider examples directory](https://bitbucket.org/neovision/react-query/src/master/src/examples/CRUD) to see examples
+
+### Functions
+
+#### request
+
+The `request` function returns a promise with the data received from the endpoint.
+
+Here is a quick example to show you how to use the `request` function :
+
+```ts
+request('mydomain.com', 'users/names').then((text) => {
+  console.log(text);
+});
+```
+
+`request` takes the `domain` as a first parameter, the `path` on the domain as a second parameter and finaly an options object to customize the request for your needs.
+
+Here are the available attributes used by the options object :
+
+| Value   | Type                                                | description                                                                          |
+| ------- | --------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| headers | `Promise<HeadersInit \| undefined>`                 | A promise returning a headers object                                                 |
+| method  | `"GET"`, `"POST"`, `"PUT"`, `"PATCH"` or `"DELETE"` | The methods used in the requests to identify what you are trying to do on the server |
+| body    | `string`                                            | The content that you want to send to the server                                      |
+| mode    | `"development"` or `"production"`                   | Weither you are running in `development` or in `production`                          |
+| signal  | `AbortSignal` or `undefined`                        | Send a signal to the request to stop it if you don't need the response anymore       |

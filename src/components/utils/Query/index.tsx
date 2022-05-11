@@ -2,6 +2,7 @@ import { Query as QueryType } from '../../../utils/util';
 import ErrorBoundary from '../ErrorBoundary';
 import { useQueryOptions } from '../QueryOptionsProvider';
 import React, { useCallback, useEffect, useState } from 'react';
+import { request } from '../../../utils/api';
 
 interface QueryProps<T = any> {
   children: (
@@ -57,37 +58,22 @@ const Query: <T = any>(
     controller?.abort();
     const ctrl = new AbortController();
     const timeout = window.setTimeout(() => {
-      // Fetch request handler
-      const req = (headers: HeadersInit | undefined) => {
-        const filteredHeaders = Object.fromEntries<any>(
-          Object.entries((headers as any) ?? {}).filter(
-            ([key]) => !key.includes('Content-Type')
-          ) ?? []
-        );
-        fetch(`${domain}/${query}`, {
-          headers: filteredHeaders,
-          signal: ctrl.signal,
+      request(domain, query, {
+        headers: requestMiddleware?.(),
+        signal: ctrl.signal,
+      })
+        .then((res) => {
+          setDataLoadErr({ data: res, loading: false, error: null });
+          onRead?.(res);
         })
-          .then((res) => {
-            if (res.status != 200) throw Error(res.statusText ?? 'Error');
-            return res.json();
-          })
-          .then((res) => {
-            setDataLoadErr({ data: res, loading: false, error: null });
-            onRead?.(res);
-          })
-          .catch((err) => {
-            if (err.name == 'AbortError') return;
-            setDataLoadErr({
-              data: null,
-              loading: false,
-              error: err.toString(),
-            });
+        .catch((err) => {
+          if (err.name == 'AbortError') return;
+          setDataLoadErr({
+            data: null,
+            loading: false,
+            error: err.toString(),
           });
-      };
-
-      // Launch de middlware if there is one
-      requestMiddleware ? requestMiddleware().then(req) : req({});
+        });
     }, delay ?? 0);
     setController(ctrl);
     setDataLoadErr({ data: null, loading: true, error: null });

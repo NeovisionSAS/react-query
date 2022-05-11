@@ -1,53 +1,63 @@
 import { Mode } from '../types/global';
-import { queryWarn } from './log';
+import { queryError, queryWarn as requestWarn } from './log';
 
-export type Method = 'POST' | 'PUT' | 'PATCH' | 'DELETE';
+export type Method = 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'GET';
 
-interface SetDataOptions {
+interface RequestOptions {
   headers?: Promise<HeadersInit | undefined>;
   method?: Method;
   body?: string;
   mode?: Mode;
+  signal?: AbortSignal;
 }
 
-export const setData = function <T = any>(
+export const request = function <T = any>(
   domain: string,
   path: string,
-  options: SetDataOptions = { method: 'POST' }
+  options: RequestOptions = { method: 'GET' }
 ): Promise<T> {
-  const { body, method, headers, mode } = options;
+  const {
+    body,
+    method = 'GET',
+    headers,
+    mode = 'production',
+    signal,
+  } = options;
 
-  const req = (headers: HeadersInit | undefined) =>
-    fetch(`${domain}/${path}`, {
+  const req = (headers: HeadersInit | undefined) => {
+    const filteredHeaders = body
+      ? headers
+      : Object.fromEntries<any>(
+          Object.entries((headers as any) ?? {}).filter(
+            ([key]) => !key.includes('Content-Type')
+          ) ?? []
+        );
+    return fetch(`${domain}/${path}`, {
+      headers: filteredHeaders,
       method,
-      headers: headers ? headers : {},
       body,
+      signal,
     }).then(
       (res: Response) => {
         if (res.ok) {
           return res.text().then((t) => {
             try {
-              return JSON.parse(t);
+              if (filteredHeaders?.['Content-Type'] == 'application/json')
+                return JSON.parse(t);
             } catch (e) {
-              queryWarn(
-                mode ?? 'production',
-                0,
-                0,
-                `Could not parse response to json`,
-                res
-              );
-              return t;
+              requestWarn(mode, 0, 0, `Could not parse response to json`, res);
             }
+            return t;
           });
         }
         return res.text().then((t) => {
+          queryError(t);
           throw new Error(t);
         });
       },
-      (reject) => {
-        console.error(reject);
-      }
+      (reject) => queryError(reject)
     );
+  };
 
   return headers ? headers.then(req) : req({});
 };
