@@ -134,6 +134,33 @@ request('mydomain.com', 'users/names').then((text) => {
 
 `request` takes the `domain` as a first parameter, the `path` on the domain as a second parameter and finaly an options object to customize the request for your needs.
 
+#### useRequest
+
+You might most commonly use the `useRequest` hook since it will also retreive the data you passed to the `QueryOptionsProvider` component :
+
+```tsx
+const UserList: FunctionComponent = () => {
+  const [users, setUsers] = useState<any[]>();
+  const request = useRequest();
+
+  useEffect(() => {
+    request('/users').then((users) => {
+      setUsers(users);
+    });
+  }, []);
+
+  return (
+    <div>
+      {users?.map((user: any) => {
+        return <p>user.name</p>;
+      })}
+    </div>
+  );
+};
+```
+
+Unlike before, you don't need to pass the `domain` we already can detect which domain it is from the `Provider`. It enables to follow the [DRY](https://en.wikipedia.org/wiki/Don%27t_repeat_yourself) principle
+
 Here are the available attributes used by the options object :
 
 | Value   | Type                                                | description                                                                          |
