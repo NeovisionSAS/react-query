@@ -1,8 +1,7 @@
 import { Query as QueryType } from '../../../utils/util';
 import ErrorBoundary from '../ErrorBoundary';
-import { useQueryOptions } from '../QueryOptionsProvider';
+import { useRequest } from '../QueryOptionsProvider';
 import React, { useCallback, useEffect, useState } from 'react';
-import { request } from '../../../utils/api';
 
 interface QueryProps<T = any> {
   children: (
@@ -38,10 +37,9 @@ const Query: <T = any>(
     loading: true,
     error: null,
   });
+  const request = useRequest();
   const [controller, setController] = useState<AbortController>();
   const [refresh, setRefresh] = useState(false);
-
-  const { requestMiddleware, domain } = useQueryOptions();
 
   const manualUpdate = useCallback(
     (data: any) =>
@@ -58,8 +56,7 @@ const Query: <T = any>(
     controller?.abort();
     const ctrl = new AbortController();
     const timeout = window.setTimeout(() => {
-      request(domain, query, {
-        headers: requestMiddleware?.(),
+      request(query, {
         signal: ctrl.signal,
       })
         .then((res) => {
