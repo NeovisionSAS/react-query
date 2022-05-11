@@ -1,5 +1,5 @@
-import { createContext, useContext } from 'react';
 import { request, RequestOptions } from '../../../utils/api';
+import { createContext, useContext } from 'react';
 
 interface QueryOptions {
   requestMiddleware?: () => Promise<HeadersInit | undefined>;
@@ -33,7 +33,10 @@ export const useRequest = () => {
     mode: qMode,
     requestMiddleware: qRequestMiddleware,
   } = useQueryOptions();
-  return (path: string, options: RequestOptions = { method: 'GET' }) => {
+  return function <T = any>(
+    path: string,
+    options: RequestOptions = { method: 'GET' }
+  ) {
     const {
       headers = qRequestMiddleware(),
       body,
@@ -41,7 +44,7 @@ export const useRequest = () => {
       mode = qMode,
       signal,
     } = options;
-    return request(domain, path, { body, headers, method, mode, signal });
+    return request<T>(domain, path, { body, headers, method, mode, signal });
   };
 };
 
