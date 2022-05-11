@@ -25,15 +25,8 @@ export const request = function <T = any>(
   } = options;
 
   const req = (headers: HeadersInit | undefined) => {
-    const filteredHeaders = body
-      ? headers
-      : Object.fromEntries<any>(
-          Object.entries((headers as any) ?? {}).filter(
-            ([key]) => !key.includes('Content-Type')
-          ) ?? []
-        );
     return fetch(`${domain}/${path}`, {
-      headers: filteredHeaders,
+      headers,
       method,
       body,
       signal,
@@ -42,7 +35,7 @@ export const request = function <T = any>(
         if (res.ok) {
           return res.text().then((t) => {
             try {
-              if (filteredHeaders?.['Content-Type'] == 'application/json')
+              if ((headers as any)?.['Content-Type'] == 'application/json')
                 return JSON.parse(t);
             } catch (e) {
               requestWarn(mode, 0, 0, `Could not parse response to json`, res);
