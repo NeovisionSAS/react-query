@@ -42,5 +42,4 @@ module.exports = merge(common, {
       template: path.resolve(__dirname, '../src', 'template.html'),
     }),
   ],
-  devtool: 'inline-source-map',
 });
