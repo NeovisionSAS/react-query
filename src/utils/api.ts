@@ -49,7 +49,7 @@ export const request = function <T = any>(
         });
       },
       (reject) => {
-        if (reject.name == 'AbortError') queryWarn(mode, 0, 0, reject);
+        if (reject.name == 'AbortError') queryWarn(mode, 0, 0, reject.message);
         else queryError(reject);
       }
     );
