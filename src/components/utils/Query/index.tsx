@@ -45,8 +45,8 @@ const Query: <T = any>(
     (data: any) =>
       setDataLoadErr({
         data,
-        loading: dataLoadErr.loading,
-        error: dataLoadErr.error,
+        loading: false,
+        error: null,
       }),
     [dataLoadErr]
   );
