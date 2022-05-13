@@ -1,5 +1,5 @@
 import { Mode } from '../types/global';
-import { queryError, queryWarn as requestWarn } from './log';
+import { queryError, queryWarn, queryWarn as requestWarn } from './log';
 
 export type Method = 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'GET';
 
@@ -48,7 +48,10 @@ export const request = function <T = any>(
           throw new Error(t);
         });
       },
-      (reject) => queryError(reject)
+      (reject) => {
+        if (reject.name == 'AbortError') queryWarn(mode, 0, 0, reject);
+        else queryError(reject);
+      }
     );
   };
 
