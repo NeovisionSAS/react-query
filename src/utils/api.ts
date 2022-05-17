@@ -51,7 +51,7 @@ export const request = function <T = any>(
         return new Promise((_, rej) => {
           if (err.name == 'AbortError') queryWarn(mode, 0, 0, err.message);
           else {
-            queryError(err);
+            queryError(`${err.url} ${err.status} ${err.statusText}`);
             rej(err);
           }
         });
