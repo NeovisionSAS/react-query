@@ -1,7 +1,7 @@
 /// <reference types="react" />
 import { RequestOptions } from '../../../utils/api';
 interface QueryOptions {
-    requestMiddleware?: Promise<HeadersInit>;
+    requestMiddleware?: () => Promise<HeadersInit>;
     domain: string;
     parameterType?: QueryType;
     mode?: 'development' | 'production';

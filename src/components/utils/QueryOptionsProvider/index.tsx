@@ -2,7 +2,7 @@ import { request, RequestOptions } from '../../../utils/api';
 import { createContext, useContext } from 'react';
 
 interface QueryOptions {
-  requestMiddleware?: Promise<HeadersInit>;
+  requestMiddleware?: () => Promise<HeadersInit>;
   domain: string;
   parameterType?: QueryType;
   mode?: 'development' | 'production';
@@ -38,7 +38,7 @@ export const useRequest = () => {
     options: RequestOptions = { method: 'GET' }
   ) {
     const {
-      headers = qRequestMiddleware,
+      headers = qRequestMiddleware?.(),
       body,
       method = 'GET',
       mode = qMode,

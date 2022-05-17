@@ -4,7 +4,7 @@ import { queryError, queryWarn, queryWarn as requestWarn } from './log';
 export type Method = 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'GET';
 
 export interface RequestOptions {
-  headers?: Promise<HeadersInit | undefined>;
+  headers?: Promise<HeadersInit>;
   method?: Method;
   body?: string;
   mode?: Mode;
