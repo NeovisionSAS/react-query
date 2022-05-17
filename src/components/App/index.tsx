@@ -4,7 +4,7 @@ import { CRUD, ErrorBoundary } from '../utils';
 import { QueryOptionsProvider } from '../utils/QueryOptionsProvider';
 
 function App(): JSX.Element {
-  const p = new Promise<HeadersInit | undefined>((resolve) => {
+  const p = new Promise<HeadersInit>((resolve) => {
     setTimeout(() => {
       resolve({
         'Content-Type': 'text',
@@ -19,7 +19,7 @@ function App(): JSX.Element {
           domain: 'https://api.publicapis.org',
           parameterType: 'path',
           mode: 'development',
-          requestMiddleware: () => p,
+          requestMiddleware: p,
         }}
       >
         <Test />

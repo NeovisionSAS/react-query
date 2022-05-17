@@ -25,13 +25,15 @@ export const request = function <T = any>(
   } = options;
 
   const req = (headers: HeadersInit | undefined) => {
-    return fetch(`${domain}/${path}`, {
+    const p = fetch(`${domain}/${path}`, {
       headers,
       method,
       body,
       signal,
-    }).then(
-      (res: Response) => {
+    });
+
+    return p
+      .then((res: Response) => {
         if (res.ok) {
           return res.text().then((t) => {
             try {
@@ -43,13 +45,17 @@ export const request = function <T = any>(
             return t;
           });
         }
-        Promise.reject(res);
-      },
-      (reject) => {
-        if (reject.name == 'AbortError') queryWarn(mode, 0, 0, reject.message);
-        else queryError(reject);
-      }
-    );
+        return Promise.reject(res);
+      })
+      .catch((err) => {
+        return new Promise((_, rej) => {
+          if (err.name == 'AbortError') queryWarn(mode, 0, 0, err.message);
+          else {
+            queryError(err);
+            rej(err);
+          }
+        });
+      });
   };
 
   return headers ? headers.then(req) : req({});
