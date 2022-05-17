@@ -43,10 +43,7 @@ export const request = function <T = any>(
             return t;
           });
         }
-        return res.text().then((t) => {
-          queryError(t);
-          throw new Error(t);
-        });
+        Promise.reject(res);
       },
       (reject) => {
         if (reject.name == 'AbortError') queryWarn(mode, 0, 0, reject.message);
