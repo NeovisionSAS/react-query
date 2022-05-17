@@ -1,5 +1,5 @@
 import CRUD, { CRUDObject } from './components/utils/CRUD';
-import Query from './components/utils/Query';
+import { Query, useQuery } from './components/utils/Query';
 import {
   QueryOptionsProvider,
   useQueryOptions,
@@ -15,4 +15,5 @@ export {
   request,
   useRequest,
   useQueryOptions,
+  useQuery,
 };

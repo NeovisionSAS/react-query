@@ -8,6 +8,7 @@ interface QueryOptions {
   mode?: 'development' | 'production';
   verbosity?: number;
   idName?: string;
+  onRejected?: (res: Response) => any;
 }
 
 export type QueryType = 'path' | 'queryString';
@@ -27,11 +28,21 @@ export const useQueryOptions = (): Required<QueryOptions> => {
   return ctx as Required<QueryOptions>;
 };
 
-export const useRequest = () => {
+export const useRequest = (
+  {
+    body: rBody,
+    headers: rHeaders,
+    method: rMethod = 'GET',
+    mode: rMode,
+    onRejected: rOnRejected,
+    signal: rSignal,
+  }: RequestOptions = { method: 'GET' }
+) => {
   const {
     domain,
-    mode: qMode,
-    requestMiddleware: qRequestMiddleware,
+    mode: qMode = rMode,
+    requestMiddleware: qRequestMiddleware = () => rHeaders,
+    onRejected: qOnRejected = rOnRejected,
   } = useQueryOptions();
   return function <T = any>(
     path: string,
@@ -39,12 +50,20 @@ export const useRequest = () => {
   ) {
     const {
       headers = qRequestMiddleware?.(),
-      body,
-      method = 'GET',
+      body = rBody,
+      method = rMethod,
       mode = qMode,
-      signal,
+      signal = rSignal,
+      onRejected = qOnRejected,
     } = options;
-    return request<T>(domain, path, { body, headers, method, mode, signal });
+    return request<T>(domain, path, {
+      body,
+      headers,
+      method,
+      mode,
+      signal,
+      onRejected,
+    });
   };
 };
 

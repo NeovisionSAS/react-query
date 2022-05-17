@@ -68,8 +68,8 @@ With query you can easily access the data you want. The Query object does a GET 
 
 ```jsx
 // Specify the API endpoint
-<Query query={`names/`}>
-  {(data: string[], loading, error) => {
+<Query<string[]> query={`names/`}>
+  {({data, loading, error}) => {
     // When the data is being retrieved
     if (loading) return <div>Loading ...</div>;
     // If an error occured

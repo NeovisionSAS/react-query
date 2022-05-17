@@ -1,6 +1,6 @@
 {
   "name": "@neovision/react-query",
-  "version": "1.7.1",
+  "version": "1.8.0",
   "private": true,
   "author": {
     "email": "alan.blanchet@neovision.fr",
@@ -13,7 +13,9 @@
     "minor": "npm version --no-git-tag-version minor",
     "major": "npm version --no-git-tag-version major",
     "amend": "npm run lib && git add . && git commit --amend && git push -f",
+    "amendQuick": "npm run lib && git add . && git commit --amend --no-edit && git push -f",
     "amendTag": "npm run amend && npm run deleteTag && npm run tag",
+    "amendTagQuick": "npm run amendQuick && npm run deleteTag && npm run tag",
     "deleteTag": "git push --delete origin v$(npx -c 'node -p \"process.env.npm_package_version\"') && git tag -d v$(npx -c 'node -p \"process.env.npm_package_version\"')",
     "tag": "git tag v$(npx -c 'node -p \"process.env.npm_package_version\"') && git push --tags",
     "postversion": "npm run lib && git add . && git commit && git push && npm run tag"

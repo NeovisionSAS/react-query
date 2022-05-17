@@ -6,5 +6,9 @@ export interface RequestOptions {
     body?: string;
     mode?: Mode;
     signal?: AbortSignal;
+    onRejected?: (res: Response) => any;
+}
+export interface ExtendedRequestOptions extends RequestOptions {
+    domain?: string;
 }
 export declare const request: <T = any>(domain: string, path: string, options?: RequestOptions) => Promise<T>;

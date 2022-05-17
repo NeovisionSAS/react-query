@@ -7,7 +7,7 @@ import {
   Query as QueryType,
 } from '../../../utils/util';
 import ErrorBoundary from '../ErrorBoundary';
-import Query from '../Query';
+import { Query } from '../Query';
 import { useQueryOptions } from '../QueryOptionsProvider';
 import equal from 'fast-deep-equal';
 import React, { FormEvent, Fragment, SyntheticEvent, useEffect } from 'react';
@@ -174,7 +174,7 @@ const CRUD: <T = any>(p: CRUDProps<T>) => React.ReactElement<CRUDProps<T>> = ({
   return (
     <ErrorBoundary>
       <Query query={`${readEndpoint}`} delay={delay} onRead={onRead}>
-        {(data: any, loading, error, manualUpdate, queryRefresh) => {
+        {({ data, loading, error, manualUpdate, forceRefresh }) => {
           return (
             <Fragment>
               {children(
@@ -208,7 +208,7 @@ const CRUD: <T = any>(p: CRUDProps<T>) => React.ReactElement<CRUDProps<T>> = ({
                     })
                       .then((created) => {
                         manualUpdate?.([...(data as any), created] as any);
-                        onCreated?.() && queryRefresh?.();
+                        onCreated?.() && forceRefresh?.();
                       })
                       .catch(() => {
                         console.error(
@@ -228,7 +228,8 @@ const CRUD: <T = any>(p: CRUDProps<T>) => React.ReactElement<CRUDProps<T>> = ({
                     const formDatas = formExtractor(e.target, name!);
 
                     let newData: any;
-                    if (type == 'array') newData = [...(data as any[])];
+                    if (type == 'array')
+                      newData = [...(data as unknown as any[])];
                     else newData = data;
 
                     const promises: Promise<any>[] = [];
@@ -283,7 +284,7 @@ const CRUD: <T = any>(p: CRUDProps<T>) => React.ReactElement<CRUDProps<T>> = ({
                     });
                     return Promise.all(promises).then(() => {
                       manualUpdate?.(newData as any);
-                      onUpdated?.() && queryRefresh?.();
+                      onUpdated?.() && forceRefresh?.();
                     });
                   },
                   handleDelete: <T,>(
@@ -322,7 +323,7 @@ const CRUD: <T = any>(p: CRUDProps<T>) => React.ReactElement<CRUDProps<T>> = ({
                       mode,
                     }).then(() => {
                       if (type == 'array') {
-                        const index = (data as any[]).findIndex(
+                        const index = (data as unknown as any[]).findIndex(
                           (val) => val[name] == id
                         );
                         const typedData = data as unknown as any[];
@@ -341,11 +342,11 @@ const CRUD: <T = any>(p: CRUDProps<T>) => React.ReactElement<CRUDProps<T>> = ({
                       } else {
                         manualUpdate?.(data as any);
                       }
-                      onDeleted?.() && queryRefresh?.();
+                      onDeleted?.() && forceRefresh?.();
                     });
                   },
                 },
-                queryRefresh
+                forceRefresh
               )}
             </Fragment>
           );

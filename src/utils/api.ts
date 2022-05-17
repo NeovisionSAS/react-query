@@ -9,6 +9,11 @@ export interface RequestOptions {
   body?: string;
   mode?: Mode;
   signal?: AbortSignal;
+  onRejected?: (res: Response) => any;
+}
+
+export interface ExtendedRequestOptions extends RequestOptions {
+  domain?: string;
 }
 
 export const request = function <T = any>(
@@ -22,18 +27,17 @@ export const request = function <T = any>(
     headers,
     mode = 'production',
     signal,
+    onRejected,
   } = options;
 
-  const req = (headers: HeadersInit | undefined) => {
-    const p = fetch(`${domain}/${path}`, {
+  const req = (headers: HeadersInit) => {
+    return fetch(`${domain}/${path}`, {
       headers,
       method,
       body,
       signal,
-    });
-
-    return p
-      .then((res: Response) => {
+    })
+      .then((res) => {
         if (res.ok) {
           return res.text().then((t) => {
             try {
@@ -48,13 +52,11 @@ export const request = function <T = any>(
         return Promise.reject(res);
       })
       .catch((err) => {
-        return new Promise((_, rej) => {
-          if (err.name == 'AbortError') queryWarn(mode, 0, 0, err.message);
-          else {
-            queryError(`${err.url} ${err.status} ${err.statusText}`);
-            rej(err);
-          }
-        });
+        if (err.name == 'AbortError') queryWarn(mode, 0, 0, err.message);
+        else {
+          queryError(`${err.url} ${err.status} ${err.statusText}`);
+          onRejected?.(err);
+        }
       });
   };
 

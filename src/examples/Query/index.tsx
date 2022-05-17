@@ -1,7 +1,7 @@
 import { Query } from '../../components/utils';
 
-<Query query={`names/`}>
-  {(data: string[], loading, error) => {
+<Query<string[]> query={`names/`}>
+  {({ data, loading, error }) => {
     if (loading) return <div>Loading ...</div>;
     if (error)
       return (
