@@ -42,10 +42,17 @@ export const useQuery = <T = any,>({
     loading: true,
     error: null
   });
-  const { domain = "", onRejected: rOnRejected } = requestOptions;
-  const { onRejected: qOnRejected } = useQueryOptions();
+  const {
+    domain = "",
+    onRejected,
+    headers,
+    method,
+    body,
+    mode,
+    signal
+  } = requestOptions;
   const req = useConfig
-    ? useRequest(requestOptions)
+    ? useRequest(useQueryOptions())
     : (path: string, options: RequestOptions) => request(domain, path, options);
   const [controller, setController] = useState<AbortController>();
   const [refresh, setRefresh] = useState(false);
@@ -57,7 +64,7 @@ export const useQuery = <T = any,>({
         loading: false,
         error: null
       }),
-    [dataLoadErr]
+    []
   );
 
   // Check if the query prop has changed
@@ -66,10 +73,15 @@ export const useQuery = <T = any,>({
     const ctrl = new AbortController();
     const timeout = window.setTimeout(() => {
       req(query, {
-        signal: ctrl.signal,
+        signal: signal ?? ctrl.signal,
         onRejected: (res) => {
           manualUpdate(undefined);
-        }
+          onRejected?.(res);
+        },
+        headers,
+        body,
+        method,
+        mode
       })
         .then((res) => {
           setDataLoadErr({ data: res, loading: false, error: null });
