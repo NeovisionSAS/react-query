@@ -11,7 +11,7 @@ interface QueryParams<T = any> {
 interface QueryReturn<T> {
     data: T;
     loading: boolean;
-    error: string | null;
+    error?: string;
     manualUpdate: DataHandler<T>;
     forceRefresh: () => any;
 }

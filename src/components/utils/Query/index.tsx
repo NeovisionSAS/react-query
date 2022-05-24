@@ -6,7 +6,13 @@ import {
 import { Query as QueryType } from "../../../utils/util";
 import ErrorBoundary from "../ErrorBoundary";
 import { useQueryOptions, useRequest } from "../QueryOptionsProvider";
-import React, { useCallback, useEffect, useState } from "react";
+import React, {
+  DependencyList,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState
+} from "react";
 
 export type DataHandler<T> = (data: T) => any;
 
@@ -21,7 +27,7 @@ interface QueryParams<T = any> {
 interface QueryReturn<T> {
   data: T;
   loading: boolean;
-  error: string | null;
+  error?: string;
   manualUpdate: DataHandler<T>;
   forceRefresh: () => any;
 }
@@ -38,31 +44,27 @@ export const useQuery = <T = any,>({
 }: QueryParams<T>): QueryReturn<T> => {
   // The default data/load/error triple
   const [dataLoadErr, setDataLoadErr] = useState<QueryType>({
-    data: null,
+    data: undefined,
     loading: true,
-    error: null
+    error: undefined
   });
-  const {
-    domain = "",
-    onRejected,
-    headers,
-    method,
-    body,
-    mode,
-    signal
-  } = requestOptions;
-  const req = useConfig
-    ? useRequest(useQueryOptions())
-    : (path: string, options: RequestOptions) => request(domain, path, options);
+  const { domain = "", ...options } = requestOptions;
+
+  let req: <T = any>(path: string, options?: RequestOptions) => Promise<T>;
+  if (useConfig) req = useRequest(useQueryOptions());
+  else
+    req = (path: string, options?: RequestOptions) =>
+      request(domain, path, options);
+
   const [controller, setController] = useState<AbortController>();
   const [refresh, setRefresh] = useState(false);
 
   const manualUpdate = useCallback(
-    (data: any) =>
+    (data: T) =>
       setDataLoadErr({
         data,
         loading: false,
-        error: null
+        error: undefined
       }),
     []
   );
@@ -72,32 +74,30 @@ export const useQuery = <T = any,>({
     controller?.abort();
     const ctrl = new AbortController();
     const timeout = window.setTimeout(() => {
+      const { signal, ...others } = options;
       req(query, {
         signal: signal ?? ctrl.signal,
-        onRejected: (res) => {
-          manualUpdate(undefined);
-          onRejected?.(res);
-        },
-        headers,
-        body,
-        method,
-        mode
+        ...others
       })
         .then((res) => {
-          setDataLoadErr({ data: res, loading: false, error: null });
+          console.log("RES");
+
+          setDataLoadErr({ data: res, loading: false, error: undefined });
           onRead?.(res);
         })
         .catch((err) => {
           onRead?.(undefined as any);
+          console.log("CATCH");
+
           setDataLoadErr({
-            data: null,
+            data: undefined,
             loading: false,
             error: err.toString()
           });
         });
     }, delay ?? 0);
     setController(ctrl);
-    setDataLoadErr({ data: null, loading: true, error: null });
+    setDataLoadErr({ data: undefined, loading: true, error: undefined });
 
     return () => {
       ctrl?.abort();

@@ -1,6 +1,6 @@
-import { Method } from '../../../utils/api';
-import { Query as QueryType } from '../../../utils/util';
-import React, { FormEvent } from 'react';
+import { Method } from "../../../utils/api";
+import { Query as QueryType } from "../../../utils/util";
+import React, { FormEvent } from "react";
 interface CRUDProps<T = any> {
     /**
      * This function is called whenever the query changes or if the state of the parameters have changed
@@ -46,7 +46,7 @@ interface CRUDProps<T = any> {
      * Weither the element you are pointing to in the backend refers to an `array`
      * of elements or siply to an `item`
      */
-    type?: 'array' | 'item';
+    type?: "array" | "item";
 }
 interface GeneralParams {
     pathTail?: string | number;

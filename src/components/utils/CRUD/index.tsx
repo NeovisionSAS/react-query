@@ -1,16 +1,16 @@
-import { Method, request } from '../../../utils/api';
-import { requestLog } from '../../../utils/log';
+import { Method, request } from "../../../utils/api";
+import { requestLog } from "../../../utils/log";
 import {
   formExtractor,
   getFormData,
   getPathTail,
-  Query as QueryType,
-} from '../../../utils/util';
-import ErrorBoundary from '../ErrorBoundary';
-import { Query } from '../Query';
-import { useQueryOptions } from '../QueryOptionsProvider';
-import equal from 'fast-deep-equal';
-import React, { FormEvent, Fragment, SyntheticEvent, useEffect } from 'react';
+  Query as QueryType
+} from "../../../utils/util";
+import ErrorBoundary from "../ErrorBoundary";
+import { Query } from "../Query";
+import { useQueryOptions } from "../QueryOptionsProvider";
+import equal from "fast-deep-equal";
+import React, { FormEvent, Fragment, SyntheticEvent, useEffect } from "react";
 
 interface CRUDProps<T = any> {
   /**
@@ -54,7 +54,7 @@ interface CRUDProps<T = any> {
    * Weither the element you are pointing to in the backend refers to an `array`
    * of elements or siply to an `item`
    */
-  type?: 'array' | 'item';
+  type?: "array" | "item";
 }
 
 interface GeneralParams {
@@ -148,10 +148,10 @@ const CRUD: <T = any>(p: CRUDProps<T>) => React.ReactElement<CRUDProps<T>> = ({
   onUpdated,
   onDeleted,
   delay,
-  type = 'array',
+  type = "array"
 }) => {
   const [createEndpoint, readEndpoint, updateEndpoint, deleteEndpoint] =
-    typeof endPoints == 'string'
+    typeof endPoints == "string"
       ? new Array(4).fill(endPoints)
       : [endPoints.create, endPoints.read, endPoints.update, endPoints.delete];
 
@@ -181,14 +181,14 @@ const CRUD: <T = any>(p: CRUDProps<T>) => React.ReactElement<CRUDProps<T>> = ({
                 {
                   handleCreate: <T,>(
                     e: FormEvent,
-                    params: CreateParams = { method: 'POST' }
+                    params: CreateParams = { method: "POST" }
                   ) => {
                     e.preventDefault();
-                    const { method = 'POST', pathTail } = params;
+                    const { method = "POST", pathTail } = params;
                     const formData = getFormData(e.target);
 
                     const endpoint = `${createEndpoint}/${
-                      pathTail ? `${pathTail}/` : ''
+                      pathTail ? `${pathTail}/` : ""
                     }`;
 
                     requestLog(
@@ -203,8 +203,8 @@ const CRUD: <T = any>(p: CRUDProps<T>) => React.ReactElement<CRUDProps<T>> = ({
                     return request(domain, endpoint, {
                       body: JSON.stringify(formData),
                       method,
-                      headers: requestMiddleware?.(),
-                      mode,
+                      headers: requestMiddleware,
+                      mode
                     })
                       .then((created) => {
                         manualUpdate?.([...(data as any), created] as any);
@@ -220,15 +220,15 @@ const CRUD: <T = any>(p: CRUDProps<T>) => React.ReactElement<CRUDProps<T>> = ({
                   read: { data, loading, error },
                   handleUpdate: <T,>(
                     e: FormEvent,
-                    params: UpdateParams = { method: 'PUT', name: idName }
+                    params: UpdateParams = { method: "PUT", name: idName }
                   ) => {
                     e.preventDefault();
-                    const { method = 'PUT', pathTail, name = idName } = params;
+                    const { method = "PUT", pathTail, name = idName } = params;
 
                     const formDatas = formExtractor(e.target, name!);
 
                     let newData: any;
-                    if (type == 'array')
+                    if (type == "array")
                       newData = [...(data as unknown as any[])];
                     else newData = data;
 
@@ -242,18 +242,18 @@ const CRUD: <T = any>(p: CRUDProps<T>) => React.ReactElement<CRUDProps<T>> = ({
                       );
 
                       const endpoint = `${updateEndpoint}/${
-                        tail ? `${tail}/` : ''
+                        tail ? `${tail}/` : ""
                       }`;
 
                       let hasChanged = false;
-                      if (type == 'array') {
+                      if (type == "array") {
                         const index = (newData as any[]).findIndex(
                           (val) => val[name!] == tail
                         );
                         if (index != undefined) {
                           const mergedData = {
                             ...newData[index],
-                            ...formData,
+                            ...formData
                           };
                           hasChanged = !equal(newData[index], mergedData);
                           newData[index] = mergedData;
@@ -276,8 +276,8 @@ const CRUD: <T = any>(p: CRUDProps<T>) => React.ReactElement<CRUDProps<T>> = ({
                           request(domain, endpoint, {
                             body: JSON.stringify(formData),
                             method,
-                            headers: requestMiddleware?.(),
-                            mode,
+                            headers: requestMiddleware,
+                            mode
                           })
                         );
                       }
@@ -289,15 +289,15 @@ const CRUD: <T = any>(p: CRUDProps<T>) => React.ReactElement<CRUDProps<T>> = ({
                   },
                   handleDelete: <T,>(
                     e: SyntheticEvent | undefined,
-                    params: DeleteParams = { method: 'DELETE', name: idName }
+                    params: DeleteParams = { method: "DELETE", name: idName }
                   ) => {
                     e?.preventDefault();
                     e?.stopPropagation();
                     const {
-                      method = 'DELETE',
+                      method = "DELETE",
                       pathTail,
                       name = idName,
-                      id,
+                      id
                     } = params;
 
                     const tail = getPathTail(
@@ -319,10 +319,10 @@ const CRUD: <T = any>(p: CRUDProps<T>) => React.ReactElement<CRUDProps<T>> = ({
 
                     return request(domain, endpoint, {
                       method,
-                      headers: requestMiddleware?.(),
-                      mode,
+                      headers: requestMiddleware,
+                      mode
                     }).then(() => {
-                      if (type == 'array') {
+                      if (type == "array") {
                         const index = (data as unknown as any[]).findIndex(
                           (val) => val[name] == id
                         );
@@ -335,7 +335,7 @@ const CRUD: <T = any>(p: CRUDProps<T>) => React.ReactElement<CRUDProps<T>> = ({
                         );
                         const newArr = [
                           ...typedData.slice(0, index),
-                          ...typedData.slice(index + 1, typedData.length),
+                          ...typedData.slice(index + 1, typedData.length)
                         ];
                         requestLog(mode, verbosity, 4, `Array updated`, newArr);
                         manualUpdate?.(newArr as any);
@@ -344,7 +344,7 @@ const CRUD: <T = any>(p: CRUDProps<T>) => React.ReactElement<CRUDProps<T>> = ({
                       }
                       onDeleted?.() && forceRefresh?.();
                     });
-                  },
+                  }
                 },
                 forceRefresh
               )}

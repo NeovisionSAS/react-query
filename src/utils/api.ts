@@ -1,10 +1,10 @@
-import { Mode } from '../types/global';
-import { queryError, queryWarn, queryWarn as requestWarn } from './log';
+import { Mode } from "../types/global";
+import { queryError, queryWarn, queryWarn as requestWarn } from "./log";
 
-export type Method = 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'GET';
+export type Method = "POST" | "PUT" | "PATCH" | "DELETE" | "GET";
 
 export interface RequestOptions {
-  headers?: Promise<HeadersInit>;
+  headers?: () => Promise<HeadersInit>;
   method?: Method;
   body?: string;
   mode?: Mode;
@@ -19,15 +19,15 @@ export interface ExtendedRequestOptions extends RequestOptions {
 export const request = function <T = any>(
   domain: string,
   path: string,
-  options: RequestOptions = { method: 'GET' }
+  options: RequestOptions = { method: "GET" }
 ): Promise<T> {
   const {
     body,
-    method = 'GET',
+    method = "GET",
     headers,
-    mode = 'production',
+    mode = "production",
     signal,
-    onRejected,
+    onRejected
   } = options;
 
   const req = (headers: HeadersInit) => {
@@ -35,13 +35,13 @@ export const request = function <T = any>(
       headers,
       method,
       body,
-      signal,
+      signal
     })
       .then((res) => {
         if (res.ok) {
           return res.text().then((t) => {
             try {
-              if ((headers as any)?.['Content-Type'] == 'application/json')
+              if ((headers as any)?.["Content-Type"] == "application/json")
                 return JSON.parse(t);
             } catch (e) {
               requestWarn(mode, 0, 0, `Could not parse response to json`, res);
@@ -52,7 +52,7 @@ export const request = function <T = any>(
         return Promise.reject(res);
       })
       .catch((err) => {
-        if (err.name == 'AbortError') queryWarn(mode, 0, 0, err.message);
+        if (err.name == "AbortError") queryWarn(mode, 0, 0, err.message);
         else {
           queryError(`${err.url} ${err.status} ${err.statusText}`);
           onRejected?.(err);
@@ -60,5 +60,5 @@ export const request = function <T = any>(
       });
   };
 
-  return headers ? headers.then(req) : req({});
+  return headers ? headers().then(req) : req({});
 };

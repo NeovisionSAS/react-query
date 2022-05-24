@@ -1,4 +1,4 @@
-import { QueryType } from '../components/utils/QueryOptionsProvider';
+import { QueryType } from "../components/utils/QueryOptionsProvider";
 /**
  * getFormData extracts the values of the input elements
  * received from the target object
@@ -83,6 +83,6 @@ export declare const useForceUpdate: () => (() => void);
 export interface Query<T = any> {
     data: T;
     loading: boolean;
-    error: string | null;
+    error?: string;
 }
 export {};
