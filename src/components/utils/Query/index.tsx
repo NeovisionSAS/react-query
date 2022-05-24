@@ -80,15 +80,10 @@ export const useQuery = <T = any,>({
         ...others
       })
         .then((res) => {
-          console.log("RES");
-
           setDataLoadErr({ data: res, loading: false, error: undefined });
           onRead?.(res);
         })
         .catch((err) => {
-          onRead?.(undefined as any);
-          console.log("CATCH");
-
           setDataLoadErr({
             data: undefined,
             loading: false,

@@ -38,25 +38,24 @@ export const request = function <T = any>(
       signal
     })
       .then((res) => {
-        if (res.ok) {
-          return res.text().then((t) => {
-            try {
-              if ((headers as any)?.["Content-Type"] == "application/json")
-                return JSON.parse(t);
-            } catch (e) {
-              requestWarn(mode, 0, 0, `Could not parse response to json`, res);
-            }
-            return t;
-          });
+        if (!res.ok) {
+          queryError(`${res.url} ${res.status} ${res.statusText}`);
+          onRejected?.(res);
+          return Promise.reject(res.statusText);
         }
-        return Promise.reject(res);
+        return res.text().then((t) => {
+          try {
+            if ((headers as any)?.["Content-Type"] == "application/json")
+              return JSON.parse(t);
+          } catch (e) {
+            requestWarn(mode, 0, 0, `Could not parse response to json`, res);
+          }
+          return t;
+        });
       })
       .catch((err) => {
         if (err.name == "AbortError") queryWarn(mode, 0, 0, err.message);
-        else {
-          queryError(`${err.url} ${err.status} ${err.statusText}`);
-          onRejected?.(err);
-        }
+        throw new Error(err);
       });
   };
 
