@@ -22,6 +22,9 @@ package-lock.json
 # Package files
 *.jar
 
+tmp/
+*.sql
+
 # Maven
 target/
 dist/

@@ -1,14 +1,22 @@
-import "../../scss/main.scss";
-import { Test } from "../Test";
-import { CRUD, ErrorBoundary } from "../utils";
-import { QueryOptionsProvider } from "../utils/QueryOptionsProvider";
+import { ErrorBoundary } from '../utils';
+import { QueryOptionsProvider } from '../utils/QueryOptionsProvider';
+import { Header } from 'components/App/Header';
+import { QueryEx } from 'components/App/Lib/QueryEx';
+import { UseRequestEx } from 'components/App/Lib/UseRequestEx';
+import {
+  HashRouter as Router,
+  Navigate,
+  Route,
+  Routes,
+} from 'react-router-dom';
+import { backend } from 'src/config';
 
 function App(): JSX.Element {
   const p = () =>
     new Promise<HeadersInit>((resolve) => {
       setTimeout(() => {
         resolve({
-          "Content-Type": "text"
+          'Content-Type': 'text',
         });
       }, 1000);
     });
@@ -17,21 +25,21 @@ function App(): JSX.Element {
     <ErrorBoundary>
       <QueryOptionsProvider
         value={{
-          domain: "https://api.publicapis.org",
-          parameterType: "path",
-          mode: "development",
-          requestMiddleware: p
+          domain: backend.url,
+          parameterType: 'path',
+          mode: 'development',
+          requestMiddleware: p,
+          verbosity: 10,
         }}
       >
-        <Test />
-        <CRUD endPoints={"entries"}>
-          {(crud) => {
-            const { data, loading } = crud.read;
-            if (loading) return <div>Loading..</div>;
-
-            return <div>{JSON.stringify(data)}</div>;
-          }}
-        </CRUD>
+        <Router>
+          <Header />
+          <Routes>
+            <Route path="/query/*" element={<QueryEx />} />
+            <Route path="/useRequest/*" element={<UseRequestEx />} />
+            <Route path="/*" element={<Navigate to={`/query`} />} />
+          </Routes>
+        </Router>
       </QueryOptionsProvider>
     </ErrorBoundary>
   );

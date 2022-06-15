@@ -1,18 +1,12 @@
 import {
   ExtendedRequestOptions,
   request,
-  RequestOptions
-} from "../../../utils/api";
-import { Query as QueryType } from "../../../utils/util";
-import ErrorBoundary from "../ErrorBoundary";
-import { useQueryOptions, useRequest } from "../QueryOptionsProvider";
-import React, {
-  DependencyList,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState
-} from "react";
+  RequestOptions,
+} from '../../../utils/api';
+import { Query as QueryType } from '../../../utils/util';
+import ErrorBoundary from '../ErrorBoundary';
+import { useQueryOptions, useRequest } from '../QueryOptionsProvider';
+import React, { useCallback, useEffect, useState } from 'react';
 
 export type DataHandler<T> = (data: T) => any;
 
@@ -40,15 +34,15 @@ export const useQuery = <T = any,>({
   delay,
   onRead,
   requestOptions = {},
-  useConfig = true
+  useConfig = true,
 }: QueryParams<T>): QueryReturn<T> => {
   // The default data/load/error triple
   const [dataLoadErr, setDataLoadErr] = useState<QueryType>({
     data: undefined,
     loading: true,
-    error: undefined
+    error: undefined,
   });
-  const { domain = "", ...options } = requestOptions;
+  const { domain = '', ...options } = requestOptions;
 
   let req: <T = any>(path: string, options?: RequestOptions) => Promise<T>;
   if (useConfig) req = useRequest(useQueryOptions());
@@ -64,7 +58,7 @@ export const useQuery = <T = any,>({
       setDataLoadErr({
         data,
         loading: false,
-        error: undefined
+        error: undefined,
       }),
     []
   );
@@ -77,7 +71,7 @@ export const useQuery = <T = any,>({
       const { signal, ...others } = options;
       req(query, {
         signal: signal ?? ctrl.signal,
-        ...others
+        ...others,
       })
         .then((res) => {
           setDataLoadErr({ data: res, loading: false, error: undefined });
@@ -87,7 +81,7 @@ export const useQuery = <T = any,>({
           setDataLoadErr({
             data: undefined,
             loading: false,
-            error: err.toString()
+            error: err.toString(),
           });
         });
     }, delay ?? 0);
@@ -105,7 +99,7 @@ export const useQuery = <T = any,>({
     loading: dataLoadErr.loading,
     error: dataLoadErr.error,
     manualUpdate,
-    forceRefresh: () => setRefresh(!refresh)
+    forceRefresh: () => setRefresh(!refresh),
   };
 };
 
@@ -120,14 +114,14 @@ export const Query: <T = any>(
   delay,
   onRead,
   requestOptions,
-  useConfig = true
+  useConfig = true,
 }) => {
   const { data, loading, error, forceRefresh, manualUpdate } = useQuery({
     query,
     delay,
     onRead,
     requestOptions,
-    useConfig
+    useConfig,
   });
 
   return (

@@ -1,0 +1,52 @@
+@use 'sass:color';
+
+$background: rgb(30,30,30);
+$color: white;
+
+body {
+  padding: 0;
+  margin: 0;
+  overflow-x: hidden;
+  background-color: $background;
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+header {
+  padding: 10px;
+  color: black;
+  z-index: 1;
+  text-shadow: 1px 1px 1px rgba(black, 0.2);
+  border-bottom: 1px solid black;
+
+  > * {
+    margin: 5px;
+  }
+}
+
+.root {
+  margin: 0;
+}
+
+nav {
+  display: flex;
+  margin: 5px;
+  padding: 5px;
+
+  > * {
+    margin: 5px;
+  }
+}
+
+main {
+  flex-grow: 1;
+}
+
+input {
+  width: fit-content;
+  margin: 5px;
+}
