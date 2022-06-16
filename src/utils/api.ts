@@ -22,20 +22,18 @@ export const request = function <T = any>(
   options: RequestOptions = { method: 'GET' }
 ): Promise<T> {
   const {
-    body,
     method = 'GET',
     headers,
     mode = 'production',
-    signal,
     onRejected,
+    ...rest
   } = options;
 
   const req = (headers: HeadersInit) => {
     return fetch(`${domain}/${path}`, {
       headers,
       method,
-      body,
-      signal,
+      ...rest,
     })
       .then((res) => {
         if (!res.ok) {
