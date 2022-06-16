@@ -55,7 +55,11 @@ export const request = function <T = any>(
       })
       .catch((err) => {
         if (err.name == 'AbortError') queryWarn(mode, 0, 0, err.message);
-        throw new Error(err);
+        else {
+          queryError(`${err.url} ${err.status} ${err.statusText}`);
+          onRejected?.(err);
+          throw new Error(`${err.status} ${err.statusText}`);
+        }
       });
   };
 
