@@ -16,6 +16,6 @@ interface QueryOptions {
 }
 export declare type QueryType = 'path' | 'queryString';
 export declare const useQueryOptions: () => Required<QueryOptions>;
-export declare const useRequest: ({ headers: rHeaders, method: rMethod, ...rRest }?: RequestOptions) => <T = any>(path: string, options?: RequestOptions) => Promise<T>;
+export declare const useRequest: ({ method: rMethod, ...rRest }?: RequestOptions) => <T = any>(path: string, options?: RequestOptions) => Promise<T>;
 export declare const QueryOptionsProvider: import("react").Provider<QueryOptions>;
 export {};

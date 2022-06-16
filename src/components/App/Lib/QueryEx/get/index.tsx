@@ -1,5 +1,5 @@
-import { Query } from '../../../../utils';
 import { User as UserInterface } from '../../../../../interfaces/user';
+import { Query } from '../../../../utils';
 import { FunctionComponent, useState } from 'react';
 
 export const AllUsers: FunctionComponent = () => {

@@ -32,6 +32,10 @@ function App(): JSX.Element {
           mode: 'development',
           requestMiddleware: p,
           verbosity: 10,
+          loader: {
+            autoload: true,
+            loader: <div>Spinner</div>,
+          },
         }}
       >
         <Router>

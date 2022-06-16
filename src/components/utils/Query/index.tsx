@@ -95,9 +95,7 @@ export const useQuery = <T = any,>({
   }, [query, refresh]);
 
   return {
-    data: dataLoadErr.data,
-    loading: dataLoadErr.loading,
-    error: dataLoadErr.error,
+    ...dataLoadErr,
     manualUpdate,
     forceRefresh: () => setRefresh(!refresh),
   };
@@ -110,23 +108,25 @@ export const Query: <T = any>(
   p: QueryProps<T>
 ) => React.ReactElement<QueryProps<T>> = ({
   children,
-  query,
-  delay,
-  onRead,
-  requestOptions,
   useConfig = true,
+  ...qRest
 }) => {
-  const { data, loading, error, forceRefresh, manualUpdate } = useQuery({
-    query,
-    delay,
-    onRead,
-    requestOptions,
+  const { loader } = useQueryOptions();
+  const { loading, ...qData } = useQuery({
+    ...qRest,
     useConfig,
   });
 
+  // Always call to maintain the hooks
+  const render = children({ loading, ...qData });
+
   return (
     <ErrorBoundary>
-      {children({ data, loading, error, manualUpdate, forceRefresh })}
+      {loading && loader.autoload ? (
+        <>{loader.loader ?? <div>Loading data...</div>}</>
+      ) : (
+        render
+      )}
     </ErrorBoundary>
   );
 };
