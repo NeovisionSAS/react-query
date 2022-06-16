@@ -179,7 +179,7 @@ export const getPathTail = (
   if (type == "path" && id != "" && id != null) {
     return id;
   }
-  return pathTail;
+  return pathTail ?? '';
 };
 
 export const useForceUpdate = (): (() => void) => {
