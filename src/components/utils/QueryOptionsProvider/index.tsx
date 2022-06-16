@@ -35,29 +35,21 @@ export const useQueryOptions = (): Required<QueryOptions> => {
 };
 
 export const useRequest = (
-  { headers: rHeaders, method: rMethod = 'GET', ...rRest }: RequestOptions = {
+  { method: rMethod = 'GET', ...rRest }: RequestOptions = {
     method: 'GET',
   }
 ) => {
-  const {
-    domain,
-    requestMiddleware: qRequestMiddleware = rHeaders,
-    ...qRest
-  } = useQueryOptions();
-  return function <T = any>(
+  const { domain, ...qRest } = useQueryOptions();
+
+  return <T = any,>(
     path: string,
     options: RequestOptions = { method: 'GET' }
-  ) {
-    return request<T>(
+  ) =>
+    request<T>(
       domain,
       path,
-      Object.merge(options, {
-        headers: qRequestMiddleware,
-        method: rMethod,
-        ...Object.merge(rRest, qRest, options),
-      })
+      Object.merge<RequestOptions>(rRest, qRest, options)
     );
-  };
 };
 
 export const QueryOptionsProvider = queryOptionsContext.Provider;
