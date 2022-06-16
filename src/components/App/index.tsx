@@ -16,7 +16,7 @@ function App(): JSX.Element {
     new Promise<HeadersInit>((resolve) => {
       setTimeout(() => {
         resolve({
-          'Content-Type': 'text',
+          'Content-Type': 'application/json',
         });
       }, 1000);
     });
@@ -26,7 +26,7 @@ function App(): JSX.Element {
       <QueryOptionsProvider
         value={{
           domain: backend.url,
-          parameterType: 'path',
+          parameterType: 'queryString',
           mode: 'development',
           requestMiddleware: p,
           verbosity: 10,

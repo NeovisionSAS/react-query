@@ -50,3 +50,24 @@ input {
   width: fit-content;
   margin: 5px;
 }
+
+
+form {
+  display: flex;
+  flex-direction: column;
+  width: 30%;
+
+  > div {
+    display: flex;
+    justify-content: space-between;
+    label {
+      flex-grow: 1;
+      min-width: 20%;
+      max-width: 30%;
+    }
+  }
+
+  > button:last-child {
+    margin: 5px;
+  }
+}

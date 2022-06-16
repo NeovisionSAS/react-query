@@ -27,4 +27,13 @@ export class UserResolver {
 
     return res;
   }
+
+  static async update(
+    id: number,
+    name: string,
+    age: number,
+    nationality: string
+  ) {
+    User.update(id, { age, name, nationality });
+  }
 }

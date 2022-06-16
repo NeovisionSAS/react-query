@@ -34,4 +34,16 @@ export const routes: Routable[] = [
       return UserResolver.delete(parseInt(request.body.id));
     },
   },
+  {
+    method: 'PUT',
+    path: '/user',
+    action(request, response) {
+      return UserResolver.update(
+        parseInt(request.body.id),
+        request.body.name,
+        parseInt(request.body.age),
+        request.body.nationality
+      );
+    },
+  },
 ];

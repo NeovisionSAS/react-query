@@ -30,7 +30,7 @@ source.initialize().then(() => {
           .action(request, response)
           .then((d) => response.send(d))
           .catch((e) => {
-            console.error(e), response.status(400), response.send(e);
+            console.error(e), response.status(404), response.send(e);
           });
       }
     );
