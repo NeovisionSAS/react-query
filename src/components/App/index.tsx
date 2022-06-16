@@ -1,15 +1,16 @@
+import { backend } from '../../config';
 import { ErrorBoundary } from '../utils';
 import { QueryOptionsProvider } from '../utils/QueryOptionsProvider';
 import { Header } from './Header';
 import { QueryEx } from './Lib/QueryEx';
 import { UseRequestEx } from './Lib/UseRequestEx';
+import { CRUDEx } from './Lib/CRUDEx';
 import {
   HashRouter as Router,
   Navigate,
   Route,
   Routes,
 } from 'react-router-dom';
-import { backend } from '../../config';
 
 function App(): JSX.Element {
   const p = () =>
@@ -36,6 +37,7 @@ function App(): JSX.Element {
           <Header />
           <Routes>
             <Route path="/query/*" element={<QueryEx />} />
+            <Route path="/crud/*" element={<CRUDEx />} />
             <Route path="/useRequest/*" element={<UseRequestEx />} />
             <Route path="/*" element={<Navigate to={`/query`} />} />
           </Routes>
