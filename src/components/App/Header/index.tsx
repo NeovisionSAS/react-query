@@ -7,6 +7,7 @@ export const Header: FunctionComponent = () => {
       <Link to={'/query'}>Query</Link>
       <Link to={'/crud'}>CRUD</Link>
       <Link to={'/useRequest'}>UseRequest</Link>
+      <Link to={'/useQueryOptions'}>UseQueryOptions</Link>
     </header>
   );
 };

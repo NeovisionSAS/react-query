@@ -1,21 +1,17 @@
-import { useRequest } from '../../../utils/QueryOptionsProvider';
-import { User } from '../../../../interfaces/user';
-import { FunctionComponent, useState } from 'react';
+import { ProviderValues } from './provider';
+import { FunctionComponent } from 'react';
+import { Link, Navigate, Route, Routes } from 'react-router-dom';
 
 export const UseRequestEx: FunctionComponent = () => {
-  const [user, setUser] = useState<User>();
-  const request = useRequest();
-
-  request<User>('user', { method: 'GET' })
-    .then((user) => {
-      setUser(user);
-    })
-    .catch((e) => console.error(e));
-
   return (
-    <div>
-      <div>{user?.name}</div>
-      <div>{user?.name}</div>
-    </div>
+    <>
+      <nav>
+        <Link to={'providerValues'}>Provider Values</Link>
+      </nav>
+      <Routes>
+        <Route path="providerValues" element={<ProviderValues />} />
+        <Route path="*" element={<Navigate to={'providerValues'} />} />
+      </Routes>
+    </>
   );
 };

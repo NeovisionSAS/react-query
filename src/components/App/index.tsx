@@ -2,9 +2,10 @@ import { backend } from '../../config';
 import { ErrorBoundary } from '../utils';
 import { QueryOptionsProvider } from '../utils/QueryOptionsProvider';
 import { Header } from './Header';
-import { QueryEx } from './Lib/QueryEx';
-import { UseRequestEx } from './Lib/UseRequestEx';
 import { CRUDEx } from './Lib/CRUDEx';
+import { QueryEx } from './Lib/QueryEx';
+import { UseQueryOptionsEx } from './Lib/UseQueryOptionsEx';
+import { UseRequestEx } from './Lib/UseRequestEx';
 import {
   HashRouter as Router,
   Navigate,
@@ -39,6 +40,7 @@ function App(): JSX.Element {
             <Route path="/query/*" element={<QueryEx />} />
             <Route path="/crud/*" element={<CRUDEx />} />
             <Route path="/useRequest/*" element={<UseRequestEx />} />
+            <Route path="/useQueryOptions/*" element={<UseQueryOptionsEx />} />
             <Route path="/*" element={<Navigate to={`/query`} />} />
           </Routes>
         </Router>
