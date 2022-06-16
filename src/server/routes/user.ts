@@ -1,6 +1,6 @@
 import { Response } from 'express';
-import { UserResolver } from 'src/server/resolver';
-import { Routable } from 'src/server/routes';
+import { UserResolver } from '../resolver';
+import { Routable } from './';
 
 const send = (p: Promise<any>, response: Response) => {
   p.then();

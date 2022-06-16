@@ -1,9 +1,9 @@
 import cors from 'cors';
 import express, { Request, Response } from 'express';
 import 'reflect-metadata';
-import { backend } from 'src/config';
-import { User } from 'src/server/orm/user';
-import { Route } from 'src/server/routes';
+import { backend } from '../config';
+import { User } from './orm/user';
+import { Route } from './routes';
 import { DataSource } from 'typeorm';
 
 export const source = new DataSource({

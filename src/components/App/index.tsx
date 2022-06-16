@@ -1,15 +1,15 @@
 import { ErrorBoundary } from '../utils';
 import { QueryOptionsProvider } from '../utils/QueryOptionsProvider';
-import { Header } from 'components/App/Header';
-import { QueryEx } from 'components/App/Lib/QueryEx';
-import { UseRequestEx } from 'components/App/Lib/UseRequestEx';
+import { Header } from './Header';
+import { QueryEx } from './Lib/QueryEx';
+import { UseRequestEx } from './Lib/UseRequestEx';
 import {
   HashRouter as Router,
   Navigate,
   Route,
   Routes,
 } from 'react-router-dom';
-import { backend } from 'src/config';
+import { backend } from '../../config';
 
 function App(): JSX.Element {
   const p = () =>

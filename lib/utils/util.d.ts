@@ -78,7 +78,7 @@ export declare const seperate: (strs: string[]) => [
     string,
     string[]
 ][];
-export declare const getPathTail: (data: FormExtractorData, type: QueryType, name: string, pathTail?: string | number | undefined) => string | number | undefined;
+export declare const getPathTail: (data: FormExtractorData, type: QueryType, name: string, pathTail?: string | number) => string | number;
 export declare const useForceUpdate: () => (() => void);
 export interface Query<T = any> {
     data: T;

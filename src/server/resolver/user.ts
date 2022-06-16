@@ -1,4 +1,4 @@
-import { User } from 'src/server/orm/user';
+import { User } from '../orm/user';
 
 export class UserResolver {
   static async create(name: string, age: number, nationality?: string) {

@@ -1,4 +1,4 @@
-import { PrimaryEntity } from "src/server/orm/entity";
+import { PrimaryEntity } from "./entity";
 import { Column, Entity } from "typeorm";
 
     

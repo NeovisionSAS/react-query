@@ -1,5 +1,5 @@
-import { useRequest } from 'components/utils/QueryOptionsProvider';
-import { User } from 'interfaces/user';
+import { useRequest } from '../../../utils/QueryOptionsProvider';
+import { User } from '../../../../interfaces/user';
 import { FunctionComponent, useState } from 'react';
 
 export const UseRequestEx: FunctionComponent = () => {

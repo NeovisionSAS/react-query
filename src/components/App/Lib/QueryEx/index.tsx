@@ -1,10 +1,10 @@
-import { User as UserDelete } from 'components/App/Lib/QueryEx/delete';
+import { User as UserDelete } from './delete';
 import {
   AllUsers as AllUsersGet,
   User as UserGet,
-} from 'components/App/Lib/QueryEx/get';
-import { User as UserPost } from 'components/App/Lib/QueryEx/post';
-import { User as UserPut } from 'components/App/Lib/QueryEx/put';
+} from './get';
+import { User as UserPost } from './post';
+import { User as UserPut } from './put';
 import { FunctionComponent } from 'react';
 import { Navigate, Route, Routes } from 'react-router';
 import { Link } from 'react-router-dom';
