@@ -59,31 +59,47 @@ export const User: FunctionComponent = () => {
 };
 
 export const AllUsersDelay: FunctionComponent = () => {
-  return (
-    <Query<UserInterface[]>
-      query={'user'}
-      delay={1000}
-      requestOptions={{ method: 'POST' }}
-    >
-      {({ data: users, loading, error }) => {
-        if (loading) return <div>loading...</div>;
-        if (error) return <div>{error}</div>;
+  const [delay, setDelay] = useState(1);
 
-        return (
-          <div>
-            {users.map((user, i) => {
-              return (
-                <ul key={`allUsers-${i}`}>
-                  <li>ID : {user.id}</li>
-                  <li>Name : {user.name}</li>
-                  <li>Age : {user.age}</li>
-                  <li>Nationality : {user.nationality ?? 'No nationality'}</li>
-                </ul>
-              );
-            })}
-          </div>
-        );
-      }}
-    </Query>
+  return (
+    <>
+      <div>
+        <p>Delay in seconds (10sec max)</p>
+        <input
+          type={'number'}
+          value={delay}
+          onChange={(e) => {
+            const d = parseInt(e.target.value);
+            setDelay(d > 10 ? 10 : d < 1 ? 0 : d);
+          }}
+        />
+      </div>
+      <Query<UserInterface[]> query={'user'} delay={delay * 1000}>
+        {({ data: users, loading, error, forceRefresh }) => {
+          if (loading) return <div>loading...</div>;
+          if (error) return <div>{error}</div>;
+
+          return (
+            <>
+              <button onClick={forceRefresh}>Refresh</button>
+              <div>
+                {users.map((user, i) => {
+                  return (
+                    <ul key={`allUsers-${i}`}>
+                      <li>ID : {user.id}</li>
+                      <li>Name : {user.name}</li>
+                      <li>Age : {user.age}</li>
+                      <li>
+                        Nationality : {user.nationality ?? 'No nationality'}
+                      </li>
+                    </ul>
+                  );
+                })}
+              </div>
+            </>
+          );
+        }}
+      </Query>
+    </>
   );
 };
