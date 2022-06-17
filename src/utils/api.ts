@@ -39,7 +39,7 @@ export const request = function <T = any>(
         if (!res.ok) {
           queryError(`${res.url} ${res.status} ${res.statusText}`);
           onRejected?.(res);
-          return Promise.reject(res.statusText);
+          return Promise.reject(`${res.status} ${res.statusText}`);
         }
         return res.text().then((t) => {
           try {
@@ -52,12 +52,9 @@ export const request = function <T = any>(
         });
       })
       .catch((err) => {
+        console.log(err);
         if (err.name == 'AbortError') queryWarn(mode, 0, 0, err.message);
-        else {
-          queryError(`${err.url} ${err.status} ${err.statusText}`);
-          onRejected?.(err);
-          throw new Error(`${err.status} ${err.statusText}`);
-        }
+        else throw new Error(err);
       });
   };
 

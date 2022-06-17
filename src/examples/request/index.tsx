@@ -1,5 +1,5 @@
-import { request } from '../../utils/api';
 import { useRequest } from '../../components/utils/QueryOptionsProvider';
+import { request } from '../../utils/api';
 import { FunctionComponent, useEffect, useState } from 'react';
 
 request('mydomain.com', 'users/names').then((text) => {
@@ -9,7 +9,7 @@ request('mydomain.com', 'users/names').then((text) => {
 request('mydomain.com', 'users/changeName/1', {
   method: 'POST',
   body: JSON.stringify({ name: 'Gerald' }),
-  headers: Promise.resolve({ 'Content-Type': 'application/json' }),
+  headers: () => Promise.resolve({ 'Content-Type': 'application/json' }),
 }).then((json) => {
   console.log(json);
 });

@@ -39,7 +39,7 @@ export const useRequest = (
     method: 'GET',
   }
 ) => {
-  const { domain, ...qRest } = useQueryOptions();
+  const { domain, loader, ...qRest } = useQueryOptions();
 
   return <T = any,>(
     path: string,
