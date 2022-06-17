@@ -15,6 +15,7 @@ module.exports = merge(common, {
   output: {
     filename: 'server.js',
     path: path.resolve(__dirname, '../tmp'),
+    clean: true,
   },
   module: {
     rules: [
@@ -26,7 +27,7 @@ module.exports = merge(common, {
           {
             loader: 'ts-loader',
             options: {
-              configFile: path.resolve(__dirname, '../tsconfig.json'),
+              configFile: path.resolve(__dirname, '../tsconfig.server.json'),
             },
           },
         ],

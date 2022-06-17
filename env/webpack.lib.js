@@ -18,6 +18,7 @@ module.exports = merge(
         type: 'umd',
       },
       filename: 'module.js',
+      clean: true,
     },
     module: {
       rules: [
