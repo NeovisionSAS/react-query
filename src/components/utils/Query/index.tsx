@@ -1,12 +1,15 @@
 import {
-  ExtendedRequestOptions,
   request,
   RequestOptions,
+  RequestOptionsWithDomain,
+  RequestOptionsWithOptionalDomain,
 } from '../../../utils/api';
 import { Query as QueryType } from '../../../utils/util';
 import ErrorBoundary from '../ErrorBoundary';
-import { useQueryOptions, useRequest } from '../QueryOptionsProvider';
+import { useQueryOptions } from '../QueryOptionsProvider';
 import React, { useCallback, useEffect, useState } from 'react';
+import { RequiredBy } from '../../../types/global';
+import { requestLog } from '../../../utils/log';
 
 export type DataHandler<T> = (data: T) => any;
 
@@ -14,7 +17,7 @@ interface QueryParams<T = any> {
   query: string;
   delay?: number;
   onRead?: DataHandler<T>;
-  requestOptions?: ExtendedRequestOptions;
+  requestOptions?: RequestOptionsWithOptionalDomain;
   useConfig?: boolean;
 }
 
@@ -34,7 +37,6 @@ export const useQuery = <T = any,>({
   delay,
   onRead,
   requestOptions = {},
-  useConfig = true,
 }: QueryParams<T>): QueryReturn<T> => {
   // The default data/load/error triple
   const [dataLoadErr, setDataLoadErr] = useState<QueryType>({
@@ -42,13 +44,14 @@ export const useQuery = <T = any,>({
     loading: true,
     error: undefined,
   });
-  const { domain = '', ...options } = requestOptions;
+  const options = Object.merge<
+    any,
+    RequiredBy<RequestOptionsWithDomain, 'mode' | 'verbosity'>
+  >(useQueryOptions(), requestOptions);
+  const { domain, mode, verbosity } = options;
 
-  let req: <T = any>(path: string, options?: RequestOptions) => Promise<T>;
-  if (useConfig) req = useRequest(useQueryOptions());
-  else
-    req = (path: string, options?: RequestOptions) =>
-      request(domain, path, options);
+  const req = (path: string, options?: RequestOptions) =>
+    request(domain, path, options);
 
   const [controller, setController] = useState<AbortController>();
   const [refresh, setRefresh] = useState(false);
@@ -65,17 +68,20 @@ export const useQuery = <T = any,>({
 
   // Check if the query prop has changed
   useEffect(() => {
+    requestLog(mode, verbosity, 1, `[read][${query}]`, `${domain}/${query}`);
     controller?.abort();
     const ctrl = new AbortController();
     const timeout = window.setTimeout(() => {
       const { signal, ...others } = options;
       req(query, {
-        signal: signal ?? ctrl.signal,
+        signal: ctrl.signal,
         ...others,
       })
         .then((res) => {
-          setDataLoadErr({ data: res, loading: false, error: undefined });
-          onRead?.(res);
+          if (res) {
+            setDataLoadErr({ data: res, loading: false, error: undefined });
+            onRead?.(res);
+          }
         })
         .catch((err) => {
           setDataLoadErr({
@@ -122,7 +128,7 @@ export const Query: <T = any>(
 
   return (
     <ErrorBoundary>
-      {loading && loader.autoload ? (
+      {loading && loader && loader.autoload ? (
         <>{loader.loader ?? <div>Loading data...</div>}</>
       ) : (
         render

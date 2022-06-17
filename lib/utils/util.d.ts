@@ -1,4 +1,4 @@
-import { QueryType } from "../components/utils/QueryOptionsProvider";
+import { QueryType } from './api';
 /**
  * getFormData extracts the values of the input elements
  * received from the target object

@@ -152,7 +152,7 @@ const CRUD: <T = any>(p: CRUDProps<T>) => React.ReactElement<CRUDProps<T>> = ({
       ? new Array(4).fill(endPoints)
       : [endPoints.create, endPoints.read, endPoints.update, endPoints.delete];
 
-  const { parameterType, domain, requestMiddleware, mode, verbosity, idName } =
+  const { parameterType, domain, headers, mode, verbosity, idName } =
     useQueryOptions();
 
   useEffect(() => {
@@ -200,7 +200,7 @@ const CRUD: <T = any>(p: CRUDProps<T>) => React.ReactElement<CRUDProps<T>> = ({
                     return request(domain, endpoint, {
                       body: JSON.stringify(formData),
                       method,
-                      headers: requestMiddleware,
+                      headers,
                       mode,
                     })
                       .then((created) => {
@@ -273,7 +273,7 @@ const CRUD: <T = any>(p: CRUDProps<T>) => React.ReactElement<CRUDProps<T>> = ({
                           request(domain, endpoint, {
                             body: JSON.stringify(formData),
                             method,
-                            headers: requestMiddleware,
+                            headers,
                             mode,
                           })
                         );
@@ -318,7 +318,7 @@ const CRUD: <T = any>(p: CRUDProps<T>) => React.ReactElement<CRUDProps<T>> = ({
 
                     return request(domain, endpoint, {
                       method,
-                      headers: requestMiddleware,
+                      headers,
                       mode,
                       body:
                         parameterType == 'path'

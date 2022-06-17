@@ -1,25 +1,55 @@
-import { Mode } from '../types/global';
 import { queryError, queryWarn, queryWarn as requestWarn } from './log';
+import { PartialBy, RequiredBy } from '../types/global';
 
 export type Method = 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'GET';
+export type QueryType = 'path' | 'queryString';
 
-export interface RequestOptions {
+interface LoaderOptions {
+  loader?: JSX.Element;
+  autoload?: boolean;
+}
+
+export interface BaseQueryOptions {
   headers?: () => Promise<HeadersInit>;
+  parameterType?: QueryType;
+  mode?: 'development' | 'production';
+  verbosity?: number;
+  idName?: string;
+  onRejected?: (res: Response) => any;
+  delay?: number;
+}
+
+export interface RequestOptions extends BaseQueryOptions {
   method?: Method;
   body?: string;
-  mode?: Mode;
   signal?: AbortSignal;
-  onRejected?: (res: Response) => any;
 }
 
-export interface ExtendedRequestOptions extends RequestOptions {
-  domain?: string;
+interface Domain {
+  domain: string;
 }
+
+export interface QueryOptions extends BaseQueryOptions, Domain {
+  loader?: LoaderOptions;
+}
+
+export type RealQueryOptions = RequiredBy<
+  QueryOptions,
+  'mode' | 'verbosity' | 'parameterType' | 'idName'
+>;
+
+export type RequestOptionsWithDomain = RequestOptions & Domain;
+export type RequestOptionsWithOptionalDomain = PartialBy<
+  RequestOptionsWithDomain,
+  'domain'
+>;
 
 export const request = function <T = any>(
   domain: string,
   path: string,
-  options: RequestOptions = { method: 'GET' }
+  options: RequestOptions = {
+    method: 'GET',
+  }
 ): Promise<T> {
   const {
     method = 'GET',
@@ -52,7 +82,6 @@ export const request = function <T = any>(
         });
       })
       .catch((err) => {
-        console.log(err);
         if (err.name == 'AbortError') queryWarn(mode, 0, 0, err.message);
         else throw new Error(err);
       });

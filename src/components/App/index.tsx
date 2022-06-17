@@ -14,13 +14,15 @@ import {
 } from 'react-router-dom';
 
 function App(): JSX.Element {
+  const headerDelay = 0;
+
   const p = () =>
     new Promise<HeadersInit>((resolve) => {
       setTimeout(() => {
         resolve({
           'Content-Type': 'application/json',
         });
-      }, 1000);
+      }, headerDelay);
     });
 
   return (
@@ -30,12 +32,8 @@ function App(): JSX.Element {
           domain: backend.url,
           parameterType: 'queryString',
           mode: 'development',
-          requestMiddleware: p,
+          headers: p,
           verbosity: 10,
-          loader: {
-            autoload: true,
-            loader: <div>Spinner</div>,
-          },
         }}
       >
         <Router>

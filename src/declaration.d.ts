@@ -1,5 +1,5 @@
 declare module '*.scss';
 
 interface ObjectConstructor {
-  merge: <T = object>(...objects: T[]) => T | undefined;
+  merge: <T = object, R extends T = T>(...objects: T[]) => R;
 }

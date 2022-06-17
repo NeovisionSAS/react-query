@@ -57,3 +57,33 @@ export const User: FunctionComponent = () => {
     </>
   );
 };
+
+export const AllUsersDelay: FunctionComponent = () => {
+  return (
+    <Query<UserInterface[]>
+      query={'user'}
+      delay={1000}
+      requestOptions={{ method: 'POST' }}
+    >
+      {({ data: users, loading, error }) => {
+        if (loading) return <div>loading...</div>;
+        if (error) return <div>{error}</div>;
+
+        return (
+          <div>
+            {users.map((user, i) => {
+              return (
+                <ul key={`allUsers-${i}`}>
+                  <li>ID : {user.id}</li>
+                  <li>Name : {user.name}</li>
+                  <li>Age : {user.age}</li>
+                  <li>Nationality : {user.nationality ?? 'No nationality'}</li>
+                </ul>
+              );
+            })}
+          </div>
+        );
+      }}
+    </Query>
+  );
+};

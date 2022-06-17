@@ -36,7 +36,7 @@ https://neovision-sas.atlassian.net/jira/software/projects/LRQ/boards/11
     domain: 'https://api.publicapis.org',
     parameterType: 'path',
     mode: 'development',
-    requestMiddleware: () => promiseReturningHeader,
+    headers: () => promiseReturningHeader,
   }}
 >
   <CRUD endPoints={'entries'}>
@@ -52,13 +52,13 @@ https://neovision-sas.atlassian.net/jira/software/projects/LRQ/boards/11
 
 ##### Value prop
 
-| Value             | Type                                      | description                                                                                                                                               |
-| ----------------- | ----------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| domain            | `string`                                  | The domain where the component needs to point to                                                                                                          |
-| parameterType     | `"path"` or `"queryString"`               | Where the component should place the `primary key` in requests                                                                                            |
-| mode              | `"development"` or `"production"`         | The environment which is used to manage logging                                                                                                           |
-| requestMiddleware | `() => Promise<HeadersInit \| undefined>` | Before doing any request, this function is called. It is used if you need some sort of request to get a `token` before sending the real effective request |
-| idName            | `string`                                  | The name of the general parameter representing the default `primary key` name to use in request                                                           |
+| Value         | Type                                      | description                                                                                                                                               |
+| ------------- | ----------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| domain        | `string`                                  | The domain where the component needs to point to                                                                                                          |
+| parameterType | `"path"` or `"queryString"`               | Where the component should place the `primary key` in requests                                                                                            |
+| mode          | `"development"` or `"production"`         | The environment which is used to manage logging                                                                                                           |
+| headers       | `() => Promise<HeadersInit \| undefined>` | Before doing any request, this function is called. It is used if you need some sort of request to get a `token` before sending the real effective request |
+| idName        | `string`                                  | The name of the general parameter representing the default `primary key` name to use in request                                                           |
 
 Go to the [QueryOptionsProvider examples directory](https://bitbucket.org/neovision/react-query/src/master/src/examples/QueryOptionsProvider) to see examples
 

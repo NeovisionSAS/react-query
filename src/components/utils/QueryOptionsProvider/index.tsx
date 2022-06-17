@@ -1,23 +1,11 @@
-import { request, RequestOptions } from '../../../utils/api';
+import {
+  QueryOptions,
+  RealQueryOptions,
+  request,
+  RequestOptionsWithDomain,
+  RequestOptionsWithOptionalDomain,
+} from '../../../utils/api';
 import { createContext, useContext } from 'react';
-
-interface LoaderOptions {
-  loader?: JSX.Element;
-  autoload?: boolean;
-}
-
-interface QueryOptions {
-  requestMiddleware?: () => Promise<HeadersInit>;
-  domain: string;
-  parameterType?: QueryType;
-  mode?: 'development' | 'production';
-  verbosity?: number;
-  idName?: string;
-  onRejected?: (res: Response) => any;
-  loader?: LoaderOptions;
-}
-
-export type QueryType = 'path' | 'queryString';
 
 const queryOptionsContext = createContext<QueryOptions>({
   domain: '',
@@ -27,7 +15,7 @@ const queryOptionsContext = createContext<QueryOptions>({
   idName: 'id',
 });
 
-export const useQueryOptions = (): Required<QueryOptions> => {
+export const useQueryOptions = (): RealQueryOptions => {
   const ctx = useContext(queryOptionsContext);
   if (!ctx) throw new Error("No context for 'useQueryOptions'");
   if (!ctx.idName) ctx.idName = 'id';
@@ -35,21 +23,24 @@ export const useQueryOptions = (): Required<QueryOptions> => {
 };
 
 export const useRequest = (
-  { method: rMethod = 'GET', ...rRest }: RequestOptions = {
+  rRest: RequestOptionsWithOptionalDomain = {
     method: 'GET',
   }
 ) => {
-  const { domain, loader, ...qRest } = useQueryOptions();
+  const { loader, ...qRest } = useQueryOptions();
+
+  const merged = Object.merge<any, RequestOptionsWithDomain>(rRest, qRest);
 
   return <T = any,>(
     path: string,
-    options: RequestOptions = { method: 'GET' }
-  ) =>
-    request<T>(
-      domain,
-      path,
-      Object.merge<RequestOptions>(rRest, qRest, options)
-    );
+    options: RequestOptionsWithOptionalDomain = { method: 'GET' }
+  ) => {
+    const { domain, ...returnMerged } = Object.merge<
+      any,
+      RequestOptionsWithDomain
+    >(merged, options);
+    return request<T>(domain, path, returnMerged);
+  };
 };
 
 export const QueryOptionsProvider = queryOptionsContext.Provider;

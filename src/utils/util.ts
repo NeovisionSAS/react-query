@@ -1,5 +1,5 @@
-import { QueryType } from "../components/utils/QueryOptionsProvider";
-import { useReducer } from "react";
+import { useReducer } from 'react';
+import { QueryType } from './api';
 
 type TypedTarget = EventTarget & {
   [key: string]: {
@@ -30,22 +30,22 @@ export const getFormData = <T = { [key: string]: string | number }>(
       // Keep named input and select
       .filter((v) => {
         const tag = v.tagName?.toLocaleLowerCase?.();
-        return v.name && (tag == "input" || tag == "select");
+        return v.name && (tag == 'input' || tag == 'select');
       })
       .reduce((acc, cur) => {
         const { name, value, checked, type, required } = cur;
 
-        const isCheckbox = type == "checkbox";
-        const isValEmpty = value == "" || value == null;
+        const isCheckbox = type == 'checkbox';
+        const isValEmpty = value == '' || value == null;
 
         if (required && isValEmpty)
           throw new Error(`Can't use an empty value for ${name}`);
 
-        let finalValue = type == "number" ? new Number(value).valueOf() : value;
+        let finalValue = type == 'number' ? new Number(value).valueOf() : value;
 
         return {
           ...acc,
-          [name]: isCheckbox ? checked : finalValue
+          [name]: isCheckbox ? checked : finalValue,
         };
       }, {}) as T
   );
@@ -132,7 +132,7 @@ export const seperateAndKeepIds = (strs: string[]) => {
   return seperate(strs).map<[string, string]>((v) => {
     const seperated = v[1];
     const id = seperated[seperated.length - 1];
-    return [v[0].replace(new RegExp(`(-|_)?${id}$`), ""), id];
+    return [v[0].replace(new RegExp(`(-|_)?${id}$`), ''), id];
   });
 };
 
@@ -158,13 +158,13 @@ export const seperate = (strs: string[]): [string, string[]][] => {
     return [
       str,
       str
-        .replace(/([0-9]+)/, " $1")
-        .replace(/(-|_)/g, " ")
-        .replace(/([A-Z])/g, " $1")
+        .replace(/([0-9]+)/, ' $1')
+        .replace(/(-|_)/g, ' ')
+        .replace(/([A-Z])/g, ' $1')
         .trim()
         .toLocaleLowerCase()
-        .split(" ")
-        .filter((s) => s != "")
+        .split(' ')
+        .filter((s) => s != ''),
     ];
   });
 };
@@ -176,7 +176,7 @@ export const getPathTail = (
   pathTail?: string | number
 ) => {
   const id = data[name];
-  if (type == "path" && id != "" && id != null) {
+  if (type == 'path' && id != '' && id != null) {
     return id;
   }
   return pathTail ?? '';

@@ -5,7 +5,7 @@ import { Query, QueryOptionsProvider } from '../../module';
     domain: 'mydomain.com',
     mode: 'development',
     idName: 'id',
-    requestMiddleware: () =>
+    headers: () =>
       new Promise((res, rej) => {
         console.log('A request is about to be done by react-query');
         return fetch('authorizationToken').then((token) => {

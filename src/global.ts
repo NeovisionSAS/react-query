@@ -1,6 +1,6 @@
 const isObject = (obj: any) => obj && typeof obj === 'object';
 
-function deepMergeInner(target: any, source: any) {
+const deepMergeInner = (target: any, source: any, memoizer = []) => {
   Object.keys(source).forEach((key: string) => {
     const targetValue = target[key];
     const sourceValue = source[key];
@@ -15,9 +15,9 @@ function deepMergeInner(target: any, source: any) {
   });
 
   return target;
-}
+};
 
-Object.merge = <T>(...objects: T[]) => {
+Object.merge = <T, R extends T = T>(...objects: T[]): R => {
   if (objects.length < 2) {
     throw new Error(
       'Merge: this function expects at least 2 objects to be provided'
@@ -35,5 +35,5 @@ Object.merge = <T>(...objects: T[]) => {
     deepMergeInner(target, source);
   }
 
-  return target;
+  return target as R;
 };
