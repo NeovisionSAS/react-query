@@ -1,21 +1,29 @@
+import { backend } from '../config';
+import { File } from './orm/file';
+import { User } from './orm/user';
+import { Route } from './routes';
 import cors from 'cors';
 import express, { Request, Response } from 'express';
 import 'reflect-metadata';
-import { backend } from '../config';
-import { User } from './orm/user';
-import { Route } from './routes';
 import { DataSource } from 'typeorm';
+
+const fileUpload = require('express-fileupload');
 
 export const source = new DataSource({
   type: 'sqlite',
   database: 'test.sql',
   synchronize: true,
   logging: true,
-  entities: [User],
+  entities: [User, File],
 });
 
 source.initialize().then(() => {
   const app = express();
+  app.use(
+    fileUpload({
+      createParentPath: true,
+    })
+  );
   app.use(express.json());
   app.use(express.urlencoded());
   app.use(cors());

@@ -1,15 +1,15 @@
+import { RequiredBy } from '../../../types/global';
 import {
   request,
   RequestOptions,
   RequestOptionsWithDomain,
   RequestOptionsWithOptionalDomain,
 } from '../../../utils/api';
+import { requestLog } from '../../../utils/log';
 import { Query as QueryType } from '../../../utils/util';
 import ErrorBoundary from '../ErrorBoundary';
 import { useQueryOptions } from '../QueryOptionsProvider';
 import React, { useCallback, useEffect, useState } from 'react';
-import { RequiredBy } from '../../../types/global';
-import { requestLog } from '../../../utils/log';
 
 export type DataHandler<T> = (data: T) => any;
 
@@ -68,7 +68,7 @@ export const useQuery = <T = any,>({
 
   // Check if the query prop has changed
   useEffect(() => {
-    requestLog(mode, verbosity, 1, `[read][${query}]`, `${domain}/${query}`);
+    requestLog(mode, verbosity, 8, `[read][${query}]`, `${domain}/${query}`);
     controller?.abort();
     const ctrl = new AbortController();
     const timeout = window.setTimeout(() => {
@@ -112,16 +112,9 @@ export const useQuery = <T = any,>({
  */
 export const Query: <T = any>(
   p: QueryProps<T>
-) => React.ReactElement<QueryProps<T>> = ({
-  children,
-  useConfig = true,
-  ...qRest
-}) => {
+) => React.ReactElement<QueryProps<T>> = ({ children, ...qRest }) => {
   const { loader } = useQueryOptions();
-  const { loading, ...qData } = useQuery({
-    ...qRest,
-    useConfig,
-  });
+  const { loading, ...qData } = useQuery(qRest);
 
   // Always call to maintain the hooks
   const render = children({ loading, ...qData });

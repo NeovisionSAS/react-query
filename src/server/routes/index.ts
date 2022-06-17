@@ -1,3 +1,4 @@
+import { routes as fileRoutes } from './file';
 import { routes as userRoutes } from './user';
 import { Request, Response } from 'express';
 
@@ -20,3 +21,4 @@ export class Route {
 }
 
 Route.add(userRoutes);
+Route.add(fileRoutes);

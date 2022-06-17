@@ -1,10 +1,5 @@
-import { Response } from 'express';
 import { UserResolver } from '../resolver';
 import { Routable } from './';
-
-const send = (p: Promise<any>, response: Response) => {
-  p.then();
-};
 
 export const routes: Routable[] = [
   {
