@@ -1,7 +1,9 @@
 import { backend } from '../config';
+import { TypeORMLogger } from './logger';
 import { File } from './orm/file';
 import { User } from './orm/user';
 import { Route } from './routes';
+import bodyParser from 'body-parser';
 import cors from 'cors';
 import express, { Request, Response } from 'express';
 import 'reflect-metadata';
@@ -15,6 +17,7 @@ export const source = new DataSource({
   synchronize: true,
   logging: true,
   entities: [User, File],
+  logger: new TypeORMLogger(true),
 });
 
 source.initialize().then(() => {
@@ -24,9 +27,14 @@ source.initialize().then(() => {
       createParentPath: true,
     })
   );
-  app.use(express.json());
-  app.use(express.urlencoded());
+  app.use(bodyParser.json());
+  app.use(bodyParser.urlencoded());
   app.use(cors());
+
+  const error = (e: any, response: Response) => {
+    if (response.statusCode == 200) response.status(400);
+    console.error(e), response.send(e);
+  };
 
   Route.getAll().forEach((route) => {
     console.log(`Adding route ${route.method} ${route.path}`);
@@ -34,12 +42,14 @@ source.initialize().then(() => {
       route.path,
       (request: Request, response: Response, next: Function) => {
         console.log(`${route.method} ${route.path}`);
-        route
-          .action(request, response)
-          .then((d) => response.send(d))
-          .catch((e) => {
-            console.error(e), response.status(404), response.send(e);
-          });
+        try {
+          route
+            .action(request, response)
+            .then((d) => response.send(d))
+            .catch((e) => error(e, response));
+        } catch (e) {
+          error(e, response);
+        }
       }
     );
   });

@@ -7,7 +7,11 @@ export const routes: Routable[] = [
     path: '/user',
     action(request, response) {
       const { id } = request.query;
-      if (id) return UserResolver.read(parseInt(id as string));
+      if (id)
+        return UserResolver.read(parseInt(id as string), {
+          request,
+          response,
+        });
       return UserResolver.readAll();
     },
   },

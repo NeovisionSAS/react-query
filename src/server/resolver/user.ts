@@ -1,3 +1,4 @@
+import { Context } from '../context';
 import { User } from '../orm/user';
 
 export class UserResolver {
@@ -12,10 +13,13 @@ export class UserResolver {
     return user;
   }
 
-  static async read(id: number) {
+  static async read(id: number, { response }: Context) {
     const user = await User.findOne({ where: { id } });
 
-    if (!user) throw new Error(`No user found with id ${id}`);
+    if (!user) {
+      response.status(404);
+      throw new Error(`No user found with id ${id}`);
+    }
 
     return user;
   }

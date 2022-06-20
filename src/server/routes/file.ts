@@ -8,7 +8,8 @@ export const routes: Routable[] = [
     action(request, response) {
       return FileResolver.create(
         request.body.name,
-        (request.files as any).file
+        (request.files as any).file,
+        { request, response }
       );
     },
   },
