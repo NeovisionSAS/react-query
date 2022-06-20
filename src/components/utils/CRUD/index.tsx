@@ -198,7 +198,7 @@ const CRUD: <T = any>(p: CRUDProps<T>) => React.ReactElement<CRUDProps<T>> = ({
                     );
 
                     return request(domain, endpoint, {
-                      body: JSON.stringify(formData),
+                      data: JSON.stringify(formData),
                       method,
                       headers,
                       mode,
@@ -271,7 +271,7 @@ const CRUD: <T = any>(p: CRUDProps<T>) => React.ReactElement<CRUDProps<T>> = ({
                         );
                         promises.push(
                           request(domain, endpoint, {
-                            body: JSON.stringify(formData),
+                            data: JSON.stringify(formData),
                             method,
                             headers,
                             mode,
@@ -320,7 +320,7 @@ const CRUD: <T = any>(p: CRUDProps<T>) => React.ReactElement<CRUDProps<T>> = ({
                       method,
                       headers,
                       mode,
-                      body:
+                      data:
                         parameterType == 'path'
                           ? ''
                           : JSON.stringify(getFormData(e.target)),

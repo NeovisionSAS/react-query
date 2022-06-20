@@ -1,4 +1,5 @@
-import { QueryType } from './api';
+import { QueryType, RequestData } from './api';
+import { FormEvent } from 'react';
 /**
  * getFormData extracts the values of the input elements
  * received from the target object
@@ -42,7 +43,7 @@ interface FormExtractorData {
  *
  * @returns {FormExtractorData} FormExtracorData
  */
-export declare const formExtractor: (target: EventTarget, name: string) => FormExtractorData[];
+export declare const formExtractor: (target: EventTarget, name?: string) => FormExtractorData[];
 /**
  * Regroup strings based on their ids represented by the last seperation of the string
  *
@@ -80,6 +81,12 @@ export declare const seperate: (strs: string[]) => [
 ][];
 export declare const getPathTail: (data: FormExtractorData, type: QueryType, name: string, pathTail?: string | number) => string | number;
 export declare const useForceUpdate: () => (() => void);
+interface StructuredData {
+    body?: Exclude<RequestData, FormEvent>;
+    contentType?: 'multipart/form-data' | 'application/x-www-form-urlencoded';
+}
+export declare const restructureData: (data?: RequestData) => StructuredData;
+export declare const buildHeader: (headers: HeadersInit, contentType?: string) => HeadersInit;
 export interface Query<T = any> {
     data: T;
     loading: boolean;

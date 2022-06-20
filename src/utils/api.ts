@@ -1,5 +1,7 @@
-import { queryError, queryWarn, queryWarn as requestWarn } from './log';
 import { PartialBy, RequiredBy } from '../types/global';
+import { queryError, queryWarn, queryWarn as requestWarn } from './log';
+import { buildHeader, restructureData } from './util';
+import { FormEvent } from 'react';
 
 export type Method = 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'GET';
 export type QueryType = 'path' | 'queryString';
@@ -19,9 +21,11 @@ export interface BaseQueryOptions {
   delay?: number;
 }
 
+export type RequestData = string | FormEvent | FormData;
+
 export interface RequestOptions extends BaseQueryOptions {
   method?: Method;
-  body?: string;
+  data?: RequestData;
   signal?: AbortSignal;
 }
 
@@ -56,13 +60,16 @@ export const request = function <T = any>(
     headers,
     mode = 'production',
     onRejected,
+    data,
     ...rest
   } = options;
+  const { body, contentType } = restructureData(data);
 
   const req = (headers: HeadersInit) => {
     return fetch(`${domain}/${path}`, {
-      headers,
+      headers: buildHeader(headers, contentType),
       method,
+      body,
       ...rest,
     })
       .then((res) => {

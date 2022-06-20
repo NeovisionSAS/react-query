@@ -1,5 +1,5 @@
 import { File } from '../orm/file';
-import { Context } from 'src/server/context';
+import { Context } from '../context';
 
 export class FileResolver {
   static async create(name: string, file: string, { response }: Context) {

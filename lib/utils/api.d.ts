@@ -1,5 +1,5 @@
-/// <reference types="react" />
 import { PartialBy, RequiredBy } from '../types/global';
+import { FormEvent } from 'react';
 export declare type Method = 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'GET';
 export declare type QueryType = 'path' | 'queryString';
 interface LoaderOptions {
@@ -15,9 +15,10 @@ export interface BaseQueryOptions {
     onRejected?: (res: Response) => any;
     delay?: number;
 }
+export declare type RequestData = string | FormEvent | FormData;
 export interface RequestOptions extends BaseQueryOptions {
     method?: Method;
-    body?: string;
+    data?: RequestData;
     signal?: AbortSignal;
 }
 interface Domain {

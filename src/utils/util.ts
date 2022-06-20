@@ -1,5 +1,5 @@
-import { useReducer } from 'react';
-import { QueryType } from './api';
+import { QueryType, RequestData } from './api';
+import { FormEvent, useReducer } from 'react';
 
 type TypedTarget = EventTarget & {
   [key: string]: {
@@ -88,13 +88,13 @@ interface FormExtractorData {
  */
 export const formExtractor = (
   target: EventTarget,
-  name: string
+  name?: string
 ): FormExtractorData[] => {
   // Get all the data from the form
   const formData = getFormData(target);
 
   // Simply check if there is no id for each formData
-  if (formData[name] != null) return [formData];
+  if (name == undefined || formData[name] != null) return [formData];
   // Each formData is specific to an id
   const values = Object.entries(formData);
   return values.reduce<FormExtractorData[]>((prev, curr) => {
@@ -184,6 +184,34 @@ export const getPathTail = (
 
 export const useForceUpdate = (): (() => void) => {
   return useReducer(() => ({}), {})[1] as () => void;
+};
+
+interface StructuredData {
+  body?: Exclude<RequestData, FormEvent>;
+  contentType?: 'multipart/form-data' | 'application/x-www-form-urlencoded';
+}
+
+export const restructureData = (data?: RequestData): StructuredData => {
+  if (data == undefined || typeof data == 'string') return { body: data };
+  else if (data.constructor.name == 'FormData')
+    return { body: data as FormData, contentType: 'multipart/form-data' };
+  return {
+    body: JSON.stringify(getFormData((data as FormEvent).target)),
+    contentType: 'application/x-www-form-urlencoded',
+  };
+};
+
+export const buildHeader = (
+  headers: HeadersInit,
+  contentType?: string
+): HeadersInit => {
+  return contentType
+    ? Object.merge(headers, {
+        'Content-Type': contentType,
+      })
+    : contentType == 'multipart/form-data'
+    ? Object.exclude(headers, 'Content-Type')
+    : headers;
 };
 
 export interface Query<T = any> {
