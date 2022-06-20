@@ -1,14 +1,23 @@
 const isObject = (obj: any) => obj && typeof obj === 'object';
 
-const deepMergeInner = (target: any, source: any, memoizer = []) => {
+const deepMergeInner = (target: any, source: any, memoizer: any[] = []) => {
   Object.keys(source).forEach((key: string) => {
     const targetValue = target[key];
     const sourceValue = source[key];
 
     if (Array.isArray(targetValue) && Array.isArray(sourceValue)) {
       target[key] = targetValue.concat(sourceValue);
-    } else if (isObject(targetValue) && isObject(sourceValue)) {
-      target[key] = deepMergeInner(Object.assign({}, targetValue), sourceValue);
+    } else if (
+      isObject(targetValue) &&
+      isObject(sourceValue) &&
+      !memoizer.includes(targetValue)
+    ) {
+      memoizer.push(targetValue);
+      target[key] = deepMergeInner(
+        Object.assign({}, targetValue),
+        sourceValue,
+        memoizer
+      );
     } else {
       target[key] = sourceValue;
     }
@@ -28,7 +37,7 @@ Object.merge = <T, R extends T = T>(...objects: T[]): R => {
     throw new Error('Merge: all values should be of type "object"');
   }
 
-  const target = objects.shift();
+  const target = {};
   let source: any;
 
   while ((source = objects.shift())) {
@@ -36,4 +45,9 @@ Object.merge = <T, R extends T = T>(...objects: T[]): R => {
   }
 
   return target as R;
+};
+
+Object.exclude = <T = any>(object: T, key: string) => {
+  delete (object as any)[key];
+  return object;
 };
