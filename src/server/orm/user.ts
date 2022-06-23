@@ -1,5 +1,5 @@
-import { PrimaryEntity } from "./entity";
 import { Column, Entity } from "typeorm";
+import { PrimaryEntity } from "./entity";
 
     
 @Entity()
@@ -12,4 +12,7 @@ export class User extends PrimaryEntity {
 
     @Column({nullable: true})
     nationality?: string;
+
+    @Column({nullable: true})
+    book?: string;
 }

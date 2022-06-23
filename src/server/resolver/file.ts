@@ -1,20 +1,33 @@
-import { File } from '../orm/file';
 import { Context } from '../context';
+import { File } from '../orm/file';
+import { UploadedFile } from 'express-fileupload';
 
 export class FileResolver {
-  static async create(name: string, file: string, { response }: Context) {
+  static async create(file: UploadedFile, { response }: Context) {
+    const { name } = file;
     const exists = await File.findOne({ where: { name } });
     if (exists) {
       response.status(409);
-      throw new Error(`Entry with name ${name} already exists`);
+      throw new Error(`Entry with name ${file.name} already exists`);
     }
 
-    const f = File.create({ name, file });
+    const f = File.create({ name, file: JSON.stringify(file) });
     await File.save(f).catch((e) => console.error(e));
-    return f;
+
+    return { received: file.data.length };
   }
 
-  static async readAll() {
-    return 'FILE';
+  static async readAllNames() {
+    const files = await File.find();
+
+    return files.map((f) => {
+      const parsed: UploadedFile = JSON.parse(f.file);
+      const { name, size } = parsed;
+
+      return {
+        name,
+        size,
+      };
+    });
   }
 }

@@ -22,11 +22,10 @@ export const source = new DataSource({
 
 source.initialize().then(() => {
   const app = express();
-  app.use(
-    fileUpload({
-      createParentPath: true,
-    })
+  app.listen(backend.port, () =>
+    console.log(`Server started on ${backend.url}`)
   );
+  app.use(fileUpload({ useTempFiles: true }));
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded());
   app.use(cors());
@@ -36,8 +35,9 @@ source.initialize().then(() => {
     console.error(e), response.send(e);
   };
 
+  Route.log();
+
   Route.getAll().forEach((route) => {
-    console.log(`Adding route ${route.method} ${route.path}`);
     (app as any)[route.method.toLocaleLowerCase()](
       route.path,
       (request: Request, response: Response, next: Function) => {
@@ -53,8 +53,4 @@ source.initialize().then(() => {
       }
     );
   });
-
-  app.listen(backend.port, () =>
-    console.log(`Server started on ${backend.url}`)
-  );
 });

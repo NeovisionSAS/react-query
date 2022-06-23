@@ -45,4 +45,11 @@ export const routes: Routable[] = [
       );
     },
   },
+  {
+    method: 'GET',
+    path: '/user/book',
+    action(request, response) {
+      return UserResolver.readUserBook(parseInt(request.body.id));
+    },
+  },
 ];
