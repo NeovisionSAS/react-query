@@ -1,3 +1,4 @@
+import { File } from '../../../../../interfaces/file';
 import { User as UserInterface } from '../../../../../interfaces/user';
 import { Query } from '../../../../utils';
 import { FunctionComponent, useState } from 'react';
@@ -101,5 +102,58 @@ export const AllUsersDelay: FunctionComponent = () => {
         }}
       </Query>
     </>
+  );
+};
+
+export const UserBook: FunctionComponent = () => {
+  const [id, setId] = useState(1);
+  return (
+    <>
+      <input
+        type={'number'}
+        value={id}
+        onChange={(v) => setId(parseInt(v.target.value))}
+      />
+      <Query<string> query={`user/book?id=${id}`}>
+        {({ data, loading, error }) => {
+          if (loading) {
+            if (typeof loading != 'boolean')
+              return <div>{loading.total.percentage}</div>;
+            return <div>{}</div>;
+          }
+          if (error) return <div>{error}</div>;
+
+          return <div>{data}</div>;
+        }}
+      </Query>
+    </>
+  );
+};
+
+export const Files: FunctionComponent = () => {
+  return (
+    <Query<File[]> query={'file'}>
+      {({ data: files, loading, error }) => {
+        if (loading) return <div>loading...</div>;
+        if (error) return <div>{error}</div>;
+
+        return (
+          <div>
+            {files.length > 0 ? (
+              files.map((file, i) => {
+                return (
+                  <ul key={`allUsers-${i}`}>
+                    <li>File name : {file.name}</li>
+                    <li>File size : {file.size} bytes</li>
+                  </ul>
+                );
+              })
+            ) : (
+              <>No files</>
+            )}
+          </div>
+        );
+      }}
+    </Query>
   );
 };

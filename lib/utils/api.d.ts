@@ -1,5 +1,6 @@
 import { PartialBy, RequiredBy } from '../types/global';
 import { FormEvent } from 'react';
+import { XHRProgress } from './xhr/progress';
 export declare type Method = 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'GET';
 export declare type QueryType = 'path' | 'queryString';
 interface LoaderOptions {
@@ -20,6 +21,7 @@ export interface RequestOptions extends BaseQueryOptions {
     method?: Method;
     data?: RequestData;
     signal?: AbortSignal;
+    progress?: XHRProgress;
 }
 interface Domain {
     domain: string;

@@ -1,5 +1,6 @@
 import { RequestOptionsWithOptionalDomain } from '../../../utils/api';
 import React from 'react';
+import { TotalProgress } from '../../../utils/xhr/progress';
 export declare type DataHandler<T> = (data: T) => any;
 interface QueryParams<T = any> {
     query: string;
@@ -10,7 +11,7 @@ interface QueryParams<T = any> {
 }
 interface QueryReturn<T> {
     data: T;
-    loading: boolean;
+    loading: TotalProgress | boolean;
     error?: string;
     manualUpdate: DataHandler<T>;
     forceRefresh: () => any;

@@ -5,7 +5,14 @@ import {
   RequestOptionsWithDomain,
   RequestOptionsWithOptionalDomain,
 } from '../../../utils/api';
-import { createContext, useContext } from 'react';
+import {
+  createContext,
+  DependencyList,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 
 const queryOptionsContext = createContext<QueryOptions>({
   domain: '',
@@ -25,22 +32,44 @@ export const useQueryOptions = (): RealQueryOptions => {
 export const useRequest = (
   rRest: RequestOptionsWithOptionalDomain = {
     method: 'GET',
-  }
+  },
+  dependencies?: DependencyList
 ) => {
+  const [ignore, setIgnore] = useState(true);
+  const [controller, setController] = useState<AbortController>(
+    new AbortController()
+  );
   const { loader, ...qRest } = useQueryOptions();
 
-  const merged = Object.merge<any, RequestOptionsWithDomain>(rRest, qRest);
+  useEffect(() => {
+    if (ignore)
+      return () => {
+        setIgnore(false);
+      };
 
-  return <T = any,>(
-    path: string,
-    options: RequestOptionsWithOptionalDomain = { method: 'GET' }
-  ) => {
-    const { domain, ...returnMerged } = Object.merge<
-      any,
-      RequestOptionsWithDomain
-    >(merged, options);
-    return request<T>(domain, path, returnMerged);
-  };
+    return () => {
+      controller.abort('The user aborted a request.');
+      setController(new AbortController());
+    };
+  }, [controller, ignore]);
+
+  return useMemo(() => {
+    const merged = Object.merge<any, RequestOptionsWithDomain>(rRest, qRest);
+
+    return <T = any,>(
+      path: string,
+      options: RequestOptionsWithOptionalDomain = { method: 'GET' }
+    ) => {
+      const { domain, ...returnMerged } = Object.merge<
+        any,
+        RequestOptionsWithDomain
+      >(merged, options);
+      return request<T>(domain, path, {
+        ...returnMerged,
+        signal: controller?.signal,
+      });
+    };
+  }, [...(dependencies ?? []), controller]);
 };
 
 export const QueryOptionsProvider = queryOptionsContext.Provider;

@@ -10,6 +10,7 @@ import { Query as QueryType } from '../../../utils/util';
 import ErrorBoundary from '../ErrorBoundary';
 import { useQueryOptions } from '../QueryOptionsProvider';
 import React, { useCallback, useEffect, useState } from 'react';
+import { TotalProgress, totalProgressInitialiser } from '../../../utils/xhr/progress';
 
 export type DataHandler<T> = (data: T) => any;
 
@@ -23,7 +24,7 @@ interface QueryParams<T = any> {
 
 interface QueryReturn<T> {
   data: T;
-  loading: boolean;
+  loading: TotalProgress | boolean;
   error?: string;
   manualUpdate: DataHandler<T>;
   forceRefresh: () => any;
@@ -41,7 +42,7 @@ export const useQuery = <T = any,>({
   // The default data/load/error triple
   const [dataLoadErr, setDataLoadErr] = useState<QueryType>({
     data: undefined,
-    loading: true,
+    loading: totalProgressInitialiser(),
     error: undefined,
   });
   const options = Object.merge<

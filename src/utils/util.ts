@@ -1,5 +1,6 @@
 import { QueryType, RequestData } from './api';
 import { FormEvent, useReducer } from 'react';
+import { TotalProgress } from './xhr/progress';
 
 type TypedTarget = EventTarget & {
   [key: string]: {
@@ -216,6 +217,6 @@ export const buildHeader = (
 
 export interface Query<T = any> {
   data: T;
-  loading: boolean;
+  loading: TotalProgress | boolean;
   error?: string;
 }

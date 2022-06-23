@@ -1,5 +1,6 @@
 import { QueryType, RequestData } from './api';
 import { FormEvent } from 'react';
+import { TotalProgress } from './xhr/progress';
 /**
  * getFormData extracts the values of the input elements
  * received from the target object
@@ -89,7 +90,7 @@ export declare const restructureData: (data?: RequestData) => StructuredData;
 export declare const buildHeader: (headers: HeadersInit, contentType?: string) => HeadersInit;
 export interface Query<T = any> {
     data: T;
-    loading: boolean;
+    loading: TotalProgress | boolean;
     error?: string;
 }
 export {};

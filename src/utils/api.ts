@@ -1,7 +1,9 @@
 import { PartialBy, RequiredBy } from '../types/global';
-import { queryError, queryWarn, queryWarn as requestWarn } from './log';
+import { queryWarn } from './log';
 import { buildHeader, restructureData } from './util';
+import { XHRFetch } from './xhr';
 import { FormEvent } from 'react';
+import { XHRProgress } from './xhr/progress';
 
 export type Method = 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'GET';
 export type QueryType = 'path' | 'queryString';
@@ -27,6 +29,7 @@ export interface RequestOptions extends BaseQueryOptions {
   method?: Method;
   data?: RequestData;
   signal?: AbortSignal;
+  progress?: XHRProgress;
 }
 
 interface Domain {
@@ -66,32 +69,15 @@ export const request = function <T = any>(
   const { body, contentType } = restructureData(data);
 
   const req = (headers: HeadersInit) => {
-    return fetch(`${domain}/${path}`, {
+    return XHRFetch(`${domain}/${path}`, {
       headers: buildHeader(headers, contentType),
       method,
       body,
       ...rest,
-    })
-      .then((res) => {
-        if (!res.ok) {
-          queryError(`${res.url} ${res.status} ${res.statusText}`);
-          onRejected?.(res);
-          return Promise.reject(`${res.status} ${res.statusText}`);
-        }
-        return res.text().then((t) => {
-          try {
-            if (res.headers.get('Content-Type')?.includes('application/json'))
-              return JSON.parse(t);
-          } catch (e) {
-            requestWarn(mode, 0, 0, `Could not parse response to json`, res);
-          }
-          return t;
-        });
-      })
-      .catch((err) => {
-        if (err.name == 'AbortError') queryWarn(mode, 0, 0, err.message);
-        else throw new Error(err);
-      });
+    }).catch((err) => {
+      if (err.name == 'AbortError') queryWarn(mode, 0, 0, err.message);
+      else throw new Error(err);
+    });
   };
 
   return headers ? headers().then(req) : req({});
