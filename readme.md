@@ -10,12 +10,6 @@
 npm i @neovision/react-query
 ```
 
-### HTTPS (not recommended)
-
-```bash
-npm i git+https://github.com/NeovisionSAS/react-query.git
-```
-
 ## Add issues
 
 You can add issues to :

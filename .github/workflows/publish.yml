@@ -20,10 +20,13 @@ jobs:
         id: version
         uses: martinbeentjes/npm-get-version-action@main
       - name: tag package
+        id: tag
         uses: rickstaa/action-create-tag@v1
         with:
           tag: v${{ steps.version.outputs.current-version }}
           message: tagging package ${{ steps.version.outputs.current-version }}
+      - name: install node_modules
+        run: npm i
       - name: generate library
         run: npm run lib
       - name: publish
