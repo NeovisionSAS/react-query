@@ -22,7 +22,7 @@ npm i git+https://username:password@bitbucket.org/neovision/react-query.git
 ## Add issues
 
 You can add issues to :
-https://neovision-sas.atlassian.net/jira/software/projects/LRQ/boards/11
+https://github.com/NeovisionSAS/react-query/issues
 
 ## Examples
 
