@@ -4,19 +4,16 @@
 
 ## Installation
 
-### SSH
+### NPM
 
 ```bash
-npm i git+ssh://git@bitbucket.org:neovision/react-query.git
+npm i @neovision/react-query
 ```
 
 ### HTTPS (not recommended)
 
 ```bash
-# username is your bitbucket username
-# password is your app password that you can generate on
-# https://bitbucket.org/account/settings/app-passwords/
-npm i git+https://username:password@bitbucket.org/neovision/react-query.git
+npm i git+https://github.com/NeovisionSAS/react-query.git
 ```
 
 ## Add issues
