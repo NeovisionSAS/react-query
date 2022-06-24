@@ -7,9 +7,9 @@
     "name": "Alan Blanchet"
   },
   "scripts": {
-    "start": "ttab -t 'node server' npm run startBack && webpack serve --config ./env/webpack.dev.js --open",
-    "startBack": "tsconfig-replace-paths --project tsconfig.json && webpack --config ./env/webpack.server.js",
-    "lib": "tsconfig-replace-paths --project tsconfig.json && webpack --config ./env/webpack.lib.js",
+    "start": "ttab -t 'node server' npm run startBack && webpack serve --config ./webpack/webpack.dev.js --open",
+    "startBack": "tsconfig-replace-paths --project typescript/tsconfig.json && webpack --config ./webpack/webpack.server.js",
+    "lib": "tsconfig-replace-paths --project typescript/tsconfig.json && webpack --config ./webpack/webpack.lib.js",
     "patch": "npm version --no-git-tag-version patch",
     "minor": "npm version --no-git-tag-version minor",
     "major": "npm version --no-git-tag-version major",

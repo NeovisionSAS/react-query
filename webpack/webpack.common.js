@@ -27,7 +27,7 @@ module.exports = {
     plugins: [
       new TsconfigPathsPlugin({
         extensions,
-        configFile: path.resolve(__dirname, '../tsconfig.json'),
+        configFile: path.resolve(__dirname, '../typescript/tsconfig.json'),
       }),
     ],
   },

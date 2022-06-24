@@ -19,7 +19,7 @@
     "declaration": true,
     "emitDecoratorMetadata": true,
     "declarationDir": "lib",
-    "baseUrl": "src",
+    "baseUrl": "../src",
     "outDir": "./",
     "paths": {
       "components/*": ["./components/*"],
@@ -31,6 +31,6 @@
       "assets/*": ["./assets/*"]
     }
   },
-  "include": ["src"],
+  "include": ["../src"],
   "exclude": []
 }

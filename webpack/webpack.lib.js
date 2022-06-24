@@ -30,7 +30,10 @@ module.exports = merge(
             {
               loader: 'ts-loader',
               options: {
-                configFile: path.resolve(__dirname, '../tsconfig.lib.json'),
+                configFile: path.resolve(
+                  __dirname,
+                  '../typescript/tsconfig.lib.json'
+                ),
               },
             },
           ],
