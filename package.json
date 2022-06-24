@@ -1,7 +1,7 @@
 {
   "name": "@neovision/react-query",
   "version": "1.10.0",
-  "private": true,
+  "private": false,
   "author": {
     "email": "alan.blanchet@neovision.fr",
     "name": "Alan Blanchet"
@@ -74,5 +74,8 @@
     "webpack-dev-server": "^4.8.1",
     "webpack-merge": "^5.8.0",
     "webpack-node-externals": "^3.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
