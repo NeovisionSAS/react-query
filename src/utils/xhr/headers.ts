@@ -19,6 +19,6 @@ export const applyHeaders = (headers: Headers, data: any) => {
 export const setRequestHeaders = (r: XMLHttpRequest, headers: HeadersInit) => {
   Object.entries(headers).forEach((v) => {
     const [key, val] = v;
-    r.setRequestHeader(key, val);
+    if (val != null) r.setRequestHeader(key, val);
   });
 };

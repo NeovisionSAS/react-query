@@ -198,7 +198,7 @@ const CRUD: <T = any>(p: CRUDProps<T>) => React.ReactElement<CRUDProps<T>> = ({
                     );
 
                     return request(domain, endpoint, {
-                      data: JSON.stringify(formData),
+                      data: formData,
                       method,
                       headers,
                       mode,
@@ -271,7 +271,7 @@ const CRUD: <T = any>(p: CRUDProps<T>) => React.ReactElement<CRUDProps<T>> = ({
                         );
                         promises.push(
                           request(domain, endpoint, {
-                            data: JSON.stringify(formData),
+                            data: formData,
                             method,
                             headers,
                             mode,
@@ -321,9 +321,7 @@ const CRUD: <T = any>(p: CRUDProps<T>) => React.ReactElement<CRUDProps<T>> = ({
                       headers,
                       mode,
                       data:
-                        parameterType == 'path'
-                          ? ''
-                          : JSON.stringify(getFormData(e.target)),
+                        parameterType == 'path' ? '' : getFormData(e.target),
                     }).then(() => {
                       if (type == 'array') {
                         const index = (data as unknown as any[]).findIndex(

@@ -2,8 +2,8 @@ import { PartialBy, RequiredBy } from '../types/global';
 import { queryWarn } from './log';
 import { buildHeader, restructureData } from './util';
 import { XHRFetch } from './xhr';
-import { FormEvent } from 'react';
 import { XHRProgress } from './xhr/progress';
+import { FormEvent } from 'react';
 
 export type Method = 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'GET';
 export type QueryType = 'path' | 'queryString';
@@ -23,7 +23,7 @@ export interface BaseQueryOptions {
   delay?: number;
 }
 
-export type RequestData = string | FormEvent | FormData;
+export type RequestData = object | string | FormEvent | FormData;
 
 export interface RequestOptions extends BaseQueryOptions {
   method?: Method;

@@ -1,6 +1,6 @@
 import { QueryType, RequestData } from './api';
-import { FormEvent, useReducer } from 'react';
 import { TotalProgress } from './xhr/progress';
+import { BaseSyntheticEvent, FormEvent, useReducer } from 'react';
 
 type TypedTarget = EventTarget & {
   [key: string]: {
@@ -10,6 +10,7 @@ type TypedTarget = EventTarget & {
     checked: boolean;
     type: string;
     required: boolean;
+    files?: FileList;
   };
 };
 
@@ -34,7 +35,7 @@ export const getFormData = <T = { [key: string]: string | number }>(
         return v.name && (tag == 'input' || tag == 'select');
       })
       .reduce((acc, cur) => {
-        const { name, value, checked, type, required } = cur;
+        const { name, value, checked, type, required, files } = cur;
 
         const isCheckbox = type == 'checkbox';
         const isValEmpty = value == '' || value == null;
@@ -42,7 +43,8 @@ export const getFormData = <T = { [key: string]: string | number }>(
         if (required && isValEmpty)
           throw new Error(`Can't use an empty value for ${name}`);
 
-        let finalValue = type == 'number' ? new Number(value).valueOf() : value;
+        let finalValue =
+          type == 'number' ? new Number(value).valueOf() : files ?? value;
 
         return {
           ...acc,
@@ -188,16 +190,45 @@ export const useForceUpdate = (): (() => void) => {
 };
 
 interface StructuredData {
-  body?: Exclude<RequestData, FormEvent>;
-  contentType?: 'multipart/form-data' | 'application/x-www-form-urlencoded';
+  body?: Exclude<RequestData, FormEvent | object> | FormData;
+  contentType?:
+    | 'multipart/form-data'
+    | 'application/x-www-form-urlencoded'
+    | 'application/json';
 }
 
 export const restructureData = (data?: RequestData): StructuredData => {
   if (data == undefined || typeof data == 'string') return { body: data };
   else if (data.constructor.name == 'FormData')
-    return { body: data as FormData, contentType: 'multipart/form-data' };
+    return { body: data as FormData };
+  else if (data.constructor.name == 'SyntheticBaseEvent')
+    // We received the event on its own. We need to determine the type of the request to be sent
+    return parseEvent(data as BaseSyntheticEvent);
   return {
-    body: JSON.stringify(getFormData((data as FormEvent).target)),
+    body: JSON.stringify(data),
+    contentType: 'application/json',
+  };
+};
+
+const parseEvent = (e: BaseSyntheticEvent): StructuredData => {
+  const data = getFormData((e as FormEvent).target);
+  if (
+    Object.values(data).some((value) => value.constructor.name == 'FileList')
+  ) {
+    const formData = new FormData();
+    Object.entries(data).forEach(([key, value]) => {
+      if (value.constructor.name == 'FileList')
+        Array.from(value as unknown as File[]).forEach((v) =>
+          formData.append(key, v)
+        );
+      else formData.append(key, value as any);
+    });
+    return {
+      body: formData,
+    };
+  }
+  return {
+    body: JSON.stringify(data),
     contentType: 'application/x-www-form-urlencoded',
   };
 };
