@@ -31,8 +31,8 @@ https://github.com/NeovisionSAS/react-query/issues
   }}
 >
   <CRUD endPoints={'entries'}>
-    {(crud) => {
-      const { data, loading } = crud.read;
+    {({ read }) => {
+      const { data, loading } = read;
       if (loading) return <div>Loading..</div>;
 
       return <div>{JSON.stringify(data)}</div>;
@@ -51,7 +51,7 @@ https://github.com/NeovisionSAS/react-query/issues
 | headers       | `() => Promise<HeadersInit \| undefined>` | Before doing any request, this function is called. It is used if you need some sort of request to get a `token` before sending the real effective request |
 | idName        | `string`                                  | The name of the general parameter representing the default `primary key` name to use in request                                                           |
 
-Go to the [QueryOptionsProvider examples directory](https://bitbucket.org/neovision/react-query/src/master/src/examples/QueryOptionsProvider) to see examples
+Go to the [QueryOptionsProvider examples directory](https://github.com/NeovisionSAS/react-query/tree/main/src/examples/QueryOptionsProvider) to see examples
 
 #### Query
 
@@ -83,8 +83,8 @@ With query you can easily access the data you want. The Query object does a GET 
 The CRUD component is one of the best since it can handle all API operations and do it all in the background. It will give you, just like the `Query` component, an interface the retrieve the data and also some helper function to place in the `onSubmit` event of forms to `create`, `update` or `delete` the object
 
 ```tsx
-<CRUD endPoints={`users/`}>
-  {(data: CRUDObject<string>) => {
+<CRUD<string> endPoints={`users/`}>
+  {({ data }) => {
     const { read, handleUpdate } = data;
     if (read.loading) return <div>Loading...</div>;
 
@@ -107,7 +107,7 @@ The CRUD component is one of the best since it can handle all API operations and
 </CRUD>
 ```
 
-Go to the [QueryOptionsProvider examples directory](https://bitbucket.org/neovision/react-query/src/master/src/examples/CRUD) to see examples
+Go to the [QueryOptionsProvider examples directory](https://github.com/NeovisionSAS/react-query/tree/main/src/examples/CRUD) to see examples
 
 ### Functions
 
