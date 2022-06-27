@@ -16,14 +16,12 @@ import {
 function App(): JSX.Element {
   const headerDelay = 0;
 
-  const p = () =>
-    new Promise<HeadersInit>((resolve) => {
-      setTimeout(() => {
-        resolve({
-          'Content-Type': 'application/json',
-        });
-      }, headerDelay);
-    });
+  // const p = () =>
+  //   new Promise<HeadersInit>((resolve) => {
+  //     setTimeout(() => {
+  //       resolve();
+  //     }, headerDelay);
+  //   });
 
   return (
     <ErrorBoundary>
@@ -32,7 +30,6 @@ function App(): JSX.Element {
           domain: backend.url,
           parameterType: 'queryString',
           mode: 'development',
-          headers: p,
           verbosity: 10,
         }}
       >
