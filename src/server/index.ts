@@ -22,12 +22,9 @@ export const source = new DataSource({
 
 source.initialize().then(() => {
   const app = express();
-  app.listen(backend.port, () =>
-    console.log(`Server started on ${backend.url}`)
-  );
-  app.use(fileUpload({ useTempFiles: true }));
   app.use(bodyParser.json());
-  app.use(bodyParser.urlencoded());
+  app.use(bodyParser.urlencoded({ extended: true }));
+  app.use(fileUpload({ useTempFiles: true }));
   app.use(cors());
 
   const error = (e: any, response: Response) => {
@@ -53,4 +50,8 @@ source.initialize().then(() => {
       }
     );
   });
+
+  app.listen(backend.port, () =>
+    console.log(`Server started on ${backend.url}`)
+  );
 });
