@@ -52,4 +52,13 @@ export const routes: Routable[] = [
       return UserResolver.readUserBook(parseInt(request.body.id));
     },
   },
+  {
+    method: 'GET',
+    path: '/user/auth',
+    action(request, response) {
+      response.status(401);
+      throw new Error('User not authorized on this url');
+      return Promise.resolve({ ok: true });
+    },
+  },
 ];

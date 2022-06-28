@@ -1,5 +1,5 @@
 import { PartialBy, RequiredBy } from '../types/global';
-import { queryWarn } from './log';
+import { requestError, requestWarn } from './log';
 import { buildHeader, restructureData } from './util';
 import { XHRFetch } from './xhr';
 import { XHRProgress } from './xhr/progress';
@@ -19,8 +19,13 @@ export interface BaseQueryOptions {
   mode?: 'development' | 'production';
   verbosity?: number;
   idName?: string;
-  onRejected?: (res: Response) => any;
+  onRejected?: (rej: Reject) => any;
   delay?: number;
+}
+
+interface Reject {
+  status: number;
+  statusText: string;
 }
 
 export type RequestData = object | string | FormEvent | FormData;
@@ -69,14 +74,19 @@ export const request = function <T = any>(
   const { body, contentType } = restructureData(data);
 
   const req = (headers: HeadersInit) => {
-    return XHRFetch(`${domain}/${path}`, {
+    const endpoint = `${domain}/${path}`;
+    return XHRFetch(endpoint, {
       headers: buildHeader(headers, contentType),
       method,
       body,
       ...rest,
     }).catch((err) => {
-      if (err.name == 'AbortError') queryWarn(mode, 0, 0, err.message);
-      else throw new Error(err);
+      if (err.name == 'AbortError') requestWarn(mode, 0, 0, err.message);
+      else {
+        requestError(method, endpoint, `${err.status} ${err.statusText}`);
+        onRejected?.(err);
+        throw new Error(err);
+      }
     });
   };
 

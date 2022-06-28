@@ -1,6 +1,10 @@
 import { File } from '../../../../../interfaces/file';
 import { User as UserInterface } from '../../../../../interfaces/user';
 import { Query } from '../../../../utils';
+import {
+  QueryOptionsProvider,
+  useQueryOptions,
+} from 'components/utils/QueryOptionsProvider';
 import { FunctionComponent, useState } from 'react';
 
 export const AllUsers: FunctionComponent = () => {
@@ -155,5 +159,26 @@ export const Files: FunctionComponent = () => {
         );
       }}
     </Query>
+  );
+};
+
+export const Auth: FunctionComponent = () => {
+  const [{ domain }] = useQueryOptions();
+
+  return (
+    <QueryOptionsProvider
+      value={{
+        domain,
+        onRejected: (e) => {
+          console.log(`My request was rejected with error ${e.status} :(`);
+        },
+      }}
+    >
+      <Query query={'user/auth'}>
+        {({}) => {
+          return <div></div>;
+        }}
+      </Query>
+    </QueryOptionsProvider>
   );
 };

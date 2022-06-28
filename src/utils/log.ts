@@ -20,10 +20,10 @@ export const requestLog = (
   ...s: any
 ) => {
   if (mode == 'development' && limitVerbosity <= paramVerbosity)
-    console.warn('%creact-query', ConsoleStyle.warning, ...s);
+    console.log('%creact-query', ConsoleStyle.info, ...s);
 };
 
-export const queryWarn = (
+export const requestWarn = (
   mode: Mode,
   paramVerbosity: number,
   limitVerbosity: number,
@@ -33,6 +33,6 @@ export const queryWarn = (
     console.warn(`%creact-query`, ConsoleStyle.warning, ...s);
 };
 
-export const queryError = (...s: any) => {
+export const requestError = (...s: any) => {
   console.error(`%creact-query`, ConsoleStyle.error, ...s);
 };

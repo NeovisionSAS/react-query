@@ -1,6 +1,7 @@
 import {
   AllUsers as AllUsersGet,
   AllUsersDelay as AllUsersDelayGet,
+  Auth as AuthGet,
   Files as FilesGet,
   User as UserGet,
   UserBook as UserBookGet,
@@ -18,6 +19,7 @@ export const QueryEx: FunctionComponent = () => {
         <Link to={'getAllUsersDelay'}>Get All Users Delay</Link>
         <Link to={'getUserBook'}>Get User Book</Link>
         <Link to={'getFiles'}>Get User Files</Link>
+        <Link to={'authGet'}>Get Auth</Link>
       </nav>
       <Routes>
         <Route path="getAllUsers" element={<AllUsersGet />} />
@@ -25,6 +27,7 @@ export const QueryEx: FunctionComponent = () => {
         <Route path="getAllUsersDelay" element={<AllUsersDelayGet />} />
         <Route path="getUserBook" element={<UserBookGet />} />
         <Route path="getFiles" element={<FilesGet />} />
+        <Route path="authGet" element={<AuthGet />} />
         <Route path="*" element={<Navigate to={'getAllUsers'} />} />
       </Routes>
     </>
