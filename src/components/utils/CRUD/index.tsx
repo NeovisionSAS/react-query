@@ -124,7 +124,10 @@ export interface CRUDObject<T = any> {
   handleCreate: <T>(e: FormEvent, params?: CreateParams) => Promise<any>;
   read: QueryType<T>;
   handleUpdate: <T>(e: FormEvent, params?: UpdateParams) => Promise<any>;
-  handleDelete: <T>(e: FormEvent, params?: DeleteParams) => Promise<any>;
+  handleDelete: <T>(
+    e: FormEvent | undefined,
+    params?: DeleteParams
+  ) => Promise<any>;
 }
 
 /**
