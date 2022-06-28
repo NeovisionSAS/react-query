@@ -285,7 +285,7 @@ const CRUD: <T = any>(p: CRUDProps<T>) => React.ReactElement<CRUDProps<T>> = ({
                     });
                   },
                   handleDelete: <T,>(
-                    e: FormEvent,
+                    e: FormEvent | undefined,
                     params: DeleteParams = { method: 'DELETE', name: idName }
                   ) => {
                     e?.preventDefault();
@@ -321,7 +321,11 @@ const CRUD: <T = any>(p: CRUDProps<T>) => React.ReactElement<CRUDProps<T>> = ({
                       headers,
                       mode,
                       data:
-                        parameterType == 'path' ? '' : getFormData(e.target),
+                        parameterType == 'path'
+                          ? ''
+                          : e
+                          ? getFormData(e.target)
+                          : '',
                     }).then(() => {
                       if (type == 'array') {
                         const index = (data as unknown as any[]).findIndex(
