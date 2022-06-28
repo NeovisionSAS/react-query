@@ -33,14 +33,14 @@ export const XHRFetch = (
     const r = new XMLHttpRequest();
     r.open(method, url.toString(), true);
     setRequestHeaders(r, headers ?? {});
-    r.addEventListener('load', (e) => {
+    r.addEventListener('load', () => {
       const headers = parseHeaders(r.getAllResponseHeaders());
       const parsedData = applyHeaders(headers, r.response);
       resolve(parsedData);
     });
     r.addEventListener('readystatechange', () => {
       const { status, statusText } = r;
-      if (status >= 400 && status < 600) reject({ status, statusText });
+      if (status >= 400 && status < 600) reject({ status, statusText, url });
     });
     signal?.addEventListener('abort', () => {
       r.abort();
@@ -54,9 +54,6 @@ export const XHRFetch = (
         handleDownloadProgress(e, xhrProgress, progress, progressCenterRatio);
       });
     }
-    r.addEventListener('error', () => {
-      console.log('ERRR');
-    });
     r.send(body as XMLHttpRequestBodyInit | Document);
   });
 };

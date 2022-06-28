@@ -4,7 +4,7 @@ import { Query } from '../../../../utils';
 import {
   QueryOptionsProvider,
   useQueryOptions,
-} from 'components/utils/QueryOptionsProvider';
+} from '../../../../utils/QueryOptionsProvider';
 import { FunctionComponent, useState } from 'react';
 
 export const AllUsers: FunctionComponent = () => {

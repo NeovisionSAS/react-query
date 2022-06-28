@@ -26,6 +26,7 @@ export interface BaseQueryOptions {
 interface Reject {
   status: number;
   statusText: string;
+  url: string;
 }
 
 export type RequestData = object | string | FormEvent | FormData;
