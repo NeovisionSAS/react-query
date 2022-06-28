@@ -25,6 +25,7 @@ package-lock.json
 
 tmp/
 *.sql
+*.tgz
 
 # Maven
 target/
