@@ -7,10 +7,13 @@ import {
 } from '../../../utils/api';
 import { requestLog } from '../../../utils/log';
 import { Query as QueryType } from '../../../utils/util';
+import {
+  TotalProgress,
+  totalProgressInitialiser,
+} from '../../../utils/xhr/progress';
 import ErrorBoundary from '../ErrorBoundary';
 import { useQueryOptions } from '../QueryOptionsProvider';
 import React, { useCallback, useEffect, useState } from 'react';
-import { TotalProgress, totalProgressInitialiser } from '../../../utils/xhr/progress';
 
 export type DataHandler<T> = (data: T) => any;
 
@@ -48,7 +51,8 @@ export const useQuery = <T = any,>({
   const options = Object.merge<
     any,
     RequiredBy<RequestOptionsWithDomain, 'mode' | 'verbosity'>
-  >(useQueryOptions(), requestOptions);
+  >(useQueryOptions()[0], requestOptions);
+
   const { domain, mode, verbosity } = options;
 
   const req = (path: string, options?: RequestOptions) =>
@@ -114,7 +118,7 @@ export const useQuery = <T = any,>({
 export const Query: <T = any>(
   p: QueryProps<T>
 ) => React.ReactElement<QueryProps<T>> = ({ children, ...qRest }) => {
-  const { loader } = useQueryOptions();
+  const [{ loader }] = useQueryOptions();
   const { loading, ...qData } = useQuery(qRest);
 
   // Always call to maintain the hooks

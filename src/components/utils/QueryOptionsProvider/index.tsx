@@ -5,29 +5,23 @@ import {
   RequestOptionsWithDomain,
   RequestOptionsWithOptionalDomain,
 } from '../../../utils/api';
-import {
-  createContext,
-  DependencyList,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
+import { contextGenerator } from '@generalizers/react-context';
+import { DependencyList, useEffect, useMemo, useState } from 'react';
 
-const queryOptionsContext = createContext<QueryOptions>({
-  domain: '',
-  parameterType: 'path',
-  mode: 'production',
-  verbosity: 1,
-  idName: 'id',
-});
-
-export const useQueryOptions = (): RealQueryOptions => {
-  const ctx = useContext(queryOptionsContext);
-  if (!ctx) throw new Error("No context for 'useQueryOptions'");
-  if (!ctx.idName) ctx.idName = 'id';
-  return ctx as Required<QueryOptions>;
-};
+export const {
+  useHook: useQueryOptions,
+  Provider: QueryOptionsProvider,
+  Consumer: QueryOptionsConsumer,
+} = contextGenerator<RealQueryOptions, QueryOptions>(
+  {
+    domain: '',
+    parameterType: 'path',
+    mode: 'production',
+    verbosity: 1,
+    idName: 'id',
+  },
+  'QueryOptions'
+);
 
 export const useRequest = (
   rRest: RequestOptionsWithOptionalDomain = {
@@ -39,7 +33,7 @@ export const useRequest = (
   const [controller, setController] = useState<AbortController>(
     new AbortController()
   );
-  const { loader, ...qRest } = useQueryOptions();
+  const [{ loader, ...qRest }] = useQueryOptions();
 
   useEffect(() => {
     if (ignore)
@@ -71,5 +65,3 @@ export const useRequest = (
     };
   }, [...(dependencies ?? []), controller]);
 };
-
-export const QueryOptionsProvider = queryOptionsContext.Provider;

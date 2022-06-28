@@ -1,11 +1,12 @@
 import {
+  QueryOptionsConsumer,
   QueryOptionsProvider,
   useQueryOptions,
 } from '../../../../utils/QueryOptionsProvider';
 import { FunctionComponent } from 'react';
 
 export const Provider: FunctionComponent = () => {
-  const options = useQueryOptions();
+  const [options] = useQueryOptions();
 
   return (
     <table>
@@ -36,33 +37,32 @@ export const ProviderOverride: FunctionComponent = () => {
         domain: 'My backend',
         parameterType: 'path',
         mode: 'development',
-        verbosity: 0,
       }}
     >
-      {(() => {
-        const options = useQueryOptions();
-
-        return (
-          <table>
-            <thead>
-              <tr>
-                <th>Key</th>
-                <th>Value</th>
-              </tr>
-            </thead>
-            <tbody>
-              {Object.entries(options).map((entry, i) => {
-                return (
-                  <tr key={`providerOverride-${i}`}>
-                    <td>{entry[0]}</td>
-                    <td>{`${entry[1]}`}</td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        );
-      })()}
+      <QueryOptionsConsumer>
+        {([options]) => {
+          return (
+            <table>
+              <thead>
+                <tr>
+                  <th>Key</th>
+                  <th>Value</th>
+                </tr>
+              </thead>
+              <tbody>
+                {Object.entries(options).map((entry, i) => {
+                  return (
+                    <tr key={`providerOverride-${i}`}>
+                      <td>{entry[0]}</td>
+                      <td>{`${entry[1]}`}</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          );
+        }}
+      </QueryOptionsConsumer>
     </QueryOptionsProvider>
   );
 };

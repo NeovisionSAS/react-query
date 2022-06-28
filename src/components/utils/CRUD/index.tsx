@@ -152,7 +152,7 @@ const CRUD: <T = any>(p: CRUDProps<T>) => React.ReactElement<CRUDProps<T>> = ({
       ? new Array(4).fill(endPoints)
       : [endPoints.create, endPoints.read, endPoints.update, endPoints.delete];
 
-  const { parameterType, domain, headers, mode, verbosity, idName } =
+  const [{ parameterType, domain, headers, mode, verbosity, idName }] =
     useQueryOptions();
 
   useEffect(() => {
