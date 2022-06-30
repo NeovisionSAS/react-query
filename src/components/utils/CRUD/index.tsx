@@ -135,10 +135,16 @@ export interface CRUDObject<T = any> {
   handleCreate: FormRequest<CreateParams>;
   read: QueryType<T>;
   handleUpdate: FormRequest<UpdateParams>;
-  handleDelete: (
-    e: FormEvent | undefined,
-    params?: DeleteParams
-  ) => Promise<any>;
+  /**
+   * The Form handler to process deleting an item
+   * @param {DeleteParams} params The params object takes :
+   *
+   * - id : The `id` value that represents the object in the database
+   * - name : The name of the key associated with the `id` value
+   * - method : The method used for the request
+   * - pathTail : What to put at the end of the request
+   */
+  handleDelete: (e: FormEvent, params?: DeleteParams) => Promise<any>;
 }
 
 /**
@@ -151,7 +157,9 @@ export interface CRUDObject<T = any> {
  *
  * Go to the [examples directory](https://bitbucket.org/neovision/react-query/src/master/src/examples) to see examples
  */
-const CRUD: <T = any>(p: CRUDProps<T>) => React.ReactElement<CRUDProps<T>> = ({
+export const CRUD: <T = any>(
+  p: CRUDProps<T>
+) => React.ReactElement<CRUDProps<T>> = ({
   children,
   endPoints,
   onCreated,
@@ -222,5 +230,3 @@ const CRUD: <T = any>(p: CRUDProps<T>) => React.ReactElement<CRUDProps<T>> = ({
     </ErrorBoundary>
   );
 };
-
-export default CRUD;

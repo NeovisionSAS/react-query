@@ -1,4 +1,4 @@
-import CRUD, { CRUDObject } from './CRUD';
+import { CRUD, CRUDObject } from './CRUD';
 import ErrorBoundary from './ErrorBoundary';
 import { Query } from './Query';
 

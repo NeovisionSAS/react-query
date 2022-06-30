@@ -1,4 +1,4 @@
-import CRUD, { CRUDObject } from './components/utils/CRUD';
+import { CRUD, CRUDObject } from './components/utils/CRUD';
 import { Query, useQuery } from './components/utils/Query';
 import {
   QueryOptionsProvider,
