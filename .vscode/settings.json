@@ -3,5 +3,6 @@
     "**/tmp": true,
     "**/node_modules": true,
     "**/LICENSE": true
-  }
+  },
+  "typescript.preferences.importModuleSpecifier": "relative"
 }

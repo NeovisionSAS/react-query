@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable no-undef */
 const path = require('path');
-const { TsconfigPathsPlugin } = require('tsconfig-paths-webpack-plugin');
 const { extensions } = require('./extensions');
 
 module.exports = {
@@ -24,12 +23,6 @@ module.exports = {
   },
   resolve: {
     extensions,
-    plugins: [
-      new TsconfigPathsPlugin({
-        extensions,
-        configFile: path.resolve(__dirname, '../tsconfig.json'),
-      }),
-    ],
   },
   devtool: 'inline-source-map',
 };
