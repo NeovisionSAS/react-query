@@ -225,7 +225,7 @@ const CRUD: <T = any>(p: CRUDProps<T>) => React.ReactElement<CRUDProps<T>> = ({
                     e.preventDefault();
                     const { method = 'PUT', pathTail, name = idName } = params;
 
-                    const formDatas = formExtractor(e.target, name!);
+                    const formDatas = formExtractor(e.target, name);
 
                     let newData: any;
                     if (type == 'array')
@@ -237,7 +237,7 @@ const CRUD: <T = any>(p: CRUDProps<T>) => React.ReactElement<CRUDProps<T>> = ({
                       const tail = getPathTail(
                         formData,
                         parameterType,
-                        name!,
+                        name,
                         pathTail
                       );
 
@@ -248,7 +248,7 @@ const CRUD: <T = any>(p: CRUDProps<T>) => React.ReactElement<CRUDProps<T>> = ({
                       let hasChanged = false;
                       if (type == 'array') {
                         const index = (newData as any[]).findIndex(
-                          (val) => val[name!] == tail
+                          (val) => val[name] == tail
                         );
                         if (index != undefined) {
                           const mergedData = {
