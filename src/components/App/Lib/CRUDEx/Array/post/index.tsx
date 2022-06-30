@@ -1,5 +1,5 @@
-import { CRUD } from '../../../../utils';
-import { User as UserInterface } from '../../../../../interfaces/user';
+import { User as UserInterface } from '../../../../../../interfaces/user';
+import { CRUD } from '../../../../../utils';
 import { FunctionComponent } from 'react';
 
 export const User: FunctionComponent = () => {
