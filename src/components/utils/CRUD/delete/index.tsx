@@ -33,12 +33,19 @@ export const deleteRequest = ({
   type,
 }: DeleteFormRequestParams) => {
   return (
-    e: FormEvent | undefined,
+    e: FormEvent,
     params: DeleteParams = { method: 'DELETE', name: idName }
   ) => {
     e?.preventDefault();
     e?.stopPropagation();
-    const { method = 'DELETE', pathTail, name = idName, id } = params;
+    const formData = getFormData(e.target);
+
+    const {
+      method = 'DELETE',
+      pathTail,
+      name = idName,
+      id = formData[name],
+    } = params;
 
     const tail = getPathTail(
       { [name]: id?.toString() ?? '' },
@@ -61,14 +68,15 @@ export const deleteRequest = ({
       method,
       headers,
       mode,
-      data: parameterType == 'path' ? '' : e ? getFormData(e.target) : '',
+      data: parameterType == 'path' ? '' : getFormData(e.target),
     }).then(() => {
       if (type == 'array') {
         const index = (data as unknown as any[]).findIndex(
           (val) => val[name] == id
         );
+        if (index < 0) throw new Error(`Element with ${name} ${id} not found.`);
         const typedData = data as unknown as any[];
-        requestLog(mode, verbosity, 3, `Removing index ${index}`);
+        requestLog(mode, verbosity, 8, `Removing index ${index}`);
         const newArr = [
           ...typedData.slice(0, index),
           ...typedData.slice(index + 1, typedData.length),
