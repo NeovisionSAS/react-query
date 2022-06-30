@@ -1,15 +1,13 @@
-import { Method, request } from '../../../utils/api';
+import { Mode } from '../../../types/global';
+import { GetHeaders, Method } from '../../../utils/api';
 import { requestLog } from '../../../utils/log';
-import {
-  formExtractor,
-  getFormData,
-  getPathTail,
-  Query as QueryType,
-} from '../../../utils/util';
+import { Query as QueryType } from '../../../utils/util';
 import ErrorBoundary from '../ErrorBoundary';
-import { Query } from '../Query';
+import { DataHandler, Query } from '../Query';
 import { useQueryOptions } from '../QueryOptionsProvider';
-import equal from 'fast-deep-equal';
+import { CreateParams, createRequest } from './create';
+import { DeleteParams, deleteRequest } from './delete';
+import { UpdateParams, updateRequest } from './update';
 import React, { FormEvent, Fragment, useEffect } from 'react';
 
 interface CRUDProps<T = any> {
@@ -54,26 +52,37 @@ interface CRUDProps<T = any> {
    * Weither the element you are pointing to in the backend refers to an `array`
    * of elements or siply to an `item`
    */
-  type?: 'array' | 'item';
+  type?: SetType;
 }
+
+export type SetType = 'array' | 'item';
 
 interface GeneralParams {
   pathTail?: string | number;
   method: Method;
 }
 
-interface IdentifiableParams extends GeneralParams {
+export interface IdentifiableParams extends GeneralParams {
   name?: string;
 }
 
-interface UpdateParams extends Partial<IdentifiableParams> {
-  name?: string;
-}
+export type PartialIdentifiableParams = Partial<IdentifiableParams>;
 
-type CreateParams = Partial<IdentifiableParams>;
+type FormRequest<T extends PartialIdentifiableParams> = (
+  e: FormEvent,
+  params?: T
+) => Promise<any>;
 
-interface DeleteParams extends Partial<IdentifiableParams> {
-  id?: number | string;
+export interface FormRequestParams<T = any> {
+  endpoint: string;
+  mode: Mode;
+  verbosity: number;
+  domain: string;
+  manualUpdate: DataHandler<T>;
+  data: T;
+  headers?: GetHeaders;
+  onCompleted?: () => any;
+  forceRefresh: () => any;
 }
 
 /**
@@ -121,10 +130,10 @@ interface DeleteParams extends Partial<IdentifiableParams> {
  * ```
  */
 export interface CRUDObject<T = any> {
-  handleCreate: <T>(e: FormEvent, params?: CreateParams) => Promise<any>;
+  handleCreate: FormRequest<CreateParams>;
   read: QueryType<T>;
-  handleUpdate: <T>(e: FormEvent, params?: UpdateParams) => Promise<any>;
-  handleDelete: <T>(
+  handleUpdate: FormRequest<UpdateParams>;
+  handleDelete: (
     e: FormEvent | undefined,
     params?: DeleteParams
   ) => Promise<any>;
@@ -155,8 +164,8 @@ const CRUD: <T = any>(p: CRUDProps<T>) => React.ReactElement<CRUDProps<T>> = ({
       ? new Array(4).fill(endPoints)
       : [endPoints.create, endPoints.read, endPoints.update, endPoints.delete];
 
-  const [{ parameterType, domain, headers, mode, verbosity, idName }] =
-    useQueryOptions();
+  const [queryOptionsState] = useQueryOptions();
+  const { verbosity, mode } = queryOptionsState;
 
   useEffect(() => {
     requestLog(
@@ -174,185 +183,33 @@ const CRUD: <T = any>(p: CRUDProps<T>) => React.ReactElement<CRUDProps<T>> = ({
   return (
     <ErrorBoundary>
       <Query query={`${readEndpoint}`} delay={delay} onRead={onRead}>
-        {({ data, loading, error, manualUpdate, forceRefresh }) => {
+        {(res) => {
+          const { forceRefresh } = res;
           return (
             <Fragment>
               {children(
                 {
-                  handleCreate: <T,>(
-                    e: FormEvent,
-                    params: CreateParams = { method: 'POST' }
-                  ) => {
-                    e.preventDefault();
-                    const { method = 'POST', pathTail } = params;
-                    const formData = getFormData(e.target);
-
-                    const endpoint = `${createEndpoint}/${
-                      pathTail ? `${pathTail}/` : ''
-                    }`;
-
-                    requestLog(
-                      mode,
-                      verbosity,
-                      1,
-                      `[create][${method}]`,
-                      `${domain}/${endpoint}`,
-                      formData
-                    );
-
-                    return request(domain, endpoint, {
-                      data: formData,
-                      method,
-                      headers,
-                      mode,
-                    })
-                      .then((created) => {
-                        manualUpdate?.([...(data as any), created] as any);
-                        onCreated?.() && forceRefresh?.();
-                      })
-                      .catch(() => {
-                        console.error(
-                          `Erreur de création`,
-                          `Une erreur est survenu lors de la création dans la base de données`
-                        );
-                      });
-                  },
-                  read: { data, loading, error },
-                  handleUpdate: <T,>(
-                    e: FormEvent,
-                    params: UpdateParams = { method: 'PUT', name: idName }
-                  ) => {
-                    e.preventDefault();
-                    const { method = 'PUT', pathTail, name = idName } = params;
-
-                    const formDatas = formExtractor(e.target, name);
-
-                    let newData: any;
-                    if (type == 'array')
-                      newData = [...(data as unknown as any[])];
-                    else newData = data;
-
-                    const promises: Promise<any>[] = [];
-                    formDatas.forEach((formData) => {
-                      const tail = getPathTail(
-                        formData,
-                        parameterType,
-                        name,
-                        pathTail
-                      );
-
-                      const endpoint = `${updateEndpoint}/${
-                        tail ? `${tail}/` : ''
-                      }`;
-
-                      let hasChanged = false;
-                      if (type == 'array') {
-                        const index = (newData as any[]).findIndex(
-                          (val) => val[name] == tail
-                        );
-                        if (index != undefined) {
-                          const mergedData = {
-                            ...newData[index],
-                            ...formData,
-                          };
-                          hasChanged = !equal(newData[index], mergedData);
-                          newData[index] = mergedData;
-                        } else newData.push(formData);
-                      } else {
-                        hasChanged = !equal(newData, data);
-                        newData = { ...newData, ...formData };
-                      }
-
-                      if (hasChanged) {
-                        requestLog(
-                          mode,
-                          verbosity,
-                          1,
-                          `[update][${method}]`,
-                          `${domain}/${endpoint}`,
-                          formData
-                        );
-                        promises.push(
-                          request(domain, endpoint, {
-                            data: formData,
-                            method,
-                            headers,
-                            mode,
-                          })
-                        );
-                      }
-                    });
-                    return Promise.all(promises).then(() => {
-                      manualUpdate?.(newData as any);
-                      onUpdated?.() && forceRefresh?.();
-                    });
-                  },
-                  handleDelete: <T,>(
-                    e: FormEvent | undefined,
-                    params: DeleteParams = { method: 'DELETE', name: idName }
-                  ) => {
-                    e?.preventDefault();
-                    e?.stopPropagation();
-                    const {
-                      method = 'DELETE',
-                      pathTail,
-                      name = idName,
-                      id,
-                    } = params;
-
-                    const tail = getPathTail(
-                      { [name]: id?.toString() ?? '' },
-                      parameterType,
-                      name,
-                      pathTail
-                    );
-
-                    const endpoint = `${deleteEndpoint}/${
-                      tail ? `${tail}/` : ''
-                    }`;
-
-                    requestLog(
-                      mode,
-                      verbosity,
-                      1,
-                      `[delete][${method}]`,
-                      `${domain}/${endpoint}`
-                    );
-
-                    return request(domain, endpoint, {
-                      method,
-                      headers,
-                      mode,
-                      data:
-                        parameterType == 'path'
-                          ? ''
-                          : e
-                          ? getFormData(e.target)
-                          : '',
-                    }).then(() => {
-                      if (type == 'array') {
-                        const index = (data as unknown as any[]).findIndex(
-                          (val) => val[name] == id
-                        );
-                        const typedData = data as unknown as any[];
-                        requestLog(
-                          mode,
-                          verbosity,
-                          3,
-                          `Removing index ${index}`
-                        );
-                        const newArr = [
-                          ...typedData.slice(0, index),
-                          ...typedData.slice(index + 1, typedData.length),
-                        ];
-                        requestLog(mode, verbosity, 4, `Array updated`, newArr);
-                        manualUpdate?.(newArr as any);
-                      } else {
-                        manualUpdate?.(data as any);
-                      }
-                      onDeleted?.() && forceRefresh?.();
-                    });
-                  },
+                  handleCreate: createRequest({
+                    endpoint: createEndpoint,
+                    onCompleted: onCreated,
+                    ...queryOptionsState,
+                    ...res,
+                  }),
+                  read: res,
+                  handleUpdate: updateRequest({
+                    endpoint: updateEndpoint,
+                    onCompleted: onUpdated,
+                    type,
+                    ...queryOptionsState,
+                    ...res,
+                  }),
+                  handleDelete: deleteRequest({
+                    endpoint: deleteEndpoint,
+                    type,
+                    onCompleted: onDeleted,
+                    ...queryOptionsState,
+                    ...res,
+                  }),
                 },
                 forceRefresh
               )}

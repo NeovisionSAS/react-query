@@ -13,8 +13,10 @@ interface LoaderOptions {
   autoload?: boolean;
 }
 
+export type GetHeaders = () => Promise<HeadersInit>;
+
 export interface BaseQueryOptions {
-  headers?: () => Promise<HeadersInit>;
+  headers?: GetHeaders;
   parameterType?: QueryType;
   mode?: 'development' | 'production';
   verbosity?: number;

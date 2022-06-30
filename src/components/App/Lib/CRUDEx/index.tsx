@@ -1,5 +1,5 @@
 import { ArrayEx } from './Array';
-import { ItemEx } from 'components/App/Lib/CRUDEx/Item';
+import { ItemEx } from './Item';
 import { FunctionComponent } from 'react';
 import { Navigate, Route, Routes } from 'react-router';
 import { Link } from 'react-router-dom';
