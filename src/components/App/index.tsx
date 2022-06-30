@@ -1,4 +1,5 @@
 import { backend } from '../../config';
+import { QueryOptions } from '../../utils/api';
 import { ErrorBoundary } from '../utils';
 import { QueryOptionsProvider } from '../utils/QueryOptionsProvider';
 import { Header } from './Header';
@@ -14,24 +15,22 @@ import {
 } from 'react-router-dom';
 
 function App(): JSX.Element {
-  const headerDelay = 0;
-
-  // const p = () =>
-  //   new Promise<HeadersInit>((resolve) => {
-  //     setTimeout(() => {
-  //       resolve();
-  //     }, headerDelay);
-  //   });
+  const storageQueryOptions = JSON.parse(
+    localStorage.getItem(`queryOptions`) ?? '{}'
+  );
 
   return (
     <ErrorBoundary>
       <QueryOptionsProvider
-        value={{
-          domain: backend.url,
-          parameterType: 'queryString',
-          mode: 'development',
-          verbosity: 10,
-        }}
+        value={Object.merge<QueryOptions>(
+          {
+            domain: backend.url,
+            parameterType: 'queryString',
+            mode: 'development',
+            verbosity: 10,
+          },
+          storageQueryOptions
+        )}
       >
         <Router>
           <Header />

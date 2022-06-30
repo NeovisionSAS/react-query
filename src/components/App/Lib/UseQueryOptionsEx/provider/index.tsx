@@ -6,7 +6,7 @@ import {
 import { FunctionComponent } from 'react';
 
 export const Provider: FunctionComponent = () => {
-  const [options] = useQueryOptions();
+  const [options, setQueryOptions] = useQueryOptions();
 
   return (
     <table>
@@ -21,7 +21,21 @@ export const Provider: FunctionComponent = () => {
           return (
             <tr key={`provider-${i}`}>
               <td>{entry[0]}</td>
-              <td>{`${entry[1]}`}</td>
+              <td>
+                <input
+                  onChange={(e) => {
+                    const newOptions = Object.merge(options, {
+                      [entry[0]]: e.target.value,
+                    } as any);
+                    setQueryOptions(newOptions);
+                    localStorage.setItem(
+                      'queryOptions',
+                      JSON.stringify(newOptions)
+                    );
+                  }}
+                  defaultValue={`${entry[1]}`}
+                />
+              </td>
             </tr>
           );
         })}
