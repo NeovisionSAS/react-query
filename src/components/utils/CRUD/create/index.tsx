@@ -1,13 +1,10 @@
-import {
-  FormRequestParams,
-  PartialIdentifiableParams,
-} from '..';
-import { FormEvent } from 'react';
+import { FormRequestParams, PartialGeneralParams } from '..';
 import { request } from '../../../../utils/api';
 import { requestLog } from '../../../../utils/log';
 import { getFormData } from '../../../../utils/util';
+import { FormEvent } from 'react';
 
-export type CreateParams = PartialIdentifiableParams;
+export type CreateParams = PartialGeneralParams;
 
 type CreateFormRequestParams<T = any> = FormRequestParams<T>;
 

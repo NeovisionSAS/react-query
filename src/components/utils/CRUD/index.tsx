@@ -62,13 +62,15 @@ interface GeneralParams {
   method: Method;
 }
 
-export interface IdentifiableParams extends GeneralParams {
+export interface IdentifiableGeneralParams extends GeneralParams {
   name?: string;
 }
 
-export type PartialIdentifiableParams = Partial<IdentifiableParams>;
+export type PartialIdentifiableGeneralParams =
+  Partial<IdentifiableGeneralParams>;
+export type PartialGeneralParams = Partial<GeneralParams>;
 
-type FormRequest<T extends PartialIdentifiableParams> = (
+type FormRequest<T extends PartialIdentifiableGeneralParams> = (
   e: FormEvent,
   params?: T
 ) => Promise<any>;

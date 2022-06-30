@@ -1,13 +1,13 @@
 import {
   FormRequestParams,
-  PartialIdentifiableParams,
+  PartialIdentifiableGeneralParams,
   SetType,
 } from '..';
-import equal from 'fast-deep-equal';
-import { FormEvent } from 'react';
 import { QueryType, request } from '../../../../utils/api';
 import { requestLog } from '../../../../utils/log';
 import { formExtractor, getPathTail } from '../../../../utils/util';
+import equal from 'fast-deep-equal';
+import { FormEvent } from 'react';
 
 interface UpdateFormRequestParams<T = any> extends FormRequestParams<T> {
   idName: string;
@@ -15,7 +15,7 @@ interface UpdateFormRequestParams<T = any> extends FormRequestParams<T> {
   parameterType: QueryType;
 }
 
-export interface UpdateParams extends PartialIdentifiableParams {
+export interface UpdateParams extends PartialIdentifiableGeneralParams {
   name?: string;
 }
 

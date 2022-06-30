@@ -1,12 +1,12 @@
 import {
   FormRequestParams,
-  PartialIdentifiableParams,
+  PartialIdentifiableGeneralParams,
   SetType,
 } from '..';
-import { FormEvent } from 'react';
 import { QueryType, request } from '../../../../utils/api';
 import { requestLog } from '../../../../utils/log';
 import { getFormData, getPathTail } from '../../../../utils/util';
+import { FormEvent } from 'react';
 
 interface DeleteFormRequestParams<T = any> extends FormRequestParams<T> {
   idName: string;
@@ -14,7 +14,7 @@ interface DeleteFormRequestParams<T = any> extends FormRequestParams<T> {
   parameterType: QueryType;
 }
 
-export interface DeleteParams extends PartialIdentifiableParams {
+export interface DeleteParams extends PartialIdentifiableGeneralParams {
   id?: number | string;
 }
 
