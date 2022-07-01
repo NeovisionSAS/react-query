@@ -140,7 +140,10 @@ export interface CRUDObject<T> {
    * - method : The method used for the request
    * - pathTail : What to put at the end of the request
    */
-  handleDelete: (e: FormEvent, params?: DeleteParams) => Promise<any>;
+  handleDelete: (
+    e: FormEvent | undefined,
+    params?: DeleteParams
+  ) => Promise<any>;
 }
 
 /**
