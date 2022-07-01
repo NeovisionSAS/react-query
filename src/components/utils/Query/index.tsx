@@ -23,6 +23,7 @@ interface QueryParams<T = any> {
   onRead?: DataHandler<T>;
   requestOptions?: RequestOptionsWithOptionalDomain;
   useConfig?: boolean;
+  disable?: boolean;
 }
 
 interface QueryReturn<T> {
@@ -41,6 +42,7 @@ export const useQuery = <T = any,>({
   delay,
   onRead,
   requestOptions = {},
+  disable = query == null,
 }: QueryParams<T>): QueryReturn<T> => {
   // The default data/load/error triple
   const [dataLoadErr, setDataLoadErr] = useState<QueryType>({
@@ -48,6 +50,19 @@ export const useQuery = <T = any,>({
     loading: totalProgressInitialiser(),
     error: undefined,
   });
+  const forceRefresh = () => setRefresh(!refresh);
+  const manualUpdate = useCallback(
+    (data: T) =>
+      setDataLoadErr({
+        data,
+        loading: false,
+        error: undefined,
+      }),
+    []
+  );
+
+  if (disable) return { ...dataLoadErr, forceRefresh, manualUpdate };
+
   const options = Object.merge<
     any,
     RequiredBy<RequestOptionsWithDomain, 'mode' | 'verbosity'>
@@ -60,16 +75,6 @@ export const useQuery = <T = any,>({
 
   const [controller, setController] = useState<AbortController>();
   const [refresh, setRefresh] = useState(false);
-
-  const manualUpdate = useCallback(
-    (data: T) =>
-      setDataLoadErr({
-        data,
-        loading: false,
-        error: undefined,
-      }),
-    []
-  );
 
   // Check if the query prop has changed
   useEffect(() => {
@@ -108,7 +113,7 @@ export const useQuery = <T = any,>({
   return {
     ...dataLoadErr,
     manualUpdate,
-    forceRefresh: () => setRefresh(!refresh),
+    forceRefresh,
   };
 };
 

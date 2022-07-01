@@ -25,7 +25,7 @@ interface CRUDProps<T = any> {
    * for each of the `CRUD` operations
    */
   endPoints:
-    | { create?: string; read: string; update?: string; delete?: string }
+    | { create?: string; read?: string; update?: string; delete?: string }
     | string;
   /**
    * Callback function whenever the component finished creating the object
@@ -182,16 +182,16 @@ export const CRUD: <T = any>(
       verbosity,
       5,
       `[endpoints]`,
-      `[C]${createEndpoint}`,
-      `[R]${readEndpoint}`,
-      `[U]${updateEndpoint}`,
-      `[D]${deleteEndpoint}`
+      `[C]${createEndpoint ?? ''}`,
+      `[R]${readEndpoint ?? ''}`,
+      `[U]${updateEndpoint ?? ''}`,
+      `[D]${deleteEndpoint ?? ''}`
     );
   }, [createEndpoint, readEndpoint, updateEndpoint, deleteEndpoint]);
 
   return (
     <ErrorBoundary>
-      <Query query={`${readEndpoint}`} delay={delay} onRead={onRead}>
+      <Query query={readEndpoint} delay={delay} onRead={onRead}>
         {(res) => {
           const { forceRefresh } = res;
           return (
