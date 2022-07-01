@@ -59,7 +59,7 @@ export const useRequest = (
       path: string,
       options: RequestOptionsWithOptionalDomain = { method: 'GET' }
     ) => {
-      const { domain, onRejected, ...returnMerged } = Object.merge<
+      const { domain, ...returnMerged } = Object.merge<
         any,
         RequestOptionsWithDomain
       >(merged, options, {
