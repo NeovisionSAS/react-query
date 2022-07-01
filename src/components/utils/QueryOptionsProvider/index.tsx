@@ -48,16 +48,26 @@ export const useRequest = (
   }, [controller, ignore]);
 
   return useMemo(() => {
-    const merged = Object.merge<any, RequestOptionsWithDomain>(rRest, qRest);
+    const merged = Object.merge<any, RequestOptionsWithDomain>(rRest, qRest, {
+      onRejected: (e: any) => {
+        rRest.onRejected?.(e);
+        qRest.onRejected?.(e);
+      },
+    });
 
     return <T = any,>(
       path: string,
       options: RequestOptionsWithOptionalDomain = { method: 'GET' }
     ) => {
-      const { domain, ...returnMerged } = Object.merge<
+      const { domain, onRejected, ...returnMerged } = Object.merge<
         any,
         RequestOptionsWithDomain
-      >(merged, options);
+      >(merged, options, {
+        onRejected: (e: any) => {
+          merged.onRejected?.(e);
+          options.onRejected?.(e);
+        },
+      });
       return request<T>(domain, path, {
         ...returnMerged,
         signal: controller?.signal,
