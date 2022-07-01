@@ -1,0 +1,26 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  min-width: 400px;
+  width: 30%;
+
+  button[type='submit'] {
+    margin: 5px;
+  }
+}
+
+.section {
+  display: flex;
+  margin: 5px;
+
+  // > label {
+  //   flex-grow: 1;
+  //   min-width: 20%;
+  //   max-width: 30%;
+  // }
+}
+
+.silent {
+  width: auto;
+  min-width: auto;
+}

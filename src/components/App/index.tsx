@@ -13,6 +13,7 @@ import {
   Route,
   Routes,
 } from 'react-router-dom';
+import { CRUDAutoEx } from './Lib/CRUDAutoEx';
 
 function App(): JSX.Element {
   const storageQueryOptions = JSON.parse(
@@ -40,6 +41,7 @@ function App(): JSX.Element {
           <Routes>
             <Route path="/query/*" element={<QueryEx />} />
             <Route path="/crud/*" element={<CRUDEx />} />
+            <Route path="/crudAuto/*" element={<CRUDAutoEx />} />
             <Route path="/useRequest/*" element={<UseRequestEx />} />
             <Route path="/useQueryOptions/*" element={<UseQueryOptionsEx />} />
             <Route path="/*" element={<Navigate to={`/query`} />} />

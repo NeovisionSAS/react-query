@@ -2,8 +2,14 @@ import { Context } from '../../context';
 import { User } from '../../orm/user';
 
 export class UserResolver {
-  static async create(name: string, age: number, nationality?: string) {
-    const user = User.create({ name, age, nationality });
+  static async create(
+    name: string,
+    age: number,
+    nationality?: string,
+    book?: string,
+    dateOfBirth?: string
+  ) {
+    const user = User.create({ name, age, nationality, book, dateOfBirth });
     await User.save(user);
     return user;
   }
@@ -36,9 +42,12 @@ export class UserResolver {
     id: number,
     name: string,
     age: number,
-    nationality: string
+    nationality: string,
+    book: string,
+    dateOfBirth?: string
   ) {
-    User.update(id, { age, name, nationality });
+    console.log(dateOfBirth);
+    User.update(id, { age, name, nationality, book, dateOfBirth });
   }
 
   static async readUserBook(id: number) {

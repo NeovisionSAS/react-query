@@ -18,11 +18,13 @@ export const routes: Routable[] = [
   {
     method: 'POST',
     path: '/user',
-    action(request, response) {
+    action({ body: { name, age, nationality, book, dateOfBirth } }, response) {
       return UserResolver.create(
-        request.body.name,
-        parseInt(request.body.age),
-        request.body.nationality
+        name,
+        parseInt(age),
+        nationality,
+        book,
+        dateOfBirth
       );
     },
   },
@@ -36,12 +38,17 @@ export const routes: Routable[] = [
   {
     method: 'PUT',
     path: '/user',
-    action(request, response) {
+    action(
+      { body: { id, name, age, nationality, book, dateOfBirth } },
+      response
+    ) {
       return UserResolver.update(
-        parseInt(request.body.id),
-        request.body.name,
-        parseInt(request.body.age),
-        request.body.nationality
+        parseInt(id),
+        name,
+        parseInt(age),
+        nationality,
+        book,
+        dateOfBirth
       );
     },
   },

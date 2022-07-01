@@ -1,3 +1,5 @@
+import equal from 'fast-deep-equal';
+import { FormEvent } from 'react';
 import {
   FormRequestParams,
   PartialIdentifiableGeneralParams,
@@ -6,8 +8,6 @@ import {
 import { QueryParamType, request } from '../../../../utils/api';
 import { requestError, requestLog } from '../../../../utils/log';
 import { formExtractor } from '../../../../utils/util';
-import equal from 'fast-deep-equal';
-import { FormEvent } from 'react';
 
 interface UpdateFormRequestParams<T = any> extends FormRequestParams<T> {
   idName: string;
@@ -38,6 +38,7 @@ export const updateRequest = ({
     params: UpdateParams = { method: 'PUT', name: idName }
   ) => {
     e.preventDefault();
+
     const { method = 'PUT', name = idName } = params;
 
     const formDatas = formExtractor(e.target, name);
