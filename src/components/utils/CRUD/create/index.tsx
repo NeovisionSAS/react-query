@@ -21,21 +21,19 @@ export const createRequest = ({
 }: CreateFormRequestParams) => {
   return (e: FormEvent, params: CreateParams = { method: 'POST' }) => {
     e.preventDefault();
-    const { method = 'POST', pathTail } = params;
+    const { method = 'POST' } = params;
     const formData = getFormData(e.target);
-
-    const endpoint = `${createEndpoint}/${pathTail ? `${pathTail}/` : ''}`;
 
     requestLog(
       mode,
       verbosity,
       1,
       `[create][${method}]`,
-      `${domain}/${endpoint}`,
+      `${domain}/${createEndpoint}/`,
       formData
     );
 
-    return request(domain, endpoint, {
+    return request(domain, createEndpoint, {
       data: formData,
       method,
       headers,

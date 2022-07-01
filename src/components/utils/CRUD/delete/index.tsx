@@ -3,15 +3,15 @@ import {
   PartialIdentifiableGeneralParams,
   SetType,
 } from '..';
-import { QueryType, request } from '../../../../utils/api';
-import { requestLog } from '../../../../utils/log';
-import { getFormData, getPathTail } from '../../../../utils/util';
+import { QueryParamType, request } from '../../../../utils/api';
+import { requestError, requestLog } from '../../../../utils/log';
+import { getFormData } from '../../../../utils/util';
 import { FormEvent } from 'react';
 
 interface DeleteFormRequestParams<T = any> extends FormRequestParams<T> {
   idName: string;
   type: SetType;
-  parameterType: QueryType;
+  parameterType: QueryParamType;
 }
 
 export interface DeleteParams extends PartialIdentifiableGeneralParams {
@@ -40,21 +40,11 @@ export const deleteRequest = ({
     e?.stopPropagation();
     const formData = getFormData(e.target);
 
-    const {
-      method = 'DELETE',
-      pathTail,
-      name = idName,
-      id = formData[name],
-    } = params;
+    const { method = 'DELETE', name = idName, id = formData[name] } = params;
 
-    const tail = getPathTail(
-      { [name]: id?.toString() ?? '' },
-      parameterType,
-      name,
-      pathTail
-    );
-
-    const endpoint = `${deleteEndpoint}/${tail ? `${tail}/` : ''}`;
+    const endpoint = `${deleteEndpoint}/${
+      parameterType == 'path' ? `${id}/` : ''
+    }`;
 
     requestLog(
       mode,
@@ -74,9 +64,17 @@ export const deleteRequest = ({
         const index = (data as unknown as any[]).findIndex(
           (val) => val[name] == id
         );
-        if (index < 0) throw new Error(`Element with ${name} ${id} not found.`);
+        if (index < 0) {
+          requestError(`Element with ${name} ${id} not found.`);
+          throw new Error(`Element with ${name} ${id} not found.`);
+        }
         const typedData = data as unknown as any[];
-        requestLog(mode, verbosity, 8, `Removing index ${index}`);
+        requestLog(
+          mode,
+          verbosity,
+          8,
+          `Removing index ${index} matching ${name} ${id}`
+        );
         const newArr = [
           ...typedData.slice(0, index),
           ...typedData.slice(index + 1, typedData.length),

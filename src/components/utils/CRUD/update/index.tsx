@@ -3,16 +3,16 @@ import {
   PartialIdentifiableGeneralParams,
   SetType,
 } from '..';
-import { QueryType, request } from '../../../../utils/api';
-import { requestLog } from '../../../../utils/log';
-import { formExtractor, getPathTail } from '../../../../utils/util';
+import { QueryParamType, request } from '../../../../utils/api';
+import { requestError, requestLog } from '../../../../utils/log';
+import { formExtractor } from '../../../../utils/util';
 import equal from 'fast-deep-equal';
 import { FormEvent } from 'react';
 
 interface UpdateFormRequestParams<T = any> extends FormRequestParams<T> {
   idName: string;
   type: SetType;
-  parameterType: QueryType;
+  parameterType: QueryParamType;
 }
 
 export interface UpdateParams extends PartialIdentifiableGeneralParams {
@@ -38,7 +38,7 @@ export const updateRequest = ({
     params: UpdateParams = { method: 'PUT', name: idName }
   ) => {
     e.preventDefault();
-    const { method = 'PUT', pathTail, name = idName } = params;
+    const { method = 'PUT', name = idName } = params;
 
     const formDatas = formExtractor(e.target, name);
 
@@ -48,21 +48,25 @@ export const updateRequest = ({
 
     const promises: Promise<any>[] = [];
     formDatas.forEach((formData) => {
-      const tail = getPathTail(formData, parameterType, name, pathTail);
+      const id = formData[name];
 
-      const endpoint = `${updateEndpoint}/${tail ? `${tail}/` : ''}`;
+      const endpoint = `${updateEndpoint}/${
+        parameterType == 'path' ? `${id}/` : ''
+      }`;
 
       let hasChanged = false;
       if (type == 'array') {
-        const index = (newData as any[]).findIndex((val) => val[name] == tail);
-        if (index != undefined) {
-          const mergedData = {
-            ...newData[index],
-            ...formData,
-          };
-          hasChanged = !equal(newData[index], mergedData);
-          newData[index] = mergedData;
-        } else newData.push(formData);
+        const index = (newData as any[]).findIndex((val) => val[name] == id);
+        if (index < 0) {
+          requestError(`Element with ${name} ${id} not found.`);
+          throw new Error(`Element with ${name} ${id} not found.`);
+        }
+        const mergedData = {
+          ...newData[index],
+          ...formData,
+        };
+        hasChanged = !equal(newData[index], mergedData);
+        newData[index] = mergedData;
       } else {
         hasChanged = !equal(newData, data);
         newData = { ...newData, ...formData };

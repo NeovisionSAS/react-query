@@ -58,7 +58,6 @@ interface CRUDProps<T = any> {
 export type SetType = 'array' | 'item';
 
 interface GeneralParams {
-  pathTail?: string | number;
   method: Method;
 }
 

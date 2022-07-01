@@ -6,7 +6,7 @@ import { XHRProgress } from './xhr/progress';
 import { FormEvent } from 'react';
 
 export type Method = 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'GET';
-export type QueryType = 'path' | 'queryString';
+export type QueryParamType = 'path' | 'queryString';
 
 interface LoaderOptions {
   loader?: JSX.Element;
@@ -17,7 +17,7 @@ export type GetHeaders = () => Promise<HeadersInit>;
 
 export interface BaseQueryOptions {
   headers?: GetHeaders;
-  parameterType?: QueryType;
+  parameterType?: QueryParamType;
   mode?: 'development' | 'production';
   verbosity?: number;
   idName?: string;

@@ -1,4 +1,4 @@
-import { QueryType, RequestData } from './api';
+import { QueryParamType, RequestData } from './api';
 import { requestError } from './log';
 import { TotalProgress } from './xhr/progress';
 import { BaseSyntheticEvent, FormEvent, useReducer } from 'react';
@@ -175,7 +175,7 @@ export const seperate = (strs: string[]): [string, string[]][] => {
 
 export const getId = (
   data: FormExtractorData,
-  type: QueryType,
+  type: QueryParamType,
   name: string,
   pathTail?: string | number
 ) => {
