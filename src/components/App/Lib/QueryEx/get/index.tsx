@@ -170,7 +170,7 @@ export const Auth: FunctionComponent = () => {
       value={{
         domain,
         onRejected: (e) => {
-          console.log(`My request was rejected with error ${e.status} :(`);
+          console.log(`My request was rejected with error ${e.status} :(`, e);
         },
       }}
     >

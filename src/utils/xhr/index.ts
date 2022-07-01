@@ -36,15 +36,11 @@ export const XHRFetch = (
     r.addEventListener('load', () => {
       const headers = parseHeaders(r.getAllResponseHeaders());
       const parsedData = applyHeaders(headers, r.response);
-      resolve(parsedData);
-    });
-    r.addEventListener('readystatechange', () => {
       const { status, statusText } = r;
-      const headers = parseHeaders(r.getAllResponseHeaders());
-      const parsedData = applyHeaders(headers, r.response);
       if (status >= 400 && status < 600) {
         reject({ status, statusText, url, data: parsedData });
       }
+      resolve(parsedData);
     });
     signal?.addEventListener('abort', () => {
       r.abort();
