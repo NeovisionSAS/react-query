@@ -25,10 +25,11 @@ export interface BaseQueryOptions {
   delay?: number;
 }
 
-interface Reject {
+interface Reject<T = any> {
   status: number;
   statusText: string;
   url: string;
+  data: T;
 }
 
 export type RequestData = object | string | FormEvent | FormData;
