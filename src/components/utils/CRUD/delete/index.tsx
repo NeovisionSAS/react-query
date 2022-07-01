@@ -33,14 +33,14 @@ export const deleteRequest = ({
   type,
 }: DeleteFormRequestParams) => {
   return (
-    e: FormEvent,
+    e: FormEvent | undefined,
     params: DeleteParams = { method: 'DELETE', name: idName }
   ) => {
     e?.preventDefault();
     e?.stopPropagation();
-    const formData = getFormData(e.target);
+    const formData = e && getFormData(e.target);
 
-    const { method = 'DELETE', name = idName, id = formData[name] } = params;
+    const { method = 'DELETE', name = idName, id = formData?.[name] } = params;
 
     const endpoint = `${deleteEndpoint}/${
       parameterType == 'path' ? `${id}/` : ''
@@ -58,7 +58,7 @@ export const deleteRequest = ({
       method,
       headers,
       mode,
-      data: parameterType == 'path' ? '' : getFormData(e.target),
+      data: parameterType == 'path' ? '' : formData ?? '',
     }).then(() => {
       if (type == 'array') {
         const index = (data as unknown as any[]).findIndex(
