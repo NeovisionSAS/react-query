@@ -22,32 +22,37 @@ export const UserCRUD: FunctionComponent = () => {
                   <form onSubmit={handleUpdate}>
                     <div>
                       <label htmlFor="id">ID : </label>
-                      <input name="id" defaultValue={id} disabled />
+                      <input
+                        type={'number'}
+                        name="id"
+                        defaultValue={id}
+                        key={id}
+                        disabled
+                      />
                     </div>
                     <div>
                       <label htmlFor="name">Name : </label>
-                      <input name="name" defaultValue={name} />
+                      <input name="name" defaultValue={name} key={name} />
                     </div>
                     <div>
                       <label htmlFor="age">Age : </label>
-                      <input type="number" name="age" defaultValue={age} />
+                      <input
+                        type="number"
+                        name="age"
+                        defaultValue={age}
+                        key={age}
+                      />
                     </div>
                     <div>
                       <label htmlFor="nationality">Nationality</label>
-                      <select name="nationality" defaultValue={nationality}>
+                      <select
+                        name="nationality"
+                        defaultValue={nationality}
+                        key={nationality}
+                      >
                         <option value={''}>Please choose an option</option>
-                        <option
-                          value={'french'}
-                          selected={nationality == 'french'}
-                        >
-                          French
-                        </option>
-                        <option
-                          value={'english'}
-                          selected={nationality == 'english'}
-                        >
-                          English
-                        </option>
+                        <option value={'french'}>French</option>
+                        <option value={'english'}>English</option>
                       </select>
                     </div>
                     <button type={'submit'}>Update</button>
@@ -55,6 +60,7 @@ export const UserCRUD: FunctionComponent = () => {
                   <form onSubmit={handleDelete}>
                     <input
                       name="id"
+                      key={id}
                       defaultValue={id}
                       style={{ display: 'none' }}
                     />
