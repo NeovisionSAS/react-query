@@ -4,7 +4,7 @@ import { FunctionComponent } from 'react';
 
 export const User: FunctionComponent = () => {
   return (
-    <CRUD<UserInterface[]> endPoints={`user`}>
+    <CRUD<UserInterface[]> endPoints={{ create: `user` }}>
       {({ handleCreate }) => {
         return (
           <form onSubmit={handleCreate}>

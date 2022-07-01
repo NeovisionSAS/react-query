@@ -6,7 +6,7 @@ import { FormEvent } from 'react';
 
 export type CreateParams = PartialGeneralParams;
 
-type CreateFormRequestParams<T = any> = FormRequestParams<T>;
+type CreateFormRequestParams<T> = FormRequestParams<T>;
 
 export const createRequest = ({
   endpoint: createEndpoint,
@@ -18,7 +18,7 @@ export const createRequest = ({
   headers,
   onCompleted: onCreated,
   forceRefresh,
-}: CreateFormRequestParams) => {
+}: CreateFormRequestParams<any>) => {
   return (e: FormEvent, params: CreateParams = { method: 'POST' }) => {
     e.preventDefault();
     const { method = 'POST' } = params;
@@ -40,7 +40,7 @@ export const createRequest = ({
       mode,
     })
       .then((created) => {
-        manualUpdate?.([...data, created] as any);
+        if (data) manualUpdate?.([...data, created] as any);
         onCreated?.() && forceRefresh?.();
       })
       .catch(() => {

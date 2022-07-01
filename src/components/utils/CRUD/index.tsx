@@ -8,9 +8,9 @@ import { useQueryOptions } from '../QueryOptionsProvider';
 import { CreateParams, createRequest } from './create';
 import { DeleteParams, deleteRequest } from './delete';
 import { UpdateParams, updateRequest } from './update';
-import React, { FormEvent, Fragment, useEffect } from 'react';
+import React, { FormEvent, useEffect } from 'react';
 
-interface CRUDProps<T = any> {
+interface CRUDProps<T> {
   /**
    * This function is called whenever the query changes or if the state of the parameters have changed
    *
@@ -24,9 +24,7 @@ interface CRUDProps<T = any> {
    * You can also specify an `object` and specify where the component should request
    * for each of the `CRUD` operations
    */
-  endPoints:
-    | { create?: string; read?: string; update?: string; delete?: string }
-    | string;
+  endPoints: Endpoints;
   /**
    * Callback function whenever the component finished creating the object
    */
@@ -48,12 +46,11 @@ interface CRUDProps<T = any> {
    * Very useful to test whenever you need to show some loading.
    */
   delay?: number;
-  /**
-   * Weither the element you are pointing to in the backend refers to an `array`
-   * of elements or siply to an `item`
-   */
-  type?: SetType;
 }
+
+export type Endpoints =
+  | { create?: string; read?: string; update?: string; delete?: string }
+  | string;
 
 export type SetType = 'array' | 'item';
 
@@ -74,13 +71,13 @@ type FormRequest<T extends PartialIdentifiableGeneralParams> = (
   params?: T
 ) => Promise<any>;
 
-export interface FormRequestParams<T = any> {
+export interface FormRequestParams<T> {
   endpoint: string;
   mode: Mode;
   verbosity: number;
   domain: string;
   manualUpdate: DataHandler<T>;
-  data: T;
+  data?: T;
   headers?: GetHeaders;
   onCompleted?: () => any;
   forceRefresh: () => any;
@@ -130,7 +127,7 @@ export interface FormRequestParams<T = any> {
  * }}
  * ```
  */
-export interface CRUDObject<T = any> {
+export interface CRUDObject<T> {
   handleCreate: FormRequest<CreateParams>;
   read: QueryType<T>;
   handleUpdate: FormRequest<UpdateParams>;
@@ -156,9 +153,7 @@ export interface CRUDObject<T = any> {
  *
  * Go to the [examples directory](https://bitbucket.org/neovision/react-query/src/master/src/examples) to see examples
  */
-export const CRUD: <T = any>(
-  p: CRUDProps<T>
-) => React.ReactElement<CRUDProps<T>> = ({
+export const CRUD = <T = any,>({
   children,
   endPoints,
   onCreated,
@@ -166,8 +161,7 @@ export const CRUD: <T = any>(
   onUpdated,
   onDeleted,
   delay,
-  type = 'array',
-}) => {
+}: CRUDProps<T>): React.ReactElement<CRUDProps<T>> => {
   const [createEndpoint, readEndpoint, updateEndpoint, deleteEndpoint] =
     typeof endPoints == 'string'
       ? new Array(4).fill(endPoints)
@@ -191,11 +185,12 @@ export const CRUD: <T = any>(
 
   return (
     <ErrorBoundary>
-      <Query query={readEndpoint} delay={delay} onRead={onRead}>
+      <Query<T> query={readEndpoint} delay={delay} onRead={onRead}>
         {(res) => {
           const { forceRefresh } = res;
+          const type: SetType = Array.isArray(res.data) ? 'array' : 'item';
           return (
-            <Fragment>
+            <>
               {children(
                 {
                   handleCreate: createRequest({
@@ -222,7 +217,7 @@ export const CRUD: <T = any>(
                 },
                 forceRefresh
               )}
-            </Fragment>
+            </>
           );
         }}
       </Query>
