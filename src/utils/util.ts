@@ -1,4 +1,5 @@
 import { QueryType, RequestData } from './api';
+import { requestError } from './log';
 import { TotalProgress } from './xhr/progress';
 import { BaseSyntheticEvent, FormEvent, useReducer } from 'react';
 
@@ -172,17 +173,17 @@ export const seperate = (strs: string[]): [string, string[]][] => {
   });
 };
 
-export const getPathTail = (
+export const getId = (
   data: FormExtractorData,
   type: QueryType,
   name: string,
   pathTail?: string | number
 ) => {
   const id = data[name];
-  if (type == 'path' && id != '' && id != null) {
-    return id;
-  }
-  return pathTail ?? '';
+  if (id != '' && id != null) return id;
+  else if (pathTail) return pathTail;
+  requestError(`Cannot identify the form ${name} from`, data);
+  throw new Error(`Cannot identify the form ${name}`);
 };
 
 export const useForceUpdate = (): (() => void) => {
