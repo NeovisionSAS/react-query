@@ -64,8 +64,8 @@ export const useRequest = (
         RequestOptionsWithDomain
       >(merged, options, {
         onRejected: (e: any) => {
-          merged.onRejected?.(e);
           options.onRejected?.(e);
+          merged.onRejected?.(e);
         },
       });
       return request<T>(domain, path, {
