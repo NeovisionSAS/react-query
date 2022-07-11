@@ -33,7 +33,7 @@ export const createRequest = ({
       formData
     );
 
-    return request(domain, createEndpoint, {
+    return request(domain, `${createEndpoint}/`, {
       data: formData,
       method,
       headers,
