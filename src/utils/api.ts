@@ -77,8 +77,6 @@ export const request = function <T = any>(
   } = options;
   const { body, contentType } = restructureData(data);
 
-  console.log('onRejected : ', onRejected);
-
   const req = (headers: HeadersInit) => {
     const endpoint = `${domain}/${path}`;
     return XHRFetch(endpoint, {

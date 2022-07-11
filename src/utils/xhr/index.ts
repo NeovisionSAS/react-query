@@ -38,7 +38,6 @@ export const XHRFetch = (
       const parsedData = applyHeaders(headers, r.response);
       const { status, statusText } = r;
       if (status >= 400 && status < 600) {
-        console.log('ERRRRRROR', parsedData);
         reject({ status, statusText, url, data: parsedData });
       }
       resolve(parsedData);
