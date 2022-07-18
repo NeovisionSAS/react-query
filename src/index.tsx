@@ -1,6 +1,6 @@
 import App from './components/App';
-import './global';
 import './scss/default.scss';
+import '@generalizers/prototype-expansion';
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 

@@ -243,7 +243,7 @@ export const buildHeader = (
         'Content-Type': contentType,
       })
     : contentType == 'multipart/form-data'
-    ? Object.exclude(headers, 'Content-Type')
+    ? Object.exclude(headers, 'Content-Type' as any)
     : headers;
 };
 

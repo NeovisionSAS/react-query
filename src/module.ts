@@ -5,8 +5,8 @@ import {
   useQueryOptions,
   useRequest,
 } from './components/utils/QueryOptionsProvider';
-import './global';
 import { request } from './utils/api';
+import '@generalizers/prototype-expansion';
 
 export {
   CRUD,
