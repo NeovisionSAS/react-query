@@ -68,3 +68,17 @@ export class Route {
 
 Route.add(userRoutes, 'User');
 Route.add(fileRoutes, 'File');
+Route.add(
+  [
+    {
+      action: (_, response) => {
+        response.removeHeader('Access-Control-Allow-Origin');
+        response.setHeader('Access-Control-Allow-Credentials', 'true');
+        return Promise.resolve('Cors works !');
+      },
+      method: 'GET',
+      path: '/cors',
+    },
+  ],
+  'Cors'
+);

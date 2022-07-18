@@ -28,6 +28,9 @@ function App(): JSX.Element {
             parameterType: 'queryString',
             mode: 'development',
             verbosity: 10,
+            onRejected(rej) {
+              console.error('Received rejection', rej);
+            },
           },
           storageQueryOptions
         )}
