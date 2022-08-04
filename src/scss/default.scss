@@ -1,6 +1,6 @@
 @use 'sass:color';
 
-$background: rgb(30,30,30);
+$background: rgb(30, 30, 30);
 $color: white;
 
 body {
@@ -8,6 +8,8 @@ body {
   margin: 0;
   overflow-x: hidden;
   background-color: $background;
+  font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+  color: $color;
 }
 
 #root {
@@ -16,7 +18,8 @@ body {
   min-height: 100vh;
 }
 
-header,nav {
+header,
+nav {
   padding: 10px;
   color: black;
   z-index: 1;
@@ -51,7 +54,6 @@ input {
   margin: 5px;
 }
 
-
 form {
   display: flex;
   flex-direction: column;
@@ -70,5 +72,13 @@ form {
 
   > button:last-child {
     margin: 5px;
+  }
+}
+
+a {
+  color: orange;
+
+  &:visited {
+    color: orangered;
   }
 }
