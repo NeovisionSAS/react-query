@@ -1,19 +1,19 @@
+import React, { useCallback, useEffect, useState } from 'react';
 import { RequiredBy } from '../../../types/global';
 import {
   request,
   RequestOptions,
   RequestOptionsWithDomain,
   RequestOptionsWithOptionalDomain,
-} from '../../../utils/api';
-import { requestLog } from '../../../utils/log';
-import { Query as QueryType } from '../../../utils/util';
+} from '../../../utils/client/api';
+import { requestLog } from '../../../utils/client/log';
+import { Query as QueryType } from '../../../utils/client/util';
 import {
   TotalProgress,
   totalProgressInitialiser,
-} from '../../../utils/xhr/progress';
+} from '../../../utils/client/xhr/progress';
 import ErrorBoundary from '../ErrorBoundary';
 import { useQueryOptions } from '../QueryOptionsProvider';
-import React, { useCallback, useEffect, useState } from 'react';
 
 export type DataHandler<T> = (data: T) => any;
 

@@ -1,4 +1,4 @@
-import { PartialBy } from '../../types/global';
+import { PartialBy } from '../../../types/global';
 
 export type XHRProgress = (progress: TotalProgress) => any;
 
