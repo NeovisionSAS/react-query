@@ -1,7 +1,7 @@
+import { BaseSyntheticEvent, FormEvent, useReducer } from 'react';
 import { QueryParamType, RequestData } from './api';
 import { requestError } from './log';
 import { TotalProgress } from './xhr/progress';
-import { BaseSyntheticEvent, FormEvent, useReducer } from 'react';
 
 type TypedTarget = EventTarget & {
   [key: string]: {
@@ -38,21 +38,35 @@ export const getFormData = <T = { [key: string]: string | number }>(
       .reduce((acc, cur) => {
         const { name, value, checked, type, required, files } = cur;
 
-        const isCheckbox = type == 'checkbox';
         const isValEmpty = value == '' || value == null;
 
         if (required && isValEmpty)
           throw new Error(`Can't use an empty value for ${name}`);
 
-        let finalValue =
-          type == 'number' ? new Number(value).valueOf() : files ?? value;
+        const typeValue = valueFromType(type, { checked, value, files });
 
         return {
           ...acc,
-          [name]: isCheckbox ? checked : finalValue,
+          [name]: typeValue,
         };
       }, {}) as T
   );
+};
+
+const valueFromType = (type: string, possibleValues: any) => {
+  const { value, checked, files } = possibleValues;
+  switch (type) {
+    case 'checkbox':
+      return checked;
+    case 'number':
+      return value == '' || value == null ? null : new Number(value).valueOf();
+    case 'date':
+      return value == '' || value == null ? null : value;
+    case 'file':
+      return files ?? value;
+    default:
+      return value;
+  }
 };
 
 interface FormExtractorData {
