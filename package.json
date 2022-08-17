@@ -1,6 +1,6 @@
 {
   "name": "@neovision/react-query",
-  "version": "1.14.12",
+  "version": "1.14.13",
   "private": false,
   "author": {
     "email": "alan.blanchet@neovision.fr",
@@ -15,7 +15,7 @@
     "major": "npm version --no-git-tag-version major",
     "postversion": "git add . && git commit && git push"
   },
-  "main": "./src/index.tsx",
+  "main": "./lib/module.js",
   "module": "./lib/module.js",
   "types": "./lib/module.d.ts",
   "files": [
