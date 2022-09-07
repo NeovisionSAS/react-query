@@ -1,3 +1,5 @@
+import { contextGenerator } from '@generalizers/react-context';
+import { DependencyList, useEffect, useMemo, useState } from 'react';
 import {
   QueryOptions,
   RealQueryOptions,
@@ -5,8 +7,6 @@ import {
   RequestOptionsWithDomain,
   RequestOptionsWithOptionalDomain,
 } from '../../../utils/api';
-import { contextGenerator } from '@generalizers/react-context';
-import { DependencyList, useEffect, useMemo, useState } from 'react';
 
 export const {
   useHook: useQueryOptions,
@@ -70,7 +70,7 @@ export const useRequest = (
       });
       return request<T>(domain, path, {
         ...returnMerged,
-        signal: controller?.signal,
+        signal: rRest.signal ?? controller?.signal,
       });
     };
   }, [...(dependencies ?? []), controller]);
