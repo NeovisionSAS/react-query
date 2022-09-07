@@ -59,7 +59,7 @@ export const useRequest = (
       path: string,
       options: RequestOptionsWithOptionalDomain = { method: 'GET' }
     ) => {
-      const { domain, ...returnMerged } = Object.merge<
+      const { domain, signal, ...returnMerged } = Object.merge<
         any,
         RequestOptionsWithDomain
       >(merged, options, {
@@ -70,7 +70,7 @@ export const useRequest = (
       });
       return request<T>(domain, path, {
         ...returnMerged,
-        signal: rRest.signal ?? controller?.signal,
+        signal: signal ?? controller?.signal,
       });
     };
   }, [...(dependencies ?? []), controller]);

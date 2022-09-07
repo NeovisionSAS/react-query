@@ -1,9 +1,9 @@
+import { FormEvent } from 'react';
 import { PartialBy, RequiredBy } from '../types/global';
 import { requestError, requestWarn } from './log';
 import { buildHeader, restructureData } from './util';
 import { XHRFetch } from './xhr';
 import { XHRProgress } from './xhr/progress';
-import { FormEvent } from 'react';
 
 export type Method = 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'GET';
 export type QueryParamType = 'path' | 'queryString';
