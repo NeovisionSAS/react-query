@@ -24,7 +24,7 @@ interface FormOptionsInsert<T> {
 }
 
 interface CRUDFormProps<T, U extends FormType> {
-  endpoints: Endpoints;
+  endPoints: Endpoints;
   children?: (children: CRUDFormChildren<T, Partial<U>>) => JSX.Element;
   type: FormType<U>;
   updateStyle?: 'each' | 'global';
@@ -32,12 +32,12 @@ interface CRUDFormProps<T, U extends FormType> {
 
 export const CRUDAuto = <T, U extends FormType = FormType<T>>({
   children,
-  endpoints,
+  endPoints,
   type,
   updateStyle = 'each',
 }: CRUDFormProps<T, U>): React.ReactElement => {
   return (
-    <CRUD<T> endPoints={endpoints}>
+    <CRUD<T> endPoints={endPoints}>
       {(crud) => {
         const {
           read: { data, loading, error },
