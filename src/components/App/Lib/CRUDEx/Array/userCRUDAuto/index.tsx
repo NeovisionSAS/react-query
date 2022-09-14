@@ -6,8 +6,6 @@ import style from './index.module.scss';
 
 const userType = asFormTypes({
   id: { required: true, visible: false, pk: true, type: 'number' },
-  name: { required: true },
-  age: { required: true, type: 'number' },
   nationality: {
     select: {
       options: ['Francaise', 'Anglaise', 'Quebequoise'].map((n) => ({
@@ -21,11 +19,18 @@ const userType = asFormTypes({
     name: 'Date of birth',
     required: true,
   },
+  personalInfo: {
+    name: 'Informations personnelles',
+    sub: {
+      name: { required: true },
+      age: { required: true, type: 'number' },
+    },
+  },
 });
 
 export const UserCRUDAuto: FunctionComponent = () => {
   return (
-    <CRUDAuto<User> endpoints={'user'} type={userType}>
+    <CRUDAuto<User, typeof userType> endpoints={'user'} type={userType}>
       {({ getForm }) => {
         return (
           <div>
@@ -34,6 +39,7 @@ export const UserCRUDAuto: FunctionComponent = () => {
             <h1>UPDATE</h1>
             {getForm('update', {
               className: style.main,
+              deletable: false,
             })}
           </div>
         );
