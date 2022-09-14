@@ -9,6 +9,7 @@ import {
 } from './components/utils/QueryOptionsProvider';
 import './scss/defaults.scss';
 import { request } from './utils/api';
+import { asFormTypes } from './utils/form';
 
 export {
   CRUD,
@@ -18,6 +19,7 @@ export {
   useQuery,
   useRequest,
   CRUDObject,
+  asFormTypes,
   useQueryOptions,
   QueryOptionsProvider,
 };

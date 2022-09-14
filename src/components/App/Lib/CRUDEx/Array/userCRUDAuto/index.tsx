@@ -25,7 +25,7 @@ const userType = asFormTypes({
 
 export const UserCRUDAuto: FunctionComponent = () => {
   return (
-    <CRUDAuto<User> endpoints={'user'} type={userType}>
+    <CRUDAuto<User> endPoints={'user'} type={userType}>
       {({ getForm }) => {
         return (
           <div>
