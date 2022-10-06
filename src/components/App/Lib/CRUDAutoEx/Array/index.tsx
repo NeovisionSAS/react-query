@@ -6,7 +6,7 @@ const userType = asFormTypes({ hello: { name: 'Hello' } });
 
 export const ArrayEx: FunctionComponent = () => {
   return (
-    <CRUDAuto endpoints={'user'} type={userType}>
+    <CRUDAuto endPoints={'user'} type={userType}>
       {({ getForm }) => {
         return getForm('create');
       }}

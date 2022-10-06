@@ -100,10 +100,10 @@ export const CRUDAuto = <T, U = FormType<any>>({
                     .map(([k, v]) => v.name ?? k)[0];
                   return updateStyle == 'each' ? (
                     <>
-                      {data.map((d, i) => {
+                      {data.map((d) => {
                         const value = d[pkName];
                         return (
-                          <Fragment key={i}>
+                          <Fragment key={`${pkName}-del-${value}`}>
                             <div className={className}>
                               <form
                                 className={form.form}

@@ -39,7 +39,6 @@ export const UserCRUDAuto: FunctionComponent = () => {
             <h1>UPDATE</h1>
             {getForm('update', {
               className: style.main,
-              deletable: false,
             })}
           </div>
         );

@@ -1,3 +1,4 @@
+import { FormEvent } from 'react';
 import {
   FormRequestParams,
   PartialIdentifiableGeneralParams,
@@ -6,7 +7,6 @@ import {
 import { QueryParamType, request } from '../../../../utils/api';
 import { requestError, requestLog } from '../../../../utils/log';
 import { getFormData } from '../../../../utils/util';
-import { FormEvent } from 'react';
 
 interface DeleteFormRequestParams<T = any> extends FormRequestParams<T> {
   idName: string;
