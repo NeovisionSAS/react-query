@@ -1,8 +1,8 @@
 import { FunctionComponent } from 'react';
-import { FormType } from '../../../../../utils/form';
+import { asFormTypes } from '../../../../../utils/form';
 import { CRUDAuto } from '../../../../utils/CRUDAuto';
 
-const userType: FormType = { hello: { name: 'Hello' } };
+const userType = asFormTypes({ hello: { name: 'Hello' } });
 
 export const ArrayEx: FunctionComponent = () => {
   return (

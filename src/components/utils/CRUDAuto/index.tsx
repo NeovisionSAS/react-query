@@ -1,13 +1,21 @@
 import React, { Fragment, ReactElement } from 'react';
+import { DeepPartial } from 'typeorm';
 import form from '../../../scss/form.module.scss';
-import { createFormObject, FormType } from '../../../utils/form';
+import {
+  createFormObject,
+  FormType,
+  KeysToFormType,
+} from '../../../utils/form';
 import { CRUD, CRUDObject, Endpoints } from '../CRUD';
 
 export type FormCreateType = 'create' | 'read' | 'update';
 
-interface CRUDFormChildren<T, U extends FormType> {
+interface CRUDFormChildren<T, U> {
   data: CRUDObject<T>;
-  getForm: (type: FormCreateType, options?: FormOptions<U>) => ReactElement;
+  getForm: (
+    type: FormCreateType,
+    options?: FormOptions<DeepPartial<KeysToFormType<U>>>
+  ) => ReactElement;
 }
 
 export interface FormOptions<T> {
@@ -23,14 +31,14 @@ interface FormOptionsInsert<T> {
   element: () => JSX.Element;
 }
 
-interface CRUDFormProps<T, U extends FormType> {
+interface CRUDFormProps<T, U> {
   endPoints: Endpoints;
-  children?: (children: CRUDFormChildren<T, Partial<U>>) => JSX.Element;
-  type: FormType<U>;
+  children?: (children: CRUDFormChildren<T, U>) => JSX.Element;
+  type: U;
   updateStyle?: 'each' | 'global';
 }
 
-export const CRUDAuto = <T, U extends FormType = FormType<T>>({
+export const CRUDAuto = <T, U = FormType<any>>({
   children,
   endPoints,
   type,
@@ -87,7 +95,7 @@ export const CRUDAuto = <T, U extends FormType = FormType<T>>({
                     </div>
                   );
                 if (t == 'update') {
-                  const pkName = Object.entries<any>(type)
+                  const pkName = Object.entries<any>(type as object)
                     .filter(([_, value]) => value.pk)
                     .map(([k, v]) => v.name ?? k)[0];
                   return updateStyle == 'each' ? (

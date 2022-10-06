@@ -1,6 +1,6 @@
 /* eslint-disable no-unsafe-finally */
-import styles from './index.module.scss';
 import React, { ErrorInfo } from 'react';
+import styles from './index.module.scss';
 
 interface ErrorBoundaryState {
   hasError: boolean;
@@ -33,7 +33,13 @@ class ErrorBoundary extends React.Component<
       <div className={styles.main}>
         <div>{error?.e?.message}</div>
         <hr />
-        <div>{error?.info?.componentStack}</div>
+        <div>
+          {error?.info?.componentStack.split('\n').map((v) => (
+            <>
+              <div>{v}</div>
+            </>
+          ))}
+        </div>
       </div>
     );
   }

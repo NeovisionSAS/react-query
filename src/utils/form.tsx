@@ -4,7 +4,7 @@ import form from '../scss/form.module.scss';
 
 const formObjectKeys = ['pattern', 'name', 'required', 'visible', 'className'];
 
-interface FormObject {
+interface FormObject<T> {
   pk?: boolean;
   pattern?: string;
   name?: string;
@@ -24,44 +24,68 @@ interface FormObject {
     | 'text';
   className?: string;
   select?: FormObjectSelect;
+  sub?: T;
 }
 
 interface FormObjectSelect {
-  options: { value: string | number; text: string | number }[];
+  options: { value: string | number; text?: string | number }[];
 }
 
-export type FormType<T = object> = {
-  [K in keyof T]: FormObject | FormType;
+export type FormType<T, K extends keyof T = keyof T, Q extends T[K] = T[K]> = {
+  [U in K]: FormObject<FormType<T[U]>>;
 };
 
-export const asFormTypes = <T,>(types: FormType<T>) => {
-  return types;
+type ExtactFormType<T> = T extends FormType<infer X> ? X : never;
+
+export type KeysToFormType<
+  T,
+  K = ExtactFormType<T>,
+  L extends keyof K = keyof K
+> = {
+  [P in L]: K[P] extends object
+    ? FormObject<KeysToFormType<K[P]>>
+    : FormObject<K[P]>;
 };
+
+export const asFormTypes = <T,>(types: FormType<T>) => types;
+
+const x = asFormTypes({
+  a: {
+    name: 'Hello',
+  },
+});
 
 interface FormObjectOptions {
   method: FormCreateType;
   updateStyle?: 'each' | 'global';
   formOptions?: FormOptions<any>;
+  noSubmit?: boolean;
 }
 
-export const createFormObject = <T extends object>(
+export const createFormObject = <T,>(
   type: T,
   options: FormObjectOptions,
   data: any[] = []
 ) => {
-  return createFormObjectRecursive(type, options, data, true);
+  return createFormObjectRecursive(type, options, data);
 };
 
-const createFormObjectRecursive = <T extends object>(
+const createFormObjectRecursive = <T,>(
   type: T,
-  { method, updateStyle = 'each', formOptions = {} }: FormObjectOptions,
+  options: FormObjectOptions,
   data: any[] = [],
-  start = false
+  idName?: string
 ): JSX.Element => {
+  const {
+    method,
+    updateStyle = 'each',
+    formOptions = {},
+    noSubmit = false,
+  } = options;
   if (method == 'create') {
     return (
       <>
-        {Object.entries(type).map(([attr, object]) => {
+        {Object.entries(type as object).map(([attr, object]) => {
           // if (!start && formObjectKeys.includes(attr))
           //   return createFormObjectRecursive<T>(object, method, data);
           const {
@@ -70,10 +94,29 @@ const createFormObjectRecursive = <T extends object>(
             visible = true,
             pk,
             select,
+            sub,
             ...other
-          } = object as FormObject;
+          } = object as FormObject<any>;
           const { required } = other;
           const oName = name ?? attr;
+
+          if (sub) {
+            return (
+              <Fragment key={attr}>
+                <div className={`${form.section}`}>
+                  <label>{oName}</label>
+                </div>
+                <div {...other} className={`${form.sectionDeep} ${className}`}>
+                  {createFormObjectRecursive(
+                    sub,
+                    { ...options, noSubmit: true },
+                    data
+                  )}
+                </div>
+              </Fragment>
+            );
+          }
+
           if (pk) return <Fragment key={attr}></Fragment>;
           return (
             <div key={attr} className={`${form.section} ${className}`}>
@@ -99,12 +142,12 @@ const createFormObjectRecursive = <T extends object>(
             </div>
           );
         })}
-        <button type="submit">Submit</button>
+        {!noSubmit && <button type="submit">Submit</button>}
       </>
     );
   }
 
-  const pkName = Object.entries(type)
+  const pkName = Object.entries(type as object)
     .filter(([_, value]) => value.pk)
     .map(([k, v]) => v.name ?? k)[0];
 
@@ -116,26 +159,49 @@ const createFormObjectRecursive = <T extends object>(
   return (
     <>
       {data.map((line) => {
-        const idValue = line[pkName];
+        const idValue = line[idName ?? pkName];
+
+        const lineKeys = Object.keys(line);
         return (
           <Fragment key={idValue}>
-            {Object.entries<any>(line).map(([key, value = ''], i) => {
+            {Object.entries(type as any).map(([key, v], i) => {
               const {
                 className,
                 name,
                 visible = true,
                 pk,
                 select,
+                sub,
                 ...other
-              } = (type as any)[key] as FormObject;
-              const { required } = other;
+              } = v as FormObject<any>;
 
-              // TODO include nested objects
-              // if (!start && formObjectKeys.includes(attr))
-              //   return createFormObjectRecursive<T>(object, method, data);
+              const { required } = other;
 
               const oName = name ?? key;
               const fName = `${key}-${idValue}`;
+
+              if (!lineKeys.includes(key)) {
+                return (
+                  <Fragment key={`${fName}-${i}`}>
+                    <div className={`${form.section}`}>
+                      <label>{oName}</label>
+                    </div>
+                    <div
+                      {...other}
+                      className={`${form.sectionDeep} ${className}`}
+                    >
+                      {createFormObjectRecursive(
+                        sub,
+                        { ...options, noSubmit: true },
+                        data,
+                        pkName
+                      )}
+                    </div>
+                  </Fragment>
+                );
+              }
+
+              const value = line[key];
 
               if (!visible)
                 return (
@@ -185,7 +251,7 @@ const createFormObjectRecursive = <T extends object>(
                 </Fragment>
               );
             })}
-            {method != 'read' && updateStyle == 'each' && (
+            {method != 'read' && updateStyle == 'each' && !noSubmit && (
               <button key={`btn-${idValue}`} type="submit">
                 Submit
               </button>
