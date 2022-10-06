@@ -14,7 +14,11 @@ interface CRUDFormChildren<T, U> {
   data: CRUDObject<T>;
   getForm: (
     type: FormCreateType,
-    options?: FormOptions<DeepPartial<KeysToFormType<U>>>
+    options?: FormOptions<DeepPartial<KeysToFormType<U>>>,
+    attributes?: React.DetailedHTMLProps<
+      React.FormHTMLAttributes<HTMLFormElement>,
+      HTMLFormElement
+    >
   ) => ReactElement;
 }
 
@@ -65,13 +69,18 @@ export const CRUDAuto = <T, U = FormType<any>>({
                 deletable = <button type="submit">Delete</button>,
                 className,
                 ...options
-              } = {}
+              } = {},
+              { ...attributes }
             ) => {
               if (t == 'create')
                 return (
                   <form
-                    className={`${form.form} ${className}`}
-                    onSubmit={handleCreate}
+                    {...attributes}
+                    className={`${form.form} ${className} ${attributes.className}`}
+                    onSubmit={(e) => {
+                      attributes.onSubmit?.(e);
+                      handleCreate(e);
+                    }}
                   >
                     {createFormObject(type, {
                       method: t,
@@ -106,8 +115,12 @@ export const CRUDAuto = <T, U = FormType<any>>({
                           <Fragment key={`${pkName}-del-${value}`}>
                             <div className={className}>
                               <form
-                                className={form.form}
-                                onSubmit={(e) => handleUpdate(e)}
+                                {...attributes}
+                                className={`${form.form} ${attributes.className}`}
+                                onSubmit={(e) => {
+                                  attributes.onSubmit?.(e);
+                                  handleUpdate(e);
+                                }}
                               >
                                 {createFormObject(
                                   type,
@@ -121,10 +134,12 @@ export const CRUDAuto = <T, U = FormType<any>>({
                               </form>
                               {(typeof deletable != 'boolean' || deletable) && (
                                 <form
-                                  className={form.silent}
-                                  onSubmit={(e) =>
-                                    handleDelete(e, { name: pkName })
-                                  }
+                                  {...attributes}
+                                  className={`${form.silent} ${attributes.className}`}
+                                  onSubmit={(e) => {
+                                    attributes.onSubmit?.(e);
+                                    handleDelete(e, { name: pkName });
+                                  }}
                                 >
                                   <input
                                     id={pkName}
@@ -142,8 +157,12 @@ export const CRUDAuto = <T, U = FormType<any>>({
                     </>
                   ) : (
                     <form
-                      className={`${form.form} ${className}`}
-                      onSubmit={(e) => handleUpdate(e)}
+                      {...attributes}
+                      className={`${form.form} ${className} ${attributes.className}`}
+                      onSubmit={(e) => {
+                        attributes.onSubmit?.(e);
+                        handleUpdate(e);
+                      }}
                     >
                       {createFormObject(
                         type,
