@@ -70,15 +70,15 @@ export const CRUDAuto = <T, U = FormType<any>>({
                 className,
                 ...options
               } = {},
-              { ...attributes }
+              attributes
             ) => {
               if (t == 'create')
                 return (
                   <form
                     {...attributes}
-                    className={`${form.form} ${className} ${attributes.className}`}
+                    className={`${form.form} ${className} ${attributes?.className}`}
                     onSubmit={(e) => {
-                      attributes.onSubmit?.(e);
+                      attributes?.onSubmit?.(e);
                       handleCreate(e);
                     }}
                   >
@@ -116,9 +116,9 @@ export const CRUDAuto = <T, U = FormType<any>>({
                             <div className={className}>
                               <form
                                 {...attributes}
-                                className={`${form.form} ${attributes.className}`}
+                                className={`${form.form} ${attributes?.className}`}
                                 onSubmit={(e) => {
-                                  attributes.onSubmit?.(e);
+                                  attributes?.onSubmit?.(e);
                                   handleUpdate(e);
                                 }}
                               >
@@ -135,9 +135,9 @@ export const CRUDAuto = <T, U = FormType<any>>({
                               {(typeof deletable != 'boolean' || deletable) && (
                                 <form
                                   {...attributes}
-                                  className={`${form.silent} ${attributes.className}`}
+                                  className={`${form.silent} ${attributes?.className}`}
                                   onSubmit={(e) => {
-                                    attributes.onSubmit?.(e);
+                                    attributes?.onSubmit?.(e);
                                     handleDelete(e, { name: pkName });
                                   }}
                                 >
@@ -158,9 +158,9 @@ export const CRUDAuto = <T, U = FormType<any>>({
                   ) : (
                     <form
                       {...attributes}
-                      className={`${form.form} ${className} ${attributes.className}`}
+                      className={`${form.form} ${className} ${attributes?.className}`}
                       onSubmit={(e) => {
-                        attributes.onSubmit?.(e);
+                        attributes?.onSubmit?.(e);
                         handleUpdate(e);
                       }}
                     >

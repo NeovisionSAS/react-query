@@ -86,8 +86,6 @@ const createFormObjectRecursive = <T,>(
     return (
       <>
         {Object.entries(type as object).map(([attr, object]) => {
-          // if (!start && formObjectKeys.includes(attr))
-          //   return createFormObjectRecursive<T>(object, method, data);
           const {
             className,
             name,
@@ -102,18 +100,22 @@ const createFormObjectRecursive = <T,>(
 
           if (sub) {
             return (
-              <Fragment key={attr}>
+              <div
+                key={attr}
+                className={`${className}`}
+                style={{ display: 'flex', flexDirection: 'column' }}
+              >
                 <div className={`${form.section}`}>
                   <label>{oName}</label>
                 </div>
-                <div {...other} className={`${form.sectionDeep} ${className}`}>
+                <div {...other} className={`${form.sectionDeep}`}>
                   {createFormObjectRecursive(
                     sub,
                     { ...options, noSubmit: true },
                     data
                   )}
                 </div>
-              </Fragment>
+              </div>
             );
           }
 
