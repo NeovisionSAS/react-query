@@ -1,12 +1,12 @@
+import { FunctionComponent } from 'react';
+import { Navigate, Route, Routes } from 'react-router';
+import { Link } from 'react-router-dom';
 import { User as UserDelete } from './delete';
 import { AllUsers } from './get';
 import { User as UserPost } from './post';
 import { User as UserPut } from './put';
 import { UserCRUD } from './userCRUD';
 import { UserCRUDAuto } from './userCRUDAuto';
-import { FunctionComponent } from 'react';
-import { Navigate, Route, Routes } from 'react-router';
-import { Link } from 'react-router-dom';
 
 export const ArrayEx: FunctionComponent = () => {
   return (
@@ -20,7 +20,7 @@ export const ArrayEx: FunctionComponent = () => {
       </nav>
       <Routes>
         <Route path="userCRUD" element={<UserCRUD />} />
-        <Route path="userCRUDAuto" element={<UserCRUDAuto />} />
+        <Route path="userCRUDAuto/*" element={<UserCRUDAuto />} />
         <Route path="getAllUsers" element={<AllUsers />} />
         <Route path="postUser" element={<UserPost />} />
         <Route path="putUser" element={<UserPut />} />

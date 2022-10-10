@@ -1,5 +1,9 @@
 import { Fragment } from 'react';
-import { FormCreateType, FormOptions } from '../components/utils/CRUDAuto';
+import {
+  FormCreateType,
+  FormOptions,
+  FormOptionsInsert,
+} from '../components/utils/CRUDAuto';
 import form from '../scss/form.module.scss';
 
 const formObjectKeys = ['pattern', 'name', 'required', 'visible', 'className'];
@@ -82,6 +86,9 @@ const createFormObjectRecursive = <T,>(
     formOptions = {},
     noSubmit = false,
   } = options;
+
+  const { insert = [] } = formOptions;
+
   if (method == 'create') {
     return (
       <>
@@ -121,27 +128,31 @@ const createFormObjectRecursive = <T,>(
 
           if (pk) return <Fragment key={attr}></Fragment>;
           return (
-            <div key={attr} className={`${form.section} ${className}`}>
-              <label htmlFor={attr}>
-                {oName?.capitalize()} {required && '*'}
-              </label>
-              {select ? (
-                <select id={attr} name={attr}>
-                  {select.options.map((option, i) => {
-                    return (
-                      <option
-                        key={`${attr}-${i}`}
-                        value={option.value ?? option.text}
-                      >
-                        {option.text ?? option.value}
-                      </option>
-                    );
-                  })}
-                </select>
-              ) : (
-                <input {...other} id={attr} name={attr} />
-              )}
-            </div>
+            <Fragment key={attr}>
+              {extractInsert(insert, 'before', attr)}
+              <div className={`${form.section} ${className}`}>
+                <label htmlFor={attr}>
+                  {oName?.capitalize()} {required && '*'}
+                </label>
+                {select ? (
+                  <select id={attr} name={attr}>
+                    {select.options.map((option, i) => {
+                      return (
+                        <option
+                          key={`${attr}-${i}`}
+                          value={option.value ?? option.text}
+                        >
+                          {option.text ?? option.value}
+                        </option>
+                      );
+                    })}
+                  </select>
+                ) : (
+                  <input {...other} id={attr} name={attr} />
+                )}
+              </div>
+              {extractInsert(insert, 'after', attr)}
+            </Fragment>
           );
         })}
         {!noSubmit && <button type="submit">Submit</button>}
@@ -152,11 +163,6 @@ const createFormObjectRecursive = <T,>(
   const pkName = Object.entries(type as object)
     .filter(([_, value]) => value.pk)
     .map(([k, v]) => v.name ?? k)[0];
-
-  const { insert = { search: '', type: 'after', element: () => <></> } } =
-    formOptions;
-
-  const { search, type: insertType = 'after', element } = insert;
 
   return (
     <>
@@ -220,7 +226,7 @@ const createFormObjectRecursive = <T,>(
 
               return (
                 <Fragment key={`${fName}-${i}`}>
-                  {insertType == 'before' && search == key && element()}
+                  {extractInsert(insert, 'before', key)}
                   <div className={`${form.section} ${className}`}>
                     <label htmlFor={fName}>
                       {oName.capitalize()} {required && '*'}
@@ -249,7 +255,7 @@ const createFormObjectRecursive = <T,>(
                       />
                     )}
                   </div>
-                  {insertType == 'after' && search == key && element()}
+                  {extractInsert(insert, 'after', key)}
                 </Fragment>
               );
             })}
@@ -263,4 +269,12 @@ const createFormObjectRecursive = <T,>(
       })}
     </>
   );
+};
+
+const extractInsert = (
+  insert: FormOptionsInsert<any>[],
+  type: FormOptionsInsert<any>['type'],
+  s: string
+) => {
+  return insert.find((i) => i.type == type && i.search == s)?.element();
 };

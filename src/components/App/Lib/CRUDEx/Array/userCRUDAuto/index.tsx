@@ -1,50 +1,21 @@
 import { FunctionComponent } from 'react';
-import { User } from '../../../../../../interfaces';
-import { asFormTypes } from '../../../../../../utils/form';
-import { CRUDAuto } from '../../../../../utils/CRUDAuto';
-import style from './index.module.scss';
-
-const userType = asFormTypes({
-  id: { required: true, visible: false, pk: true, type: 'number' },
-  nationality: {
-    select: {
-      options: ['Francaise', 'Anglaise', 'Quebequoise'].map((n) => ({
-        value: n,
-      })),
-    },
-  },
-  book: {},
-  dateOfBirth: {
-    type: 'date',
-    name: 'Date of birth',
-    required: true,
-  },
-  personalInfo: {
-    name: 'Informations personnelles',
-    sub: {
-      name: { required: true },
-      age: { required: true, type: 'number' },
-    },
-  },
-});
+import { Navigate, Route, Routes } from 'react-router';
+import { Link } from 'react-router-dom';
+import { UserCRUDAutoDefault } from './default';
+import { UserCRUDAutoInsert } from './insert';
 
 export const UserCRUDAuto: FunctionComponent = () => {
   return (
-    <CRUDAuto<User, typeof userType> endPoints={'user'} type={userType}>
-      {({ getForm }) => {
-        return (
-          <div>
-            <h1>CREATE</h1>
-            {getForm('create')}
-            <h1>UPDATE</h1>
-            {getForm('update', {
-              className: style.main,
-            })}
-          </div>
-        );
-      }}
-    </CRUDAuto>
+    <>
+      <nav>
+        <Link to={'default'}>Default</Link>
+        <Link to={'insert'}>Insert</Link>
+      </nav>
+      <Routes>
+        <Route path="default" element={<UserCRUDAutoDefault />} />
+        <Route path="insert" element={<UserCRUDAutoInsert />} />
+        <Route path="*" element={<Navigate to={'default'} />} />
+      </Routes>
+    </>
   );
 };
-
-// Delete action

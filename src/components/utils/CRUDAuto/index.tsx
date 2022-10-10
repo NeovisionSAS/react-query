@@ -24,12 +24,12 @@ interface CRUDFormChildren<T, U> {
 
 export interface FormOptions<T> {
   override?: T;
-  insert?: FormOptionsInsert<T>;
+  insert?: FormOptionsInsert<T>[];
   deletable?: JSX.Element | boolean;
   className?: string;
 }
 
-interface FormOptionsInsert<T> {
+export interface FormOptionsInsert<T = any> {
   type?: 'before' | 'after';
   search: keyof T;
   element: () => JSX.Element;
