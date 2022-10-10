@@ -1,12 +1,11 @@
 import { Fragment } from 'react';
+import { DeepPartial } from 'typeorm';
 import {
   FormCreateType,
   FormOptions,
-  FormOptionsInsert,
+  FormOptionsInsertOrder,
 } from '../components/utils/CRUDAuto';
 import form from '../scss/form.module.scss';
-
-const formObjectKeys = ['pattern', 'name', 'required', 'visible', 'className'];
 
 interface FormObject<T> {
   pk?: boolean;
@@ -28,8 +27,16 @@ interface FormObject<T> {
     | 'text';
   className?: string;
   select?: FormObjectSelect;
+  render?: (o: FormRender) => JSX.Element;
   sub?: T;
 }
+
+type FormRender<T = any> = DeepPartial<FormObject<T>> &
+  FormObjectOptions & {
+    oName: string;
+    fName: string;
+    value?: any;
+  };
 
 interface FormObjectSelect {
   options: { value: string | number; text?: string | number }[];
@@ -52,12 +59,6 @@ export type KeysToFormType<
 };
 
 export const asFormTypes = <T,>(types: FormType<T>) => types;
-
-const x = asFormTypes({
-  a: {
-    name: 'Hello',
-  },
-});
 
 interface FormObjectOptions {
   method: FormCreateType;
@@ -87,12 +88,13 @@ const createFormObjectRecursive = <T,>(
     noSubmit = false,
   } = options;
 
-  const { insert = [] } = formOptions;
+  const { insert } = formOptions;
+  const { before = [], after = [] } = insert ?? {};
 
   if (method == 'create') {
     return (
       <>
-        {Object.entries(type as object).map(([attr, object]) => {
+        {Object.entries(type as object).map(([fName, object]) => {
           const {
             className,
             name,
@@ -100,15 +102,23 @@ const createFormObjectRecursive = <T,>(
             pk,
             select,
             sub,
+            render,
             ...other
           } = object as FormObject<any>;
           const { required } = other;
-          const oName = name ?? attr;
+          const oName = name ?? fName;
+
+          if (render)
+            return (
+              <Fragment key={fName}>
+                {render({ ...object, oName, fName, ...options })}
+              </Fragment>
+            );
 
           if (sub) {
             return (
               <div
-                key={attr}
+                key={fName}
                 className={`${className}`}
                 style={{ display: 'flex', flexDirection: 'column' }}
               >
@@ -126,20 +136,21 @@ const createFormObjectRecursive = <T,>(
             );
           }
 
-          if (pk) return <Fragment key={attr}></Fragment>;
+          if (pk) return <Fragment key={fName}></Fragment>;
+
           return (
-            <Fragment key={attr}>
-              {extractInsert(insert, 'before', attr)}
+            <Fragment key={fName}>
+              {extractInsert(before, fName)}
               <div className={`${form.section} ${className}`}>
-                <label htmlFor={attr}>
+                <label htmlFor={fName}>
                   {oName?.capitalize()} {required && '*'}
                 </label>
                 {select ? (
-                  <select id={attr} name={attr}>
+                  <select id={fName} name={fName}>
                     {select.options.map((option, i) => {
                       return (
                         <option
-                          key={`${attr}-${i}`}
+                          key={`${fName}-${i}`}
                           value={option.value ?? option.text}
                         >
                           {option.text ?? option.value}
@@ -148,10 +159,10 @@ const createFormObjectRecursive = <T,>(
                     })}
                   </select>
                 ) : (
-                  <input {...other} id={attr} name={attr} />
+                  <input {...other} id={fName} name={fName} />
                 )}
               </div>
-              {extractInsert(insert, 'after', attr)}
+              {extractInsert(after, fName)}
             </Fragment>
           );
         })}
@@ -180,6 +191,7 @@ const createFormObjectRecursive = <T,>(
                 pk,
                 select,
                 sub,
+                render,
                 ...other
               } = v as FormObject<any>;
 
@@ -187,6 +199,21 @@ const createFormObjectRecursive = <T,>(
 
               const oName = name ?? key;
               const fName = `${key}-${idValue}`;
+
+              const value = line[key];
+
+              if (render)
+                return (
+                  <Fragment key={`${fName}-${i}`}>
+                    {render({
+                      ...(v as FormObject<any>),
+                      oName,
+                      fName,
+                      value,
+                      ...options,
+                    })}
+                  </Fragment>
+                );
 
               if (!lineKeys.includes(key)) {
                 return (
@@ -209,8 +236,6 @@ const createFormObjectRecursive = <T,>(
                 );
               }
 
-              const value = line[key];
-
               if (!visible)
                 return (
                   <input
@@ -226,7 +251,7 @@ const createFormObjectRecursive = <T,>(
 
               return (
                 <Fragment key={`${fName}-${i}`}>
-                  {extractInsert(insert, 'before', key)}
+                  {extractInsert(before, key)}
                   <div className={`${form.section} ${className}`}>
                     <label htmlFor={fName}>
                       {oName.capitalize()} {required && '*'}
@@ -255,7 +280,7 @@ const createFormObjectRecursive = <T,>(
                       />
                     )}
                   </div>
-                  {extractInsert(insert, 'after', key)}
+                  {extractInsert(after, key)}
                 </Fragment>
               );
             })}
@@ -271,10 +296,6 @@ const createFormObjectRecursive = <T,>(
   );
 };
 
-const extractInsert = (
-  insert: FormOptionsInsert<any>[],
-  type: FormOptionsInsert<any>['type'],
-  s: string
-) => {
-  return insert.find((i) => i.type == type && i.search == s)?.element();
+const extractInsert = (insert: FormOptionsInsertOrder<any>[], s: string) => {
+  return insert.filter(([search]) => search == s).map(([, e]) => e?.());
 };

@@ -2,11 +2,12 @@ import { FunctionComponent } from 'react';
 import { User } from '../../../../../../../interfaces';
 import { asFormTypes } from '../../../../../../../utils/form';
 import { CRUDAuto } from '../../../../../../utils/CRUDAuto';
-import style from './index.module.scss';
 
 const userType = asFormTypes({
   id: { required: true, visible: false, pk: true, type: 'number' },
-  name: { required: true },
+  name: {
+    required: true,
+  },
   age: { required: true, type: 'number' },
   nationality: {
     select: {
@@ -22,25 +23,27 @@ const userType = asFormTypes({
   },
 });
 
-export const UserCRUDAutoInsert: FunctionComponent = () => {
+export const UserCRUDAutoCustom: FunctionComponent = () => {
   return (
     <CRUDAuto<User, typeof userType> endPoints={'user'} type={userType}>
       {({ getForm }) => {
         return (
           <div>
             <h1>CREATE</h1>
-            {getForm('create', {
-              insert: {
-                before: [['name', () => <div>I am before name</div>]],
-                after: [['name', () => <div>I am after name</div>]],
-              },
-            })}
+            {getForm('create')}
             <h1>UPDATE</h1>
             {getForm('update', {
-              className: style.main,
-              insert: {
-                before: [['name', () => <div>I am before name</div>]],
-                after: [['name', () => <div>I am after name</div>]],
+              override: {
+                name: {
+                  render: ({ oName, value }) => {
+                    return (
+                      <div>
+                        <label>{oName}</label>
+                        <div>{value}</div>
+                      </div>
+                    );
+                  },
+                },
               },
             })}
           </div>

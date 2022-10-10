@@ -24,16 +24,17 @@ interface CRUDFormChildren<T, U> {
 
 export interface FormOptions<T> {
   override?: T;
-  insert?: FormOptionsInsert<T>[];
+  insert?: FormOptionsInsert<T>;
   deletable?: JSX.Element | boolean;
   className?: string;
 }
 
 export interface FormOptionsInsert<T = any> {
-  type?: 'before' | 'after';
-  search: keyof T;
-  element: () => JSX.Element;
+  before?: FormOptionsInsertOrder<T>[];
+  after?: FormOptionsInsertOrder<T>[];
 }
+
+export type FormOptionsInsertOrder<T> = [keyof T, () => JSX.Element];
 
 interface CRUDFormProps<T, U> {
   endPoints: Endpoints;
@@ -68,10 +69,17 @@ export const CRUDAuto = <T, U = FormType<any>>({
               {
                 deletable = <button type="submit">Delete</button>,
                 className,
+                override = {},
                 ...options
               } = {},
               attributes
             ) => {
+              const mergedType = Object.merge<FormType<any>>(
+                {},
+                type as any,
+                override as any
+              );
+
               if (t == 'create')
                 return (
                   <form
@@ -82,7 +90,7 @@ export const CRUDAuto = <T, U = FormType<any>>({
                       handleCreate(e);
                     }}
                   >
-                    {createFormObject(type, {
+                    {createFormObject(mergedType, {
                       method: t,
                       updateStyle,
                       formOptions: options,
@@ -94,7 +102,7 @@ export const CRUDAuto = <T, U = FormType<any>>({
                   return (
                     <div className={`${form.form} ${className}`}>
                       {createFormObject(
-                        type,
+                        mergedType,
                         {
                           method: t,
                           formOptions: options,
@@ -104,7 +112,7 @@ export const CRUDAuto = <T, U = FormType<any>>({
                     </div>
                   );
                 if (t == 'update') {
-                  const pkName = Object.entries<any>(type as object)
+                  const pkName = Object.entries<any>(mergedType)
                     .filter(([_, value]) => value.pk)
                     .map(([k, v]) => v.name ?? k)[0];
                   return updateStyle == 'each' ? (
@@ -123,7 +131,7 @@ export const CRUDAuto = <T, U = FormType<any>>({
                                 }}
                               >
                                 {createFormObject(
-                                  type,
+                                  mergedType,
                                   {
                                     method: t,
                                     updateStyle,
@@ -165,7 +173,7 @@ export const CRUDAuto = <T, U = FormType<any>>({
                       }}
                     >
                       {createFormObject(
-                        type,
+                        mergedType,
                         {
                           method: t,
                           updateStyle,
