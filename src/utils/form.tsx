@@ -1,13 +1,14 @@
-import { Fragment } from 'react';
+import { Dispatch, Fragment, SetStateAction } from 'react';
 import { DeepPartial } from 'typeorm';
 import {
   FormCreateType,
   FormOptions,
   FormOptionsInsertOrder,
 } from '../components/utils/CRUDAuto';
+import { Form } from '../components/utils/Form';
 import form from '../scss/form.module.scss';
 
-interface FormObject<T> {
+export interface FormObject<T> {
   pk?: boolean;
   pattern?: string;
   name?: string;
@@ -28,14 +29,16 @@ interface FormObject<T> {
   className?: string;
   select?: FormObjectSelect;
   render?: (o: FormRender) => JSX.Element;
+  onValueChanged?: (v: any) => any;
   sub?: T;
 }
 
-type FormRender<T = any> = DeepPartial<FormObject<T>> &
+export type FormRender<T = any> = DeepPartial<FormObject<T>> &
   FormObjectOptions & {
     oName: string;
     fName: string;
     value?: any;
+    setValue?: Dispatch<SetStateAction<string>>;
   };
 
 interface FormObjectSelect {
@@ -60,7 +63,7 @@ export type KeysToFormType<
 
 export const asFormTypes = <T,>(types: FormType<T>) => types;
 
-interface FormObjectOptions {
+export interface FormObjectOptions {
   method: FormCreateType;
   updateStyle?: 'each' | 'global';
   formOptions?: FormOptions<any>;
@@ -75,7 +78,7 @@ export const createFormObject = <T,>(
   return createFormObjectRecursive(type, options, data);
 };
 
-const createFormObjectRecursive = <T,>(
+export const createFormObjectRecursive = <T,>(
   type: T,
   options: FormObjectOptions,
   data: any[] = [],
@@ -103,6 +106,7 @@ const createFormObjectRecursive = <T,>(
             select,
             sub,
             render,
+            onValueChanged: _,
             ...other
           } = object as FormObject<any>;
           const { required } = other;
@@ -171,117 +175,33 @@ const createFormObjectRecursive = <T,>(
     );
   }
 
-  const pkName = Object.entries(type as object)
-    .filter(([_, value]) => value.pk)
-    .map(([k, v]) => v.name ?? k)[0];
+  const pkName =
+    idName ??
+    Object.entries(type as object)
+      .filter(([_, value]) => value.pk)
+      .map(([k, v]) => v.name ?? k)[0];
 
   return (
     <>
       {data.map((line) => {
-        const idValue = line[idName ?? pkName];
+        const idValue = line[pkName];
 
         const lineKeys = Object.keys(line);
         return (
           <Fragment key={idValue}>
             {Object.entries(type as any).map(([key, v], i) => {
-              const {
-                className,
-                name,
-                visible = true,
-                pk,
-                select,
-                sub,
-                render,
-                ...other
-              } = v as FormObject<any>;
-
-              const { required } = other;
-
-              const oName = name ?? key;
-              const fName = `${key}-${idValue}`;
-
-              const value = line[key];
-
-              if (render)
-                return (
-                  <Fragment key={`${fName}-${i}`}>
-                    {render({
-                      ...(v as FormObject<any>),
-                      oName,
-                      fName,
-                      value,
-                      ...options,
-                    })}
-                  </Fragment>
-                );
-
-              if (!lineKeys.includes(key)) {
-                return (
-                  <Fragment key={`${fName}-${i}`}>
-                    <div className={`${form.section}`}>
-                      <label>{oName}</label>
-                    </div>
-                    <div
-                      {...other}
-                      className={`${form.sectionDeep} ${className}`}
-                    >
-                      {createFormObjectRecursive(
-                        sub,
-                        { ...options, noSubmit: true },
-                        data,
-                        pkName
-                      )}
-                    </div>
-                  </Fragment>
-                );
-              }
-
-              if (!visible)
-                return (
-                  <input
-                    {...other}
-                    key={`${fName}-${i}`}
-                    className={className}
-                    style={{ display: 'none' }}
-                    id={`${fName}`}
-                    name={`${fName}`}
-                    defaultValue={value}
-                  />
-                );
-
               return (
-                <Fragment key={`${fName}-${i}`}>
-                  {extractInsert(before, key)}
-                  <div className={`${form.section} ${className}`}>
-                    <label htmlFor={fName}>
-                      {oName.capitalize()} {required && '*'}
-                    </label>
-                    {method == 'read' ? (
-                      <div>{value}</div>
-                    ) : select ? (
-                      <select id={fName} name={fName} defaultValue={value}>
-                        {select.options.map((option, i) => {
-                          return (
-                            <option
-                              key={`${fName}-${i}`}
-                              value={option.value ?? option.text}
-                            >
-                              {option.text ?? option.value}
-                            </option>
-                          );
-                        })}
-                      </select>
-                    ) : (
-                      <input
-                        {...other}
-                        id={`${fName}`}
-                        name={`${fName}`}
-                        defaultValue={value}
-                      />
-                    )}
-                  </div>
-                  {extractInsert(after, key)}
-                </Fragment>
+                <Form
+                  key={`${key}-${idValue}-${i}`}
+                  formObject={v as any}
+                  formObjectOptions={options}
+                  typeKey={key}
+                  keys={lineKeys}
+                  pkName={pkName}
+                  idValue={idValue}
+                  dataLine={line}
+                  data={data}
+                />
               );
             })}
             {method != 'read' && updateStyle == 'each' && !noSubmit && (
@@ -296,6 +216,9 @@ const createFormObjectRecursive = <T,>(
   );
 };
 
-const extractInsert = (insert: FormOptionsInsertOrder<any>[], s: string) => {
+export const extractInsert = (
+  insert: FormOptionsInsertOrder<any>[],
+  s: string
+) => {
   return insert.filter(([search]) => search == s).map(([, e]) => e?.());
 };
