@@ -1,8 +1,8 @@
+import { FormEvent } from 'react';
 import { FormRequestParams, PartialGeneralParams } from '..';
 import { request } from '../../../../utils/api';
 import { requestLog } from '../../../../utils/log';
 import { getFormData } from '../../../../utils/util';
-import { FormEvent } from 'react';
 
 export type CreateParams = PartialGeneralParams;
 
@@ -38,16 +38,9 @@ export const createRequest = ({
       method,
       headers,
       mode,
-    })
-      .then((created) => {
-        if (data) manualUpdate?.([...data, created] as any);
-        onCreated?.() && forceRefresh?.();
-      })
-      .catch(() => {
-        console.error(
-          `Erreur de création`,
-          `Une erreur est survenu lors de la création dans la base de données`
-        );
-      });
+    }).then((created) => {
+      if (data) manualUpdate?.([...data, created] as any);
+      onCreated?.() && forceRefresh?.();
+    });
   };
 };
