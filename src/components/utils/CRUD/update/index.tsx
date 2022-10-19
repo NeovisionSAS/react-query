@@ -32,6 +32,7 @@ export const updateRequest = ({
   type,
   parameterType,
   forceRefresh,
+  onRejected,
 }: UpdateFormRequestParams) => {
   return (
     e: FormEvent,
@@ -39,7 +40,13 @@ export const updateRequest = ({
   ) => {
     e.preventDefault();
 
-    const { method = 'PUT', name = idName } = params;
+    const {
+      method = 'PUT',
+      name = idName,
+      onRejected: onRejectedOverride,
+    } = params;
+
+    const reject = onRejectedOverride ?? onRejected;
 
     const formDatas = formExtractor(e.target, name);
 
@@ -92,9 +99,18 @@ export const updateRequest = ({
         );
       }
     });
-    return Promise.all(promises).then(() => {
-      manualUpdate?.(newData as any);
-      onUpdated?.() && forceRefresh?.();
-    });
+    return Promise.all(promises)
+      .then(() => {
+        manualUpdate?.(newData as any);
+        onUpdated?.() && forceRefresh?.();
+      })
+      .catch((e) => {
+        reject?.({
+          data: newData,
+          status: e.status,
+          statusText: e.statusText,
+          url: `${updateEndpoint}/${parameterType == 'path' ? `*/` : ''}`,
+        });
+      });
   };
 };

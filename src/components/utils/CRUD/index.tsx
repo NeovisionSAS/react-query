@@ -1,6 +1,6 @@
 import React, { FormEvent, useEffect } from 'react';
 import { Mode } from '../../../types/global';
-import { GetHeaders, Method } from '../../../utils/api';
+import { GetHeaders, Method, Reject } from '../../../utils/api';
 import { requestLog } from '../../../utils/log';
 import { Query as QueryType } from '../../../utils/util';
 import ErrorBoundary from '../ErrorBoundary';
@@ -56,6 +56,7 @@ export type SetType = 'array' | 'item';
 
 interface GeneralParams {
   method: Method;
+  onRejected?: (rej: Reject) => any;
 }
 
 export interface IdentifiableGeneralParams extends GeneralParams {
@@ -81,6 +82,7 @@ export interface FormRequestParams<T> {
   headers?: GetHeaders;
   onCompleted?: () => any;
   forceRefresh: () => any;
+  onRejected?: (rej: Reject) => any;
 }
 
 /**

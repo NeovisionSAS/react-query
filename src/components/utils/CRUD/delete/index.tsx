@@ -31,6 +31,7 @@ export const deleteRequest = ({
   onCompleted: onDeleted,
   parameterType,
   type,
+  onRejected,
 }: DeleteFormRequestParams) => {
   return (
     e: FormEvent | undefined,
@@ -40,7 +41,14 @@ export const deleteRequest = ({
     e?.stopPropagation();
     const formData = e && getFormData(e.target);
 
-    const { method = 'DELETE', name = idName, id = formData?.[name] } = params;
+    const {
+      method = 'DELETE',
+      name = idName,
+      id = formData?.[name],
+      onRejected: onRejectedOverride,
+    } = params;
+
+    const reject = onRejectedOverride ?? onRejected;
 
     const endpoint = `${deleteEndpoint}/${
       parameterType == 'path' ? `${id}/` : ''
@@ -54,37 +62,48 @@ export const deleteRequest = ({
       `${domain}/${endpoint}`
     );
 
+    const sendData = parameterType == 'path' ? '' : formData ?? '';
+
     return request(domain, endpoint, {
       method,
       headers,
       mode,
-      data: parameterType == 'path' ? '' : formData ?? '',
-    }).then(() => {
-      if (type == 'array') {
-        const index = (data as unknown as any[]).findIndex(
-          (val) => val[name] == id
-        );
-        if (index < 0) {
-          requestError(`Element with ${name} ${id} not found.`);
-          throw new Error(`Element with ${name} ${id} not found.`);
+      data: sendData,
+    })
+      .then(() => {
+        if (type == 'array') {
+          const index = (data as unknown as any[]).findIndex(
+            (val) => val[name] == id
+          );
+          if (index < 0) {
+            requestError(`Element with ${name} ${id} not found.`);
+            throw new Error(`Element with ${name} ${id} not found.`);
+          }
+          const typedData = data as unknown as any[];
+          requestLog(
+            mode,
+            verbosity,
+            8,
+            `Removing index ${index} matching ${name} ${id}`
+          );
+          const newArr = [
+            ...typedData.slice(0, index),
+            ...typedData.slice(index + 1, typedData.length),
+          ];
+          requestLog(mode, verbosity, 4, `Array updated`, newArr);
+          manualUpdate?.(newArr as any);
+        } else {
+          manualUpdate?.(data as any);
         }
-        const typedData = data as unknown as any[];
-        requestLog(
-          mode,
-          verbosity,
-          8,
-          `Removing index ${index} matching ${name} ${id}`
-        );
-        const newArr = [
-          ...typedData.slice(0, index),
-          ...typedData.slice(index + 1, typedData.length),
-        ];
-        requestLog(mode, verbosity, 4, `Array updated`, newArr);
-        manualUpdate?.(newArr as any);
-      } else {
-        manualUpdate?.(data as any);
-      }
-      onDeleted?.() && forceRefresh?.();
-    });
+        onDeleted?.() && forceRefresh?.();
+      })
+      .catch((e) => {
+        reject?.({
+          data: sendData,
+          status: e.status,
+          statusText: e.statusText,
+          url: `${domain}/${endpoint}/`,
+        });
+      });
   };
 };

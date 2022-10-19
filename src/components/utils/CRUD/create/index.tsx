@@ -18,10 +18,12 @@ export const createRequest = ({
   headers,
   onCompleted: onCreated,
   forceRefresh,
+  onRejected,
 }: CreateFormRequestParams<any>) => {
   return (e: FormEvent, params: CreateParams = { method: 'POST' }) => {
     e.preventDefault();
-    const { method = 'POST' } = params;
+    const { method = 'POST', onRejected: onRejectedOverride } = params;
+    const reject = onRejectedOverride ?? onRejected;
     const formData = getFormData(e.target);
 
     requestLog(
@@ -38,9 +40,18 @@ export const createRequest = ({
       method,
       headers,
       mode,
-    }).then((created) => {
-      if (data) manualUpdate?.([...data, created] as any);
-      onCreated?.() && forceRefresh?.();
-    });
+    })
+      .then((created) => {
+        if (data) manualUpdate?.([...data, created] as any);
+        onCreated?.() && forceRefresh?.();
+      })
+      .catch((e) => {
+        reject?.({
+          data: formData,
+          status: e.status,
+          statusText: e.statusText,
+          url: `${domain}/${createEndpoint}/`,
+        });
+      });
   };
 };

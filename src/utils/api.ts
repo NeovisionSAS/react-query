@@ -25,7 +25,7 @@ export interface BaseQueryOptions {
   delay?: number;
 }
 
-interface Reject<T = any> {
+export interface Reject<T = any> {
   status: number;
   statusText: string;
   url: string;
