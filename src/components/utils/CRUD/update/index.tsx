@@ -95,22 +95,14 @@ export const updateRequest = ({
             method,
             headers,
             mode,
+            onRejected: reject,
           })
         );
       }
     });
-    return Promise.all(promises)
-      .then(() => {
-        manualUpdate?.(newData as any);
-        onUpdated?.() && forceRefresh?.();
-      })
-      .catch((e) => {
-        reject?.({
-          data: newData,
-          status: e.status,
-          statusText: e.statusText,
-          url: `${updateEndpoint}/${parameterType == 'path' ? `*/` : ''}`,
-        });
-      });
+    return Promise.all(promises).then(() => {
+      manualUpdate?.(newData as any);
+      onUpdated?.() && forceRefresh?.();
+    });
   };
 };

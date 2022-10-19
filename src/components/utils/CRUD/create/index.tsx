@@ -40,18 +40,10 @@ export const createRequest = ({
       method,
       headers,
       mode,
-    })
-      .then((created) => {
-        if (data) manualUpdate?.([...data, created] as any);
-        onCreated?.() && forceRefresh?.();
-      })
-      .catch((e) => {
-        reject?.({
-          data: formData,
-          status: e.status,
-          statusText: e.statusText,
-          url: `${domain}/${createEndpoint}/`,
-        });
-      });
+      onRejected: reject,
+    }).then((created) => {
+      if (data) manualUpdate?.([...data, created] as any);
+      onCreated?.() && forceRefresh?.();
+    });
   };
 };
