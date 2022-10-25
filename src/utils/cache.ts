@@ -57,4 +57,10 @@ const cleanCache = () => {
 
 export const createCacheKey = (s: string) => hash(s);
 
+// Clean straight away
 cleanCache();
+
+// Clean every 6mins
+setInterval(() => {
+  cleanCache();
+}, 1000 * 600);
