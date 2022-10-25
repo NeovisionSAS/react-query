@@ -1,4 +1,5 @@
 import hash from 'object-hash';
+import { requestLog } from './log';
 
 const createKey = (k: string = '') => `react-query-${k}`;
 
@@ -36,13 +37,21 @@ export const clearCache = (key: string) => {
 
 const cleanCache = () => {
   const p = createKey();
+  let total = 0;
   for (let k of Object.keys(localStorage).filter((k) => k.startsWith(p))) {
     const v = localStorage.getItem(k)!;
     const o = JSON.parse(v);
     const { expireDate } = o;
     const date = new Date(expireDate);
     if (new Date().getTime() > date.getTime()) clearCache(k);
+    total += (k.length + v.length) * 2;
   }
+  requestLog(
+    'development',
+    0,
+    0,
+    `Cleaned ${(total / 1024).toFixed(2)} KB from localStorage`
+  );
 };
 
 export const createCacheKey = (s: string) => hash(s);
