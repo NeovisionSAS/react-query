@@ -9,13 +9,15 @@ import {
 
 interface FormProps {
   formObject: FormObject<any>;
-  idValue: any;
+  idValue?: any;
   pkName: any;
   formObjectOptions: FormObjectOptions;
-  keys: any;
+  keys?: any;
   typeKey: any;
-  dataLine: any;
-  data: any;
+  dataLine?: any;
+  data?: any;
+  type: 'update' | 'create';
+  fName?: any;
 }
 
 export const Form: FunctionComponent<FormProps> = ({
@@ -27,8 +29,10 @@ export const Form: FunctionComponent<FormProps> = ({
   typeKey,
   dataLine,
   data,
+  fName = idValue ? `${typeKey}-${idValue}` : typeKey,
+  type,
 }) => {
-  const [value, _setValue] = useState(dataLine[typeKey]);
+  const [value, _setValue] = useState(dataLine?.[typeKey]);
 
   const {
     className,
@@ -46,11 +50,9 @@ export const Form: FunctionComponent<FormProps> = ({
 
   const { insert } = formOptions;
   const { before = [], after = [] } = insert ?? {};
-
   const { required } = other;
 
-  const oName = name ?? typeKey;
-  const fName = `${typeKey}-${idValue}`;
+  const oName = name ?? typeKey ?? fName;
 
   const setValue = (v: any) => {
     _setValue(v);
@@ -71,9 +73,15 @@ export const Form: FunctionComponent<FormProps> = ({
       </>
     );
 
-  if (!keys.includes(typeKey)) {
+  if (
+    (type == 'create' && sub) ||
+    (type == 'update' && !keys.includes(typeKey))
+  ) {
     return (
-      <>
+      <div
+        className={`${className}`}
+        style={{ display: 'flex', flexDirection: 'column' }}
+      >
         <div className={`${form.section}`}>
           <label>{oName}</label>
         </div>
@@ -85,6 +93,38 @@ export const Form: FunctionComponent<FormProps> = ({
             pkName
           )}
         </div>
+      </div>
+    );
+  }
+
+  if (type == 'create') {
+    if (pk) return <></>;
+
+    return (
+      <>
+        {extractInsert(before, fName)}
+        <div className={`${form.section} ${className}`}>
+          <label htmlFor={fName}>
+            {oName?.capitalize()} {required && '*'}
+          </label>
+          {select ? (
+            <select id={fName} name={fName}>
+              {select.options.map((option, i) => {
+                return (
+                  <option
+                    key={`${fName}-${i}`}
+                    value={option.value ?? option.text}
+                  >
+                    {option.text ?? option.value}
+                  </option>
+                );
+              })}
+            </select>
+          ) : (
+            <input {...other} id={fName} name={fName} />
+          )}
+        </div>
+        {extractInsert(after, fName)}
       </>
     );
   }

@@ -6,7 +6,6 @@ import {
   FormOptionsInsertOrder,
 } from '../components/utils/CRUDAuto';
 import { Form } from '../components/utils/Form';
-import form from '../scss/form.module.scss';
 
 export interface FormObject<T> {
   pk?: boolean;
@@ -84,102 +83,33 @@ export const createFormObjectRecursive = <T,>(
   data: any[] = [],
   idName?: string
 ): JSX.Element => {
-  const {
-    method,
-    updateStyle = 'each',
-    formOptions = {},
-    noSubmit = false,
-  } = options;
-
-  const { insert } = formOptions;
-  const { before = [], after = [] } = insert ?? {};
-
-  if (method == 'create') {
-    return (
-      <>
-        {Object.entries(type as object).map(([fName, object]) => {
-          const {
-            className,
-            name,
-            visible = true,
-            pk,
-            select,
-            sub,
-            render,
-            onValueChanged: _,
-            ...other
-          } = object as FormObject<any>;
-          const { required } = other;
-          const oName = name ?? fName;
-
-          if (render)
-            return (
-              <Fragment key={fName}>
-                {render({ ...object, oName, fName, ...options })}
-              </Fragment>
-            );
-
-          if (sub) {
-            return (
-              <div
-                key={fName}
-                className={`${className}`}
-                style={{ display: 'flex', flexDirection: 'column' }}
-              >
-                <div className={`${form.section}`}>
-                  <label>{oName}</label>
-                </div>
-                <div {...other} className={`${form.sectionDeep}`}>
-                  {createFormObjectRecursive(
-                    sub,
-                    { ...options, noSubmit: true },
-                    data
-                  )}
-                </div>
-              </div>
-            );
-          }
-
-          if (pk) return <Fragment key={fName}></Fragment>;
-
-          return (
-            <Fragment key={fName}>
-              {extractInsert(before, fName)}
-              <div className={`${form.section} ${className}`}>
-                <label htmlFor={fName}>
-                  {oName?.capitalize()} {required && '*'}
-                </label>
-                {select ? (
-                  <select id={fName} name={fName}>
-                    {select.options.map((option, i) => {
-                      return (
-                        <option
-                          key={`${fName}-${i}`}
-                          value={option.value ?? option.text}
-                        >
-                          {option.text ?? option.value}
-                        </option>
-                      );
-                    })}
-                  </select>
-                ) : (
-                  <input {...other} id={fName} name={fName} />
-                )}
-              </div>
-              {extractInsert(after, fName)}
-            </Fragment>
-          );
-        })}
-        {!noSubmit && <button type="submit">Submit</button>}
-      </>
-    );
-  }
+  const { method, updateStyle = 'each', noSubmit = false } = options;
 
   const pkName =
     idName ??
     Object.entries(type as object)
       .filter(([_, value]) => value.pk)
       .map(([k, v]) => v.name ?? k)[0];
+
+  if (method == 'create') {
+    return (
+      <>
+        {Object.entries(type as object).map(([fName, object]) => {
+          return (
+            <Form
+              key={fName}
+              formObject={object as any}
+              formObjectOptions={options}
+              pkName={pkName}
+              type={method}
+              typeKey={fName}
+            />
+          );
+        })}
+        {!noSubmit && <button type="submit">Submit</button>}
+      </>
+    );
+  }
 
   return (
     <>
@@ -192,6 +122,7 @@ export const createFormObjectRecursive = <T,>(
             {Object.entries(type as any).map(([key, v], i) => {
               return (
                 <Form
+                  type="update"
                   key={`${key}-${idValue}-${i}`}
                   formObject={v as any}
                   formObjectOptions={options}
