@@ -1,6 +1,7 @@
 import { FormEvent } from 'react';
 import { FormRequestParams, PartialGeneralParams } from '..';
 import { request } from '../../../../utils/api';
+import { setCache } from '../../../../utils/cache';
 import { requestLog } from '../../../../utils/log';
 import { getFormData } from '../../../../utils/util';
 
@@ -18,6 +19,7 @@ export const createRequest = ({
   headers,
   onCompleted: onCreated,
   forceRefresh,
+  cacheKey,
   onRejected,
 }: CreateFormRequestParams<any>) => {
   return (e: FormEvent, params: CreateParams = { method: 'POST' }) => {
@@ -42,7 +44,9 @@ export const createRequest = ({
       mode,
       onRejected: reject,
     }).then((created) => {
-      if (data) manualUpdate?.([...data, created] as any);
+      const newData = [...data, created] as any;
+      if (data) manualUpdate?.(newData);
+      setCache(cacheKey, newData);
       onCreated?.() && forceRefresh?.();
     });
   };

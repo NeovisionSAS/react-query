@@ -1,6 +1,7 @@
 import React, { FormEvent, useEffect } from 'react';
 import { Mode } from '../../../types/global';
 import { GetHeaders, Method, Reject } from '../../../utils/api';
+import { createCacheKey } from '../../../utils/cache';
 import { requestLog } from '../../../utils/log';
 import { Query as QueryType } from '../../../utils/util';
 import ErrorBoundary from '../ErrorBoundary';
@@ -83,6 +84,7 @@ export interface FormRequestParams<T> {
   onCompleted?: () => any;
   forceRefresh: () => any;
   onRejected?: (rej: Reject) => any;
+  cacheKey: string;
 }
 
 /**
@@ -188,6 +190,8 @@ export const CRUD = <T = any,>({
     );
   }, [createEndpoint, readEndpoint, updateEndpoint, deleteEndpoint]);
 
+  const cacheKey = createCacheKey(readEndpoint);
+
   return (
     <ErrorBoundary>
       <Query<T> query={readEndpoint} delay={delay} onRead={onRead}>
@@ -201,6 +205,7 @@ export const CRUD = <T = any,>({
                   handleCreate: createRequest({
                     endpoint: createEndpoint,
                     onCompleted: onCreated,
+                    cacheKey,
                     ...queryOptionsState,
                     ...res,
                   }),
@@ -209,12 +214,14 @@ export const CRUD = <T = any,>({
                     endpoint: updateEndpoint,
                     onCompleted: onUpdated,
                     type,
+                    cacheKey,
                     ...queryOptionsState,
                     ...res,
                   }),
                   handleDelete: deleteRequest({
                     endpoint: deleteEndpoint,
                     type,
+                    cacheKey,
                     onCompleted: onDeleted,
                     ...queryOptionsState,
                     ...res,

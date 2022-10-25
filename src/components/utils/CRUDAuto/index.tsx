@@ -58,6 +58,7 @@ export const CRUDAuto = <T, U = FormType<any>>({
           handleDelete,
           handleUpdate,
         } = crud;
+
         if (error) return <div>{error}</div>;
         if (loading) return <div>Loading...</div>;
 

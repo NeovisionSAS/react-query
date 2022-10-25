@@ -1,4 +1,4 @@
-import { FunctionComponent, useState } from 'react';
+import { FunctionComponent, useEffect, useState } from 'react';
 import form from '../../../scss/form.module.scss';
 import {
   createFormObjectRecursive,
@@ -58,6 +58,10 @@ export const Form: FunctionComponent<FormProps> = ({
     _setValue(v);
     onValueChanged?.(v);
   };
+
+  useEffect(() => {
+    setValue(dataLine?.[typeKey]);
+  }, [dataLine, typeKey]);
 
   if (render)
     return (

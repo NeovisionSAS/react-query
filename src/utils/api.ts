@@ -45,7 +45,11 @@ interface Domain {
   domain: string;
 }
 
-export interface QueryOptions extends BaseQueryOptions, Domain {
+interface Cacheable {
+  cache?: number;
+}
+
+export interface QueryOptions extends BaseQueryOptions, Domain, Cacheable {
   loader?: LoaderOptions;
 }
 
@@ -54,7 +58,7 @@ export type RealQueryOptions = RequiredBy<
   'mode' | 'verbosity' | 'parameterType' | 'idName'
 >;
 
-export type RequestOptionsWithDomain = RequestOptions & Domain;
+export type RequestOptionsWithDomain = RequestOptions & Domain & Cacheable;
 export type RequestOptionsWithOptionalDomain = PartialBy<
   RequestOptionsWithDomain,
   'domain'

@@ -1,3 +1,4 @@
+import React, { useCallback, useEffect, useState } from 'react';
 import { RequiredBy } from '../../../types/global';
 import {
   request,
@@ -5,6 +6,12 @@ import {
   RequestOptionsWithDomain,
   RequestOptionsWithOptionalDomain,
 } from '../../../utils/api';
+import {
+  clearCache,
+  createCacheKey,
+  getCache,
+  setCache,
+} from '../../../utils/cache';
 import { requestLog } from '../../../utils/log';
 import { Query as QueryType } from '../../../utils/util';
 import {
@@ -13,7 +20,6 @@ import {
 } from '../../../utils/xhr/progress';
 import ErrorBoundary from '../ErrorBoundary';
 import { useQueryOptions } from '../QueryOptionsProvider';
-import React, { useCallback, useEffect, useState } from 'react';
 
 export type DataHandler<T> = (data: T) => any;
 
@@ -30,6 +36,7 @@ interface QueryReturn<T> {
   data: T;
   loading: TotalProgress | boolean;
   error?: string;
+  fetching: TotalProgress | boolean;
   manualUpdate: DataHandler<T>;
   forceRefresh: () => any;
 }
@@ -45,15 +52,17 @@ export const useQuery = <T = any,>({
   disable = query == null,
 }: QueryParams<T>): QueryReturn<T> => {
   // The default data/load/error triple
-  const [dataLoadErr, setDataLoadErr] = useState<QueryType>({
+  const [dataResolver, setDataResolver] = useState<QueryType>({
     data: undefined,
     loading: totalProgressInitialiser(),
     error: undefined,
+    fetching: totalProgressInitialiser(),
   });
   const forceRefresh = () => setRefresh(!refresh);
   const manualUpdate = useCallback(
     (data: T) =>
-      setDataLoadErr({
+      setDataResolver({
+        ...dataResolver,
         data,
         loading: false,
         error: undefined,
@@ -61,20 +70,22 @@ export const useQuery = <T = any,>({
     []
   );
 
-  if (disable) return { ...dataLoadErr, forceRefresh, manualUpdate };
+  if (disable) return { ...dataResolver, forceRefresh, manualUpdate };
 
   const options = Object.merge<
     any,
     RequiredBy<RequestOptionsWithDomain, 'mode' | 'verbosity'>
   >(useQueryOptions()[0], requestOptions);
 
-  const { domain, mode, verbosity } = options;
+  const { domain, mode, verbosity, cache, data } = options;
 
   const req = (path: string, options?: RequestOptions) =>
     request(domain, path, options);
 
   const [controller, setController] = useState<AbortController>();
   const [refresh, setRefresh] = useState(false);
+
+  const cacheHash = createCacheKey(query);
 
   // Check if the query prop has changed
   useEffect(() => {
@@ -89,29 +100,45 @@ export const useQuery = <T = any,>({
       })
         .then((res) => {
           if (res != undefined) {
-            setDataLoadErr({ data: res, loading: false, error: undefined });
+            setDataResolver({
+              data: res,
+              loading: false,
+              error: undefined,
+              fetching: false,
+            });
+            setCache(cacheHash, res, cache);
             onRead?.(res);
           }
         })
         .catch((err) => {
-          setDataLoadErr({
+          setDataResolver({
             data: undefined,
             loading: false,
             error: err.toString(),
+            fetching: false,
           });
         });
     }, delay ?? 0);
     setController(ctrl);
-    setDataLoadErr({ data: undefined, loading: true, error: undefined });
+
+    const cacheData = getCache(cacheHash);
+
+    setDataResolver({
+      data: cacheData,
+      loading: cacheData == undefined,
+      error: undefined,
+      fetching: true,
+    });
 
     return () => {
       ctrl?.abort();
       window.clearTimeout(timeout);
+      clearCache(cacheHash);
     };
   }, [query, refresh]);
 
   return {
-    ...dataLoadErr,
+    ...dataResolver,
     manualUpdate,
     forceRefresh,
   };

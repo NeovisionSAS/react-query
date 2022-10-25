@@ -6,6 +6,7 @@ import {
   SetType,
 } from '..';
 import { QueryParamType, request } from '../../../../utils/api';
+import { setCache } from '../../../../utils/cache';
 import { requestError, requestLog } from '../../../../utils/log';
 import { formExtractor } from '../../../../utils/util';
 
@@ -32,6 +33,7 @@ export const updateRequest = ({
   type,
   parameterType,
   forceRefresh,
+  cacheKey,
   onRejected,
 }: UpdateFormRequestParams) => {
   return (
@@ -102,6 +104,7 @@ export const updateRequest = ({
     });
     return Promise.all(promises).then(() => {
       manualUpdate?.(newData as any);
+      setCache(cacheKey, newData);
       onUpdated?.() && forceRefresh?.();
     });
   };

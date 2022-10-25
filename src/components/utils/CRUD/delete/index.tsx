@@ -5,6 +5,7 @@ import {
   SetType,
 } from '..';
 import { QueryParamType, request } from '../../../../utils/api';
+import { setCache } from '../../../../utils/cache';
 import { requestError, requestLog } from '../../../../utils/log';
 import { getFormData } from '../../../../utils/util';
 
@@ -31,6 +32,7 @@ export const deleteRequest = ({
   onCompleted: onDeleted,
   parameterType,
   type,
+  cacheKey,
   onRejected,
 }: DeleteFormRequestParams) => {
   return (
@@ -92,6 +94,7 @@ export const deleteRequest = ({
         ];
         requestLog(mode, verbosity, 4, `Array updated`, newArr);
         manualUpdate?.(newArr as any);
+        setCache(cacheKey, newArr);
       } else {
         manualUpdate?.(data as any);
       }

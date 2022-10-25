@@ -265,4 +265,5 @@ export interface Query<T = any> {
   data: T;
   loading: TotalProgress | boolean;
   error?: string;
+  fetching: TotalProgress | boolean;
 }
