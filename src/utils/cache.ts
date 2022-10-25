@@ -3,6 +3,7 @@ import hash from 'object-hash';
 const createKey = (k: string = '') => `react-query-${k}`;
 
 export const setCache = (key: string, value: any, expires: number = 300) => {
+  if (expires == 0) return;
   const date = new Date();
   date.setSeconds(date.getSeconds() + expires);
   localStorage.setItem(

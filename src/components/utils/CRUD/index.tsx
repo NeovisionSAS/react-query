@@ -47,6 +47,7 @@ interface CRUDProps<T> {
    * Very useful to test whenever you need to show some loading.
    */
   delay?: number;
+  cache?: number;
 }
 
 export type Endpoints =
@@ -168,6 +169,7 @@ export const CRUD = <T = any,>({
   onUpdated,
   onDeleted,
   delay,
+  cache,
 }: CRUDProps<T>): React.ReactElement<CRUDProps<T>> => {
   const [createEndpoint, readEndpoint, updateEndpoint, deleteEndpoint] =
     typeof endPoints == 'string'
@@ -194,7 +196,12 @@ export const CRUD = <T = any,>({
 
   return (
     <ErrorBoundary>
-      <Query<T> query={readEndpoint} delay={delay} onRead={onRead}>
+      <Query<T>
+        query={readEndpoint}
+        delay={delay}
+        onRead={onRead}
+        cache={cache}
+      >
         {(res) => {
           const { forceRefresh } = res;
           const type: SetType = Array.isArray(res.data) ? 'array' : 'item';

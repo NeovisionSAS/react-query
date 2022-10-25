@@ -6,12 +6,7 @@ import {
   RequestOptionsWithDomain,
   RequestOptionsWithOptionalDomain,
 } from '../../../utils/api';
-import {
-  clearCache,
-  createCacheKey,
-  getCache,
-  setCache,
-} from '../../../utils/cache';
+import { createCacheKey, getCache, setCache } from '../../../utils/cache';
 import { requestLog } from '../../../utils/log';
 import { Query as QueryType } from '../../../utils/util';
 import {
@@ -30,6 +25,7 @@ interface QueryParams<T = any> {
   requestOptions?: RequestOptionsWithOptionalDomain;
   useConfig?: boolean;
   disable?: boolean;
+  cache?: number;
 }
 
 interface QueryReturn<T> {
@@ -50,6 +46,7 @@ export const useQuery = <T = any,>({
   onRead,
   requestOptions = {},
   disable = query == null,
+  cache: queryCache,
 }: QueryParams<T>): QueryReturn<T> => {
   // The default data/load/error triple
   const [dataResolver, setDataResolver] = useState<QueryType>({
@@ -77,7 +74,9 @@ export const useQuery = <T = any,>({
     RequiredBy<RequestOptionsWithDomain, 'mode' | 'verbosity'>
   >(useQueryOptions()[0], requestOptions);
 
-  const { domain, mode, verbosity, cache, data } = options;
+  const { domain, mode, verbosity, cache: cacheOption } = options;
+
+  const cache = queryCache ?? cacheOption;
 
   const req = (path: string, options?: RequestOptions) =>
     request(domain, path, options);
@@ -85,7 +84,7 @@ export const useQuery = <T = any,>({
   const [controller, setController] = useState<AbortController>();
   const [refresh, setRefresh] = useState(false);
 
-  const cacheHash = createCacheKey(query);
+  const cacheHash = cache != 0 ? createCacheKey(query) : '';
 
   // Check if the query prop has changed
   useEffect(() => {
@@ -133,7 +132,6 @@ export const useQuery = <T = any,>({
     return () => {
       ctrl?.abort();
       window.clearTimeout(timeout);
-      clearCache(cacheHash);
     };
   }, [query, refresh]);
 
