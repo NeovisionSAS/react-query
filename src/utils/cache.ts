@@ -6,13 +6,15 @@ export const setCache = (key: string, value: any, expires: number = 300) => {
   if (expires == 0) return;
   const date = new Date();
   date.setSeconds(date.getSeconds() + expires);
-  localStorage.setItem(
-    createKey(key),
-    JSON.stringify({
-      expireDate: date.toISOString(),
-      data: value,
-    })
-  );
+  try {
+    localStorage.setItem(
+      createKey(key),
+      JSON.stringify({
+        expireDate: date.toISOString(),
+        data: value,
+      })
+    );
+  } catch (e) {}
 };
 
 export const getCache = (key: string) => {
