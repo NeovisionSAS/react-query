@@ -19,20 +19,21 @@ export const setCache = (key: string, value: any, expires: number = 300) => {
 };
 
 export const getCache = (key: string) => {
-  let v = localStorage.getItem(createKey(key));
+  const k = createKey(key);
+  let v = localStorage.getItem(k);
   if (v == null) return undefined;
   const o = JSON.parse(v);
   const { expireDate, data } = o;
   const date = new Date(expireDate);
   if (new Date().getTime() > date.getTime()) {
-    clearCache(key);
+    clearCache(k);
     return undefined;
   }
   return data;
 };
 
 export const clearCache = (key: string) => {
-  localStorage.removeItem(createKey(key));
+  localStorage.removeItem(key);
 };
 
 const cleanCache = () => {
