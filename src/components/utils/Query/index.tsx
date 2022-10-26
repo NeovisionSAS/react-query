@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { RequiredBy } from '../../../types/global';
 import {
+  Method,
   request,
   RequestOptions,
   RequestOptionsWithDomain,
@@ -26,6 +27,8 @@ interface QueryParams<T = any> {
   useConfig?: boolean;
   disable?: boolean;
   cache?: number;
+  method?: Method;
+  data?: any;
 }
 
 interface QueryReturn<T> {
@@ -47,6 +50,8 @@ export const useQuery = <T = any,>({
   requestOptions = {},
   disable = query == null,
   cache: queryCache,
+  method = 'GET',
+  data,
 }: QueryParams<T>): QueryReturn<T> => {
   // The default data/load/error triple
   const [dataResolver, setDataResolver] = useState<QueryType>({
@@ -74,7 +79,7 @@ export const useQuery = <T = any,>({
     RequiredBy<RequestOptionsWithDomain, 'mode' | 'verbosity'>
   >(useQueryOptions()[0], requestOptions);
 
-  const { domain, mode, verbosity, cache: cacheOption, data } = options;
+  const { domain, mode, verbosity, cache: cacheOption } = options;
 
   const cache = queryCache ?? cacheOption;
   const cacheHash = cache != 0 ? createCacheKey(query, data) : '';
@@ -87,7 +92,14 @@ export const useQuery = <T = any,>({
 
   // Check if the query prop has changed
   useEffect(() => {
-    requestLog(mode, verbosity, 8, `[read][${query}]`, `${domain}/${query}`);
+    requestLog(
+      mode,
+      verbosity,
+      8,
+      `[read][${method}]`,
+      `${domain}/${query}`,
+      data ?? ''
+    );
     controller?.abort();
     const ctrl = new AbortController();
     const timeout = window.setTimeout(() => {
@@ -96,6 +108,8 @@ export const useQuery = <T = any,>({
         signal: ctrl.signal,
         cache,
         ...others,
+        method,
+        data,
       })
         .then((res) => {
           if (res != undefined) {
@@ -112,7 +126,7 @@ export const useQuery = <T = any,>({
           setDataResolver({
             data: undefined,
             loading: false,
-            error: err.toString(),
+            error: err.statusText,
             fetching: false,
           });
         });
@@ -132,7 +146,7 @@ export const useQuery = <T = any,>({
       ctrl?.abort();
       window.clearTimeout(timeout);
     };
-  }, [query, refresh]);
+  }, [query, refresh, data]);
 
   return {
     ...dataResolver,

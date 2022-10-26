@@ -68,4 +68,17 @@ export const routes: Routable[] = [
       return Promise.resolve({ ok: true });
     },
   },
+  {
+    method: 'POST',
+    path: '/user/get',
+    action(request, response) {
+      const { id } = request.body;
+      if (id != undefined)
+        return UserResolver.read(parseInt(id as string), {
+          request,
+          response,
+        });
+      return UserResolver.readAll();
+    },
+  },
 ];

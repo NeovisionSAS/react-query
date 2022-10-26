@@ -102,7 +102,7 @@ export const request = function <T = any>(
         else {
           requestError(method, endpoint, `${err.status} ${err.statusText}`);
           onRejected?.(err);
-          throw new Error(err);
+          throw err;
         }
       });
   };

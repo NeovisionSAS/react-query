@@ -1,3 +1,6 @@
+import { FunctionComponent } from 'react';
+import { Navigate, Route, Routes } from 'react-router';
+import { Link } from 'react-router-dom';
 import {
   AllUsers as AllUsersGet,
   AllUsersDelay as AllUsersDelayGet,
@@ -6,9 +9,7 @@ import {
   User as UserGet,
   UserBook as UserBookGet,
 } from './get';
-import { FunctionComponent } from 'react';
-import { Navigate, Route, Routes } from 'react-router';
-import { Link } from 'react-router-dom';
+import { PostAllUsers, PostUser } from './post';
 
 export const QueryEx: FunctionComponent = () => {
   return (
@@ -20,6 +21,8 @@ export const QueryEx: FunctionComponent = () => {
         <Link to={'getUserBook'}>Get User Book</Link>
         <Link to={'getFiles'}>Get User Files</Link>
         <Link to={'authGet'}>Get Auth</Link>
+        <Link to={'postUser'}>Post User</Link>
+        <Link to={'postAllUsers'}>Post All Users</Link>
       </nav>
       <Routes>
         <Route path="getAllUsers" element={<AllUsersGet />} />
@@ -28,6 +31,8 @@ export const QueryEx: FunctionComponent = () => {
         <Route path="getUserBook" element={<UserBookGet />} />
         <Route path="getFiles" element={<FilesGet />} />
         <Route path="authGet" element={<AuthGet />} />
+        <Route path="postUser" element={<PostUser />} />
+        <Route path="postAllUsers" element={<PostAllUsers />} />
         <Route path="*" element={<Navigate to={'getAllUsers'} />} />
       </Routes>
     </>
