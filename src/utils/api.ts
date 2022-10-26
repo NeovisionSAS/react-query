@@ -1,5 +1,6 @@
 import { FormEvent } from 'react';
 import { PartialBy, RequiredBy } from '../types/global';
+import { createCacheKey, setCache } from './cache';
 import { requestError, requestWarn } from './log';
 import { buildHeader, restructureData } from './util';
 import { XHRFetch } from './xhr';
@@ -23,6 +24,7 @@ export interface BaseQueryOptions {
   idName?: string;
   onRejected?: (rej: Reject) => any;
   delay?: number;
+  cache?: number;
 }
 
 export interface Reject<T = any> {
@@ -77,25 +79,32 @@ export const request = function <T = any>(
     mode = 'production',
     onRejected,
     data,
+    cache = 0,
     ...rest
   } = options;
   const { body, contentType } = restructureData(data);
 
   const req = (headers: HeadersInit) => {
     const endpoint = `${domain}/${path}`;
+    const cacheHash = cache != 0 ? createCacheKey(path, data) : '';
     return XHRFetch(endpoint, {
       headers: buildHeader(headers, contentType),
       method,
       body,
       ...rest,
-    }).catch((err) => {
-      if (err.name == 'AbortError') requestWarn(mode, 0, 0, err.message);
-      else {
-        requestError(method, endpoint, `${err.status} ${err.statusText}`);
-        onRejected?.(err);
-        throw new Error(err);
-      }
-    });
+    })
+      .then((res) => {
+        setCache(cacheHash, res, cache);
+        return res;
+      })
+      .catch((err) => {
+        if (err.name == 'AbortError') requestWarn(mode, 0, 0, err.message);
+        else {
+          requestError(method, endpoint, `${err.status} ${err.statusText}`);
+          onRejected?.(err);
+          throw new Error(err);
+        }
+      });
   };
 
   return headers ? headers().then(req) : req({});

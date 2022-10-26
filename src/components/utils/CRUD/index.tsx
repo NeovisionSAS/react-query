@@ -51,7 +51,7 @@ interface CRUDProps<T> {
 }
 
 export type Endpoints =
-  | { create?: string; read?: string; update?: string; delete?: string }
+  | { create: string; read: string; update: string; delete: string }
   | string;
 
 export type SetType = 'array' | 'item';
@@ -192,8 +192,6 @@ export const CRUD = <T = any,>({
     );
   }, [createEndpoint, readEndpoint, updateEndpoint, deleteEndpoint]);
 
-  const cacheKey = createCacheKey(readEndpoint);
-
   return (
     <ErrorBoundary>
       <Query<T>
@@ -205,6 +203,9 @@ export const CRUD = <T = any,>({
         {(res) => {
           const { forceRefresh } = res;
           const type: SetType = Array.isArray(res.data) ? 'array' : 'item';
+
+          const cacheKey = createCacheKey(readEndpoint);
+
           return (
             <>
               {children(

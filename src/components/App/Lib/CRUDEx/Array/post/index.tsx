@@ -1,10 +1,17 @@
+import { FunctionComponent } from 'react';
 import { User as UserInterface } from '../../../../../../interfaces/user';
 import { CRUD } from '../../../../../utils';
-import { FunctionComponent } from 'react';
 
 export const User: FunctionComponent = () => {
   return (
-    <CRUD<UserInterface[]> endPoints={{ create: `user` }}>
+    <CRUD<UserInterface[]>
+      endPoints={{
+        create: `user`,
+        read: 'user',
+        delete: 'user',
+        update: 'user',
+      }}
+    >
       {({ handleCreate }) => {
         return (
           <form onSubmit={handleCreate}>

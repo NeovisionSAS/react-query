@@ -55,7 +55,8 @@ const cleanCache = () => {
   );
 };
 
-export const createCacheKey = (s: string) => hash(s);
+export const createCacheKey = (s: string, data?: any) =>
+  data ? hash(hash(s) + hash(data)) : hash(s);
 
 // Clean straight away
 cleanCache();

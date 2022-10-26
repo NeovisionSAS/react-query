@@ -19,6 +19,7 @@ export const {
     mode: 'production',
     verbosity: 1,
     idName: 'id',
+    cache: 60 * 5,
   },
   'QueryOptions'
 );
