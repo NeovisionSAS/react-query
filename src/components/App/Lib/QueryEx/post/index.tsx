@@ -23,6 +23,10 @@ export const PostAllUsers: FunctionComponent = () => {
 export const PostUser: FunctionComponent = () => {
   const [id, setId] = useState(0);
 
+  const formData = new FormData();
+
+  formData.append('id', id.toString());
+
   return (
     <div>
       <input
@@ -31,7 +35,7 @@ export const PostUser: FunctionComponent = () => {
         value={id}
         onChange={(e) => setId(parseInt(e.target.value))}
       />
-      <Query<User> query="user/get" method="POST" data={{ id }}>
+      <Query<User> query="user/get" method="POST" data={formData}>
         {({ data: user, loading, error }) => {
           if (loading) return <div>Loading...</div>;
           if (error)

@@ -55,8 +55,14 @@ const cleanCache = () => {
   );
 };
 
-export const createCacheKey = (s: string, data?: any) =>
-  data ? hash(hash(s) + hash(data)) : hash(s);
+export const createCacheKey = (s: string, data?: any) => {
+  if (data) {
+    if (data.constructor?.name == 'FormData')
+      return hash(hash(s) + hash(new URLSearchParams(data).toString()));
+    return hash(hash(s) + hash(data));
+  }
+  return hash(s);
+};
 
 // Clean straight away
 cleanCache();
