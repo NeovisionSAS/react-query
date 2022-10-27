@@ -7,12 +7,13 @@ import {
   FormOptionsInsert,
   FormOptionsInsertOrder,
 } from './components/utils/CRUDAuto';
-import { Query, useQuery } from './components/utils/Query';
+import { Query } from './components/utils/Query';
 import {
   QueryOptionsProvider,
   useQueryOptions,
-  useRequest,
 } from './components/utils/QueryOptionsProvider';
+import { useQuery } from './hooks/query';
+import { useRequest } from './hooks/request';
 import './scss/defaults.scss';
 import { request } from './utils/api';
 import {

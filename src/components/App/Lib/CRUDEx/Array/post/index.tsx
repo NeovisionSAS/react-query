@@ -5,7 +5,7 @@ import { CRUD } from '../../../../../utils';
 export const User: FunctionComponent = () => {
   return (
     <CRUD<UserInterface[]>
-      endPoints={{
+      endpoints={{
         create: `user`,
         read: 'user',
         delete: 'user',

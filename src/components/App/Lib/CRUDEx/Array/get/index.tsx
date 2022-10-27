@@ -1,10 +1,10 @@
+import { FunctionComponent } from 'react';
 import { User as UserInterface } from '../../../../../../interfaces/user';
 import { CRUD } from '../../../../../utils';
-import { FunctionComponent } from 'react';
 
 export const AllUsers: FunctionComponent = () => {
   return (
-    <CRUD<UserInterface[]> endPoints={`user`}>
+    <CRUD<UserInterface[]> endpoints={`user`}>
       {({ read: { data: users, loading, error } }) => {
         if (loading) return <div>Loading...</div>;
         if (error) return <div>{error}</div>;

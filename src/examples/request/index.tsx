@@ -1,6 +1,6 @@
-import { useRequest } from '../../components/utils/QueryOptionsProvider';
-import { request } from '../../utils/api';
 import { FunctionComponent, useEffect, useState } from 'react';
+import { useRequest } from '../../hooks/request';
+import { request } from '../../utils/api';
 
 request('mydomain.com', 'users/names').then((text) => {
   console.log(text);

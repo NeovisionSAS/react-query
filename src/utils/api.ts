@@ -16,15 +16,24 @@ interface LoaderOptions {
 
 export type GetHeaders = () => Promise<HeadersInit>;
 
-export interface BaseQueryOptions {
+export type EnvMode = 'development' | 'production';
+
+export interface BaseQueryOptions extends Rejectable {
   headers?: GetHeaders;
   parameterType?: QueryParamType;
-  mode?: 'development' | 'production';
+  mode?: EnvMode;
   verbosity?: number;
   idName?: string;
-  onRejected?: (rej: Reject) => any;
+  /**
+   * Add a `delay` before the request is sent.
+   * Very useful to test whenever you need to show some loading.
+   */
   delay?: number;
   cache?: number;
+}
+
+export interface Rejectable {
+  onRejected?: (rej: Reject) => any;
 }
 
 export interface Reject<T = any> {
@@ -65,6 +74,16 @@ export type RequestOptionsWithOptionalDomain = PartialBy<
   RequestOptionsWithDomain,
   'domain'
 >;
+
+export const requestOptionsMerge = <T extends RequestOptions = RequestOptions>(
+  options: RequestOptions[],
+  override = false
+): T => {
+  if (override) return Object.merge(...options);
+  return Object.merge(...options, {
+    onRejected: (rej) => options.forEach((o) => o.onRejected?.(rej)),
+  });
+};
 
 export const request = function <T = any>(
   domain: string,

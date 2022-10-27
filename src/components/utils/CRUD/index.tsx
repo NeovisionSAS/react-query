@@ -1,17 +1,18 @@
 import React, { FormEvent, useEffect } from 'react';
+import { DataHandler, QueryParams } from '../../../hooks/query';
 import { Mode } from '../../../types/global';
-import { GetHeaders, Method, Reject } from '../../../utils/api';
+import { GetHeaders, Method, Rejectable } from '../../../utils/api';
 import { createCacheKey } from '../../../utils/cache';
 import { requestLog } from '../../../utils/log';
 import { Query as QueryType } from '../../../utils/util';
 import ErrorBoundary from '../ErrorBoundary';
-import { DataHandler, Query } from '../Query';
+import { Query } from '../Query';
 import { useQueryOptions } from '../QueryOptionsProvider';
 import { CreateParams, createRequest } from './create';
 import { DeleteParams, deleteRequest } from './delete';
 import { UpdateParams, updateRequest } from './update';
 
-interface CRUDProps<T> {
+interface CRUDProps<T> extends QueryParams<T> {
   /**
    * This function is called whenever the query changes or if the state of the parameters have changed
    *
@@ -25,15 +26,11 @@ interface CRUDProps<T> {
    * You can also specify an `object` and specify where the component should request
    * for each of the `CRUD` operations
    */
-  endPoints: Endpoints;
+  endpoints: Endpoints;
   /**
    * Callback function whenever the component finished creating the object
    */
   onCreated?: () => any;
-  /**
-   * Callback function whenever the component finished reading the object
-   */
-  onRead?: (data: T) => any;
   /**
    * Callback function whenever the component finished updating the object
    */
@@ -42,12 +39,6 @@ interface CRUDProps<T> {
    * Callback function whenever the component finished deleting the object
    */
   onDeleted?: () => any;
-  /**
-   * Add a `delay` before the request is sent.
-   * Very useful to test whenever you need to show some loading.
-   */
-  delay?: number;
-  cache?: number;
 }
 
 export type Endpoints =
@@ -56,9 +47,8 @@ export type Endpoints =
 
 export type SetType = 'array' | 'item';
 
-interface GeneralParams {
+interface GeneralParams extends Rejectable {
   method: Method;
-  onRejected?: (rej: Reject) => any;
 }
 
 export interface IdentifiableGeneralParams extends GeneralParams {
@@ -74,17 +64,16 @@ type FormRequest<T extends PartialIdentifiableGeneralParams> = (
   params?: T
 ) => Promise<any>;
 
-export interface FormRequestParams<T> {
+export interface FormRequestParams<T> extends Rejectable {
+  domain: string;
+  verbosity: number;
+  headers?: GetHeaders;
   endpoint: string;
   mode: Mode;
-  verbosity: number;
-  domain: string;
   manualUpdate: DataHandler<T>;
   data?: T;
-  headers?: GetHeaders;
   onCompleted?: () => any;
   forceRefresh: () => any;
-  onRejected?: (rej: Reject) => any;
   cacheKey: string;
 }
 
@@ -163,18 +152,17 @@ export interface CRUDObject<T> {
  */
 export const CRUD = <T = any,>({
   children,
-  endPoints,
+  endpoints,
   onCreated,
-  onRead,
   onUpdated,
   onDeleted,
-  delay,
-  cache,
+  data,
+  ...options
 }: CRUDProps<T>): React.ReactElement<CRUDProps<T>> => {
   const [createEndpoint, readEndpoint, updateEndpoint, deleteEndpoint] =
-    typeof endPoints == 'string'
-      ? new Array(4).fill(endPoints)
-      : [endPoints.create, endPoints.read, endPoints.update, endPoints.delete];
+    typeof endpoints == 'string'
+      ? new Array(4).fill(endpoints)
+      : [endpoints.create, endpoints.read, endpoints.update, endpoints.delete];
 
   const [queryOptionsState] = useQueryOptions();
   const { verbosity, mode } = queryOptionsState;
@@ -194,17 +182,12 @@ export const CRUD = <T = any,>({
 
   return (
     <ErrorBoundary>
-      <Query<T>
-        query={readEndpoint}
-        delay={delay}
-        onRead={onRead}
-        cache={cache}
-      >
+      <Query<T> query={readEndpoint} {...options}>
         {(res) => {
           const { forceRefresh } = res;
           const type: SetType = Array.isArray(res.data) ? 'array' : 'item';
 
-          const cacheKey = createCacheKey(readEndpoint);
+          const cacheKey = createCacheKey(readEndpoint, data);
 
           return (
             <>

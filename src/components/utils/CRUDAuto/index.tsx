@@ -50,7 +50,7 @@ export const CRUDAuto = <T, U = FormType<any>>({
   updateStyle = 'each',
 }: CRUDFormProps<T, U>): React.ReactElement => {
   return (
-    <CRUD<T> endPoints={endPoints}>
+    <CRUD<T> endpoints={endPoints}>
       {(crud) => {
         const {
           read: { data, loading, error },

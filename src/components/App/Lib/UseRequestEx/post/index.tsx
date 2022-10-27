@@ -1,6 +1,6 @@
-import { File as FileInterface } from '../../../../../interfaces/file';
-import { useRequest } from '../../../../utils/QueryOptionsProvider';
 import { FormEvent, FunctionComponent, useState } from 'react';
+import { useRequest } from '../../../../../hooks/request';
+import { File as FileInterface } from '../../../../../interfaces/file';
 
 export const File: FunctionComponent = () => {
   const [loading, setLoading] = useState<number>(0);

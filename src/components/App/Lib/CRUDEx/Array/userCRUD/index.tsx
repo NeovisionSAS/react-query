@@ -1,10 +1,10 @@
+import { Fragment, FunctionComponent } from 'react';
 import { User as UserInterface } from '../../../../../../interfaces/user';
 import { CRUD } from '../../../../../utils';
-import { Fragment, FunctionComponent } from 'react';
 
 export const UserCRUD: FunctionComponent = () => {
   return (
-    <CRUD<UserInterface[]> endPoints={`user`}>
+    <CRUD<UserInterface[]> endpoints={`user`}>
       {({
         read: { data: users, loading, error },
         handleCreate,

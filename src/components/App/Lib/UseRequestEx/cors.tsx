@@ -1,5 +1,5 @@
-import { useRequest } from '../../../utils/QueryOptionsProvider';
 import { FunctionComponent, useEffect, useState } from 'react';
+import { useRequest } from '../../../../hooks/request';
 
 export const Cors: FunctionComponent = () => {
   const [cors, setCors] = useState<string>();

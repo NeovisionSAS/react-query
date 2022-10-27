@@ -1,6 +1,6 @@
 import { CRUD, CRUDObject } from '../../components/utils';
 
-<CRUD endPoints={`users/`}>
+<CRUD endpoints={`users/`}>
   {(data: CRUDObject<string>) => {
     const { read, handleCreate, handleUpdate, handleDelete } = data;
     if (read.loading) return <div>Loading...</div>;
@@ -15,7 +15,7 @@ import { CRUD, CRUDObject } from '../../components/utils';
   }}
 </CRUD>;
 
-<CRUD endPoints={`users/`}>
+<CRUD endpoints={`users/`}>
   {(data: CRUDObject<string>) => {
     const { read, handleUpdate } = data;
     if (read.loading) return <div>Loading...</div>;
@@ -38,7 +38,7 @@ import { CRUD, CRUDObject } from '../../components/utils';
   }}
 </CRUD>;
 
-<CRUD endPoints={`users/`}>
+<CRUD endpoints={`users/`}>
   {(userCrud: CRUDObject<{ id: number; name: string }[]>) => {
     const { read, handleUpdate } = userCrud;
     if (read.loading) return <div>Loading...</div>;

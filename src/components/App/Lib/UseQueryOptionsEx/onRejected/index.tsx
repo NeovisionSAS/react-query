@@ -1,5 +1,5 @@
-import { useRequest } from '../../../../utils/QueryOptionsProvider';
 import { FunctionComponent, useEffect } from 'react';
+import { useRequest } from '../../../../../hooks/request';
 
 export const OnRejected: FunctionComponent = () => {
   const request = useRequest({
