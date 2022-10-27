@@ -6,7 +6,6 @@ export const Header: FunctionComponent = () => {
     <header>
       <Link to={'/query'}>Query</Link>
       <Link to={'/crud'}>CRUD</Link>
-      <Link to={'/crudAuto'}>CRUDAuto</Link>
       <Link to={'/useRequest'}>UseRequest</Link>
       <Link to={'/useQueryOptions'}>UseQueryOptions</Link>
     </header>

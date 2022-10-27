@@ -4,15 +4,13 @@ import {
   PartialIdentifiableGeneralParams,
   SetType,
 } from '..';
-import { QueryParamType, request } from '../../../../utils/api';
+import { request, requestOptionsMerge } from '../../../../utils/api';
 import { setCache } from '../../../../utils/cache';
 import { requestError, requestLog } from '../../../../utils/log';
 import { getFormData } from '../../../../utils/util';
 
 interface DeleteFormRequestParams<T = any> extends FormRequestParams<T> {
-  idName: string;
   type: SetType;
-  parameterType: QueryParamType;
 }
 
 export interface DeleteParams extends PartialIdentifiableGeneralParams {
@@ -21,19 +19,21 @@ export interface DeleteParams extends PartialIdentifiableGeneralParams {
 
 export const deleteRequest = ({
   data,
-  domain,
-  endpoint: deleteEndpoint,
+  endpoint: {
+    endpoint,
+    domain,
+    idName,
+    verbosity,
+    parameterType,
+    mode,
+    ...eRest
+  },
   forceRefresh,
-  idName,
   manualUpdate,
-  mode,
-  verbosity,
   headers,
   onCompleted: onDeleted,
-  parameterType,
   type,
   cacheKey,
-  onRejected,
 }: DeleteFormRequestParams) => {
   return (
     e: FormEvent | undefined,
@@ -47,31 +47,27 @@ export const deleteRequest = ({
       method = 'DELETE',
       name = idName,
       id = formData?.[name],
-      onRejected: onRejectedOverride,
-    } = params;
+      onRejected,
+    } = requestOptionsMerge<DeleteParams>([eRest, params]);
 
-    const reject = onRejectedOverride ?? onRejected;
-
-    const endpoint = `${deleteEndpoint}/${
-      parameterType == 'path' ? `${id}/` : ''
-    }`;
+    const endpointId = `${endpoint}/${parameterType == 'path' ? `${id}/` : ''}`;
 
     requestLog(
       mode,
       verbosity,
       1,
       `[delete][${method}]`,
-      `${domain}/${endpoint}`
+      `${domain}/${endpointId}`
     );
 
     const sendData = parameterType == 'path' ? '' : formData ?? '';
 
-    return request(domain, endpoint, {
+    return request(domain, endpointId, {
       method,
       headers,
       mode,
       data: sendData,
-      onRejected: reject,
+      onRejected,
     }).then(() => {
       if (type == 'array') {
         const index = (data as unknown as any[]).findIndex(

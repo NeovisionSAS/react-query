@@ -1,6 +1,6 @@
 import { FormEvent } from 'react';
 import { FormRequestParams, PartialGeneralParams } from '..';
-import { request } from '../../../../utils/api';
+import { request, requestOptionsMerge } from '../../../../utils/api';
 import { setCache } from '../../../../utils/cache';
 import { requestLog } from '../../../../utils/log';
 import { getFormData } from '../../../../utils/util';
@@ -10,22 +10,21 @@ export type CreateParams = PartialGeneralParams;
 type CreateFormRequestParams<T> = FormRequestParams<T>;
 
 export const createRequest = ({
-  endpoint: createEndpoint,
-  mode,
-  verbosity,
-  domain,
+  endpoint: { endpoint, mode, verbosity, domain, headers, ...eRest },
   manualUpdate,
-  data,
-  headers,
   onCompleted: onCreated,
   forceRefresh,
   cacheKey,
-  onRejected,
+  data,
 }: CreateFormRequestParams<any>) => {
   return (e: FormEvent, params: CreateParams = { method: 'POST' }) => {
     e.preventDefault();
-    const { method = 'POST', onRejected: onRejectedOverride } = params;
-    const reject = onRejectedOverride ?? onRejected;
+
+    const { method = 'POST', onRejected } = requestOptionsMerge([
+      eRest,
+      params,
+    ]);
+
     const formData = getFormData(e.target);
 
     requestLog(
@@ -33,16 +32,16 @@ export const createRequest = ({
       verbosity,
       1,
       `[create][${method}]`,
-      `${domain}/${createEndpoint}/`,
+      `${domain}/${endpoint}/`,
       formData
     );
 
-    return request(domain, `${createEndpoint}/`, {
+    return request(domain, `${endpoint}/`, {
       data: formData,
       method,
       headers,
       mode,
-      onRejected: reject,
+      onRejected,
     }).then((created) => {
       const newData = [...data, created] as any;
       if (data) manualUpdate?.(newData);

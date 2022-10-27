@@ -5,15 +5,13 @@ import {
   PartialIdentifiableGeneralParams,
   SetType,
 } from '..';
-import { QueryParamType, request } from '../../../../utils/api';
+import { request, requestOptionsMerge } from '../../../../utils/api';
 import { setCache } from '../../../../utils/cache';
 import { requestError, requestLog } from '../../../../utils/log';
 import { formExtractor } from '../../../../utils/util';
 
 interface UpdateFormRequestParams<T = any> extends FormRequestParams<T> {
-  idName: string;
   type: SetType;
-  parameterType: QueryParamType;
 }
 
 export interface UpdateParams extends PartialIdentifiableGeneralParams {
@@ -21,20 +19,22 @@ export interface UpdateParams extends PartialIdentifiableGeneralParams {
 }
 
 export const updateRequest = ({
-  idName,
-  endpoint: updateEndpoint,
-  mode,
-  verbosity,
-  domain,
+  endpoint: {
+    endpoint,
+    mode,
+    verbosity,
+    domain,
+    headers,
+    idName,
+    parameterType,
+    ...eRest
+  },
   manualUpdate,
   data,
-  headers,
   onCompleted: onUpdated,
   type,
-  parameterType,
   forceRefresh,
   cacheKey,
-  onRejected,
 }: UpdateFormRequestParams) => {
   return (
     e: FormEvent,
@@ -45,10 +45,8 @@ export const updateRequest = ({
     const {
       method = 'PUT',
       name = idName,
-      onRejected: onRejectedOverride,
-    } = params;
-
-    const reject = onRejectedOverride ?? onRejected;
+      onRejected,
+    } = requestOptionsMerge<UpdateParams>([eRest, params]);
 
     const formDatas = formExtractor(e.target, name);
 
@@ -60,7 +58,7 @@ export const updateRequest = ({
     formDatas.forEach((formData) => {
       const id = formData[name];
 
-      const endpoint = `${updateEndpoint}/${
+      const endpointId = `${endpoint}/${
         parameterType == 'path' ? `${id}/` : ''
       }`;
 
@@ -88,16 +86,16 @@ export const updateRequest = ({
           verbosity,
           1,
           `[update][${method}]`,
-          `${domain}/${endpoint}`,
+          `${domain}/${endpointId}`,
           formData
         );
         promises.push(
-          request(domain, endpoint, {
+          request(domain, endpointId, {
             data: formData,
             method,
             headers,
             mode,
-            onRejected: reject,
+            onRejected,
           })
         );
       }

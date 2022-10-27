@@ -1,7 +1,11 @@
 import React, { FormEvent, useEffect } from 'react';
 import { DataHandler, QueryParams } from '../../../hooks/query';
-import { Mode } from '../../../types/global';
-import { GetHeaders, Method, Rejectable } from '../../../utils/api';
+import {
+  GetHeaders,
+  Method,
+  Rejectable,
+  requestOptionsMerge,
+} from '../../../utils/api';
 import { createCacheKey } from '../../../utils/cache';
 import { requestLog } from '../../../utils/log';
 import { Query as QueryType } from '../../../utils/util';
@@ -42,8 +46,19 @@ interface CRUDProps<T> extends QueryParams<T> {
 }
 
 export type Endpoints =
-  | { create: string; read: string; update: string; delete: string }
+  | {
+      create: EndpointOrString;
+      read: EndpointOrString;
+      update: EndpointOrString;
+      delete: EndpointOrString;
+    }
   | string;
+
+type EndpointOrString = string | Endpoint;
+
+interface Endpoint extends QueryParams {
+  endpoint: string;
+}
 
 export type SetType = 'array' | 'item';
 
@@ -64,12 +79,9 @@ type FormRequest<T extends PartialIdentifiableGeneralParams> = (
   params?: T
 ) => Promise<any>;
 
-export interface FormRequestParams<T> extends Rejectable {
-  domain: string;
-  verbosity: number;
+export interface FormRequestParams<T> {
   headers?: GetHeaders;
-  endpoint: string;
-  mode: Mode;
+  endpoint: Required<Endpoint>;
   manualUpdate: DataHandler<T>;
   data?: T;
   onCompleted?: () => any;
@@ -156,16 +168,18 @@ export const CRUD = <T = any,>({
   onCreated,
   onUpdated,
   onDeleted,
-  data,
+  override,
   ...options
 }: CRUDProps<T>): React.ReactElement<CRUDProps<T>> => {
   const [createEndpoint, readEndpoint, updateEndpoint, deleteEndpoint] =
-    typeof endpoints == 'string'
-      ? new Array(4).fill(endpoints)
-      : [endpoints.create, endpoints.read, endpoints.update, endpoints.delete];
+    handleEndpoints(endpoints);
 
   const [queryOptionsState] = useQueryOptions();
+  const queryOptions = requestOptionsMerge([queryOptionsState, options]);
+
   const { verbosity, mode } = queryOptionsState;
+
+  const { data } = options;
 
   useEffect(() => {
     requestLog(
@@ -173,48 +187,56 @@ export const CRUD = <T = any,>({
       verbosity,
       5,
       `[endpoints]`,
-      `[C]${createEndpoint ?? ''}`,
-      `[R]${readEndpoint ?? ''}`,
-      `[U]${updateEndpoint ?? ''}`,
-      `[D]${deleteEndpoint ?? ''}`
+      `[C]${createEndpoint.endpoint}`,
+      `[R]${readEndpoint.endpoint}`,
+      `[U]${updateEndpoint.endpoint}`,
+      `[D]${deleteEndpoint.endpoint}`
     );
-  }, [createEndpoint, readEndpoint, updateEndpoint, deleteEndpoint]);
+  }, [endpoints]);
+
+  const { endpoint, ...rRest } = readEndpoint;
 
   return (
     <ErrorBoundary>
-      <Query<T> query={readEndpoint} {...options}>
+      <Query<T> query={endpoint} {...options} {...rRest}>
         {(res) => {
           const { forceRefresh } = res;
           const type: SetType = Array.isArray(res.data) ? 'array' : 'item';
 
-          const cacheKey = createCacheKey(readEndpoint, data);
+          const cacheKey = createCacheKey(endpoint, data);
 
           return (
             <>
               {children(
                 {
                   handleCreate: createRequest({
-                    endpoint: createEndpoint,
+                    endpoint: requestOptionsMerge<Required<Endpoint>>(
+                      [queryOptions, createEndpoint],
+                      createEndpoint.override ?? override
+                    ),
                     onCompleted: onCreated,
                     cacheKey,
-                    ...queryOptionsState,
                     ...res,
                   }),
                   read: res,
                   handleUpdate: updateRequest({
-                    endpoint: updateEndpoint,
+                    endpoint: requestOptionsMerge<Required<Endpoint>>(
+                      [queryOptions, updateEndpoint],
+                      updateEndpoint.override ?? override
+                    ),
                     onCompleted: onUpdated,
                     type,
                     cacheKey,
-                    ...queryOptionsState,
                     ...res,
                   }),
                   handleDelete: deleteRequest({
-                    endpoint: deleteEndpoint,
+                    endpoint: requestOptionsMerge<Required<Endpoint>>(
+                      [queryOptions, deleteEndpoint],
+                      deleteEndpoint.override ?? override
+                    ),
                     type,
                     cacheKey,
                     onCompleted: onDeleted,
-                    ...queryOptionsState,
                     ...res,
                   }),
                 },
@@ -226,4 +248,19 @@ export const CRUD = <T = any,>({
       </Query>
     </ErrorBoundary>
   );
+};
+
+const handleEndpoints = (endpoints: Endpoints) => {
+  const endpointsOrStrings =
+    typeof endpoints == 'string'
+      ? new Array<EndpointOrString>(4).fill(endpoints)
+      : [endpoints.create, endpoints.read, endpoints.update, endpoints.delete];
+
+  return endpointsOrStrings.map((endpointOrString) => {
+    if (typeof endpointOrString == 'string')
+      return {
+        endpoint: endpointOrString,
+      };
+    return endpointOrString;
+  });
 };

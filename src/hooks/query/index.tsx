@@ -25,15 +25,15 @@ export interface RequestQueryEvents<T> {
   onRead?: DataHandler<T>;
 }
 
-export interface QueryParams<T = any>
-  extends RequestOptionsWithOptionalDomain,
-    RequestQueryEvents<T> {
+export interface QueryParams<T = any> extends RequestOptionsWithOptionalDomain {
   override?: boolean;
   disable?: boolean;
   data?: any;
 }
 
-export interface QueryHookParams<T = any> extends QueryParams<T> {
+export interface QueryHookParams<T = any>
+  extends QueryParams<T>,
+    RequestQueryEvents<T> {
   query: string;
 }
 
