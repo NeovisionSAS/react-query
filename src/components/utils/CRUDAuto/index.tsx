@@ -20,6 +20,7 @@ interface CRUDFormChildren<T, U> {
       HTMLFormElement
     >
   ) => ReactElement;
+  forceRefresh: () => void;
 }
 
 export interface FormOptions<T> {
@@ -51,7 +52,7 @@ export const CRUDAuto = <T, U = FormType<any>>({
 }: CRUDFormProps<T, U>): React.ReactElement => {
   return (
     <CRUD<T> endpoints={endPoints}>
-      {(crud) => {
+      {(crud, forceRefresh) => {
         const {
           read: { data, loading, error },
           handleCreate,
@@ -190,6 +191,7 @@ export const CRUDAuto = <T, U = FormType<any>>({
               console.log('Item type not supported yet');
               return <div>Item type not supported yet</div>;
             },
+            forceRefresh,
           });
 
         if (Array.isArray(data)) {
