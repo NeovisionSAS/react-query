@@ -1,11 +1,6 @@
 import React, { FormEvent, useEffect } from 'react';
 import { DataHandler, QueryParams } from '../../../hooks/query';
-import {
-  GetHeaders,
-  Method,
-  Rejectable,
-  requestOptionsMerge,
-} from '../../../utils/api';
+import { Method, Rejectable, requestOptionsMerge } from '../../../utils/api';
 import { createCacheKey } from '../../../utils/cache';
 import { requestLog } from '../../../utils/log';
 import { Query as QueryType } from '../../../utils/util';
@@ -80,7 +75,6 @@ type FormRequest<T extends PartialIdentifiableGeneralParams> = (
 ) => Promise<any>;
 
 export interface FormRequestParams<T> {
-  headers?: GetHeaders;
   endpoint: Required<Endpoint>;
   manualUpdate: DataHandler<T>;
   data?: T;
