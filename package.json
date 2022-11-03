@@ -1,6 +1,6 @@
 {
   "name": "@neovision/react-query",
-  "version": "2.6.2",
+  "version": "2.6.3",
   "private": false,
   "author": {
     "email": "alan.blanchet@neovision.fr",
@@ -11,6 +11,7 @@
     "startBack": "webpack --config ./webpack/webpack.server.js",
     "startFront": "webpack serve --config ./webpack/webpack.dev.js --open",
     "lib": "webpack --config ./webpack/webpack.lib.js",
+    "pack": "npm run lib && npm pack",
     "patch": "npm version --no-git-tag-version patch",
     "minor": "npm version --no-git-tag-version minor",
     "major": "npm version --no-git-tag-version major",

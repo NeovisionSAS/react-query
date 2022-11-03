@@ -26,11 +26,11 @@ export const deleteRequest = ({
     verbosity,
     parameterType,
     mode,
+    headers,
     ...eRest
   },
   forceRefresh,
   manualUpdate,
-  headers,
   onCompleted: onDeleted,
   type,
   cacheKey,
