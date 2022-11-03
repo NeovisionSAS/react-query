@@ -2,8 +2,8 @@ import '@generalizers/prototype-expansion';
 import { CRUD, CRUDObject } from './components/utils/CRUD';
 import {
   CRUDAuto,
+  FormBaseOptions,
   FormCreateType,
-  FormOptions,
   FormOptionsInsert,
   FormOptionsInsertOrder,
 } from './components/utils/CRUDAuto';
@@ -33,9 +33,9 @@ export {
   useRequest,
   CRUDObject,
   asFormTypes,
-  FormOptions,
   KeysToFormType,
   FormCreateType,
+  FormBaseOptions,
   useQueryOptions,
   createFormObject,
   FormOptionsInsert,

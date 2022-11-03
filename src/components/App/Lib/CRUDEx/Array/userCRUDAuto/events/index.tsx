@@ -48,16 +48,20 @@ const userType = asFormTypes({
 
 export const UserCRUDAutoEvents: FunctionComponent = () => {
   return (
-    <CRUDAuto<User, typeof userType> endPoints={'user'} type={userType}>
-      {({ getForm }) => {
+    <CRUDAuto<User, typeof userType> endpoints={'user'} type={userType}>
+      {({ getCreateForm, getUpdateForms }) => {
         return (
           <div>
             <h1>CREATE</h1>
-            {getForm('create')}
+            {getCreateForm()}
             <h1>UPDATE</h1>
-            {getForm('update', {
-              className: style.main,
-            })}
+            {getUpdateForms({
+              options: {
+                className: style.main,
+              },
+            }).map(({ Form }, i) => (
+              <Form key={`form-${i}`} />
+            ))}
           </div>
         );
       }}

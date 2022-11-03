@@ -24,25 +24,31 @@ const userType = asFormTypes({
 
 export const UserCRUDAutoInsert: FunctionComponent = () => {
   return (
-    <CRUDAuto<User, typeof userType> endPoints={'user'} type={userType}>
-      {({ getForm }) => {
+    <CRUDAuto<User, typeof userType> endpoints={'user'} type={userType}>
+      {({ getCreateForm, getUpdateForms }) => {
         return (
           <div>
             <h1>CREATE</h1>
-            {getForm('create', {
-              insert: {
-                before: [['name', () => <div>I am before name</div>]],
-                after: [['name', () => <div>I am after name</div>]],
+            {getCreateForm({
+              options: {
+                insert: {
+                  before: [['name', () => <div>I am before name</div>]],
+                  after: [['name', () => <div>I am after name</div>]],
+                },
               },
             })}
             <h1>UPDATE</h1>
-            {getForm('update', {
-              className: style.main,
-              insert: {
-                before: [['name', () => <div>I am before name</div>]],
-                after: [['name', () => <div>I am after name</div>]],
+            {getUpdateForms({
+              options: {
+                className: style.main,
+                insert: {
+                  before: [['name', () => <div>I am before name</div>]],
+                  after: [['name', () => <div>I am after name</div>]],
+                },
               },
-            })}
+            }).map(({ Form }, i) => (
+              <Form key={`form-${i}`} />
+            ))}
           </div>
         );
       }}

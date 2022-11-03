@@ -1,8 +1,8 @@
 import { Dispatch, Fragment, SetStateAction } from 'react';
-import { DeepPartial } from 'typeorm';
+import { PartialDeep } from 'type-fest';
 import {
+  FormBaseOptions,
   FormCreateType,
-  FormOptions,
   FormOptionsInsertOrder,
 } from '../components/utils/CRUDAuto';
 import { Form } from '../components/utils/Form';
@@ -32,7 +32,7 @@ export interface FormObject<T> {
   sub?: T;
 }
 
-export type FormRender<T = any> = DeepPartial<FormObject<T>> &
+export type FormRender<T = any> = PartialDeep<FormObject<T>> &
   FormObjectOptions & {
     oName: string;
     fName: string;
@@ -64,8 +64,7 @@ export const asFormTypes = <T,>(types: FormType<T>) => types;
 
 export interface FormObjectOptions {
   method: FormCreateType;
-  updateStyle?: 'each' | 'global';
-  formOptions?: FormOptions<any>;
+  formOptions?: FormBaseOptions<any>;
   noSubmit?: boolean;
 }
 
@@ -83,7 +82,7 @@ export const createFormObjectRecursive = <T,>(
   data: any[] = [],
   idName?: string
 ): JSX.Element => {
-  const { method, updateStyle = 'each', noSubmit = false } = options;
+  const { method, noSubmit = false } = options;
 
   const pkName =
     idName ??
@@ -135,7 +134,7 @@ export const createFormObjectRecursive = <T,>(
                 />
               );
             })}
-            {method != 'read' && updateStyle == 'each' && !noSubmit && (
+            {method != 'read' && !noSubmit && (
               <button key={`btn-${idValue}`} type="submit">
                 Submit
               </button>
