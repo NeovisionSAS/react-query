@@ -52,6 +52,9 @@ module.exports = merge(
       react: 'react',
       'react-dom': 'react-dom',
     },
+    optimization: {
+      minimize: false,
+    },
   },
   common
 );
