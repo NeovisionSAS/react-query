@@ -28,7 +28,7 @@ interface FormBase<T> {
 }
 
 export interface FormBaseOptions<T> {
-  override?: PartialDeep<KeysToFormType<T, any>>;
+  override?: PartialDeep<KeysToFormType<T>>;
   insert?: FormOptionsInsert<T>;
   className?: string;
 }
@@ -212,7 +212,7 @@ const handleUpdateEach = <T,>(
                 formType,
                 {
                   method: type,
-                  formOptions: options,
+                  formOptions: options as any,
                 },
                 [d]
               )}

@@ -68,5 +68,3 @@ export const UserCRUDAutoEvents: FunctionComponent = () => {
     </CRUDAuto>
   );
 };
-
-// Delete action
