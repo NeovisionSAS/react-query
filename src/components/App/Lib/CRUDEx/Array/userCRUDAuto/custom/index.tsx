@@ -26,14 +26,14 @@ const userType = asFormTypes({
 export const UserCRUDAutoCustom: FunctionComponent = () => {
   return (
     <CRUDAuto<User, typeof userType> endpoints={'user'} type={userType}>
-      {({ getCreateForm, getUpdateForms }) => {
+      {({ forms: { CreateForm, EntriesForm } }) => {
         return (
           <div>
             <h1>CREATE</h1>
-            {getCreateForm()}
+            <CreateForm />
             <h1>UPDATE</h1>
-            {getUpdateForms({
-              options: {
+            <EntriesForm
+              options={{
                 override: {
                   name: {
                     render({ oName, value }) {
@@ -46,10 +46,17 @@ export const UserCRUDAutoCustom: FunctionComponent = () => {
                     },
                   },
                 },
-              },
-            }).map(({ Form }) => (
-              <Form />
-            ))}
+              }}
+            >
+              {({ DeleteForm, UpdateForm }) => {
+                return (
+                  <>
+                    <UpdateForm />
+                    <DeleteForm />
+                  </>
+                );
+              }}
+            </EntriesForm>
           </div>
         );
       }}

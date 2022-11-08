@@ -2,7 +2,6 @@ import { FunctionComponent } from 'react';
 import { User } from '../../../../../../../interfaces';
 import { asFormTypes } from '../../../../../../../utils/form';
 import { CRUDAuto } from '../../../../../../utils/CRUDAuto';
-import style from './index.module.scss';
 
 const userType = asFormTypes({
   id: { required: true, visible: false, pk: true, type: 'number' },
@@ -25,30 +24,36 @@ const userType = asFormTypes({
 export const UserCRUDAutoInsert: FunctionComponent = () => {
   return (
     <CRUDAuto<User, typeof userType> endpoints={'user'} type={userType}>
-      {({ getCreateForm, getUpdateForms }) => {
+      {({ forms: { CreateForm, EntriesForm } }) => {
         return (
           <div>
             <h1>CREATE</h1>
-            {getCreateForm({
-              options: {
+            <CreateForm
+              options={{
                 insert: {
                   before: [['name', () => <div>I am before name</div>]],
                   after: [['name', () => <div>I am after name</div>]],
                 },
-              },
-            })}
+              }}
+            />
             <h1>UPDATE</h1>
-            {getUpdateForms({
-              options: {
-                className: style.main,
+            <EntriesForm
+              options={{
                 insert: {
                   before: [['name', () => <div>I am before name</div>]],
                   after: [['name', () => <div>I am after name</div>]],
                 },
-              },
-            }).map(({ Form }, i) => (
-              <Form key={`form-${i}`} />
-            ))}
+              }}
+            >
+              {({ UpdateForm, DeleteForm }) => {
+                return (
+                  <>
+                    <UpdateForm />
+                    <DeleteForm />
+                  </>
+                );
+              }}
+            </EntriesForm>
           </div>
         );
       }}

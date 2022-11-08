@@ -1,4 +1,4 @@
-import { Fragment, FunctionComponent } from 'react';
+import { FunctionComponent } from 'react';
 import { User } from '../../../../../../../interfaces';
 import { asFormTypes } from '../../../../../../../utils/form';
 import { CRUDAuto } from '../../../../../../utils/CRUDAuto';
@@ -30,23 +30,23 @@ const userType = asFormTypes({
 
 export const UserCRUDAutoDefault: FunctionComponent = () => {
   return (
-    <CRUDAuto<User, typeof userType> endpoints={'user'} type={userType}>
-      {({ getCreateForm, getUpdateForms }) => {
+    <CRUDAuto<User[], typeof userType> endpoints={'user'} type={userType}>
+      {({ forms: { CreateForm, EntriesForm }, data }) => {
         return (
           <div>
             <h1>CREATE</h1>
-            {getCreateForm()}
+            <CreateForm />
             <h1>UPDATE</h1>
-            {getUpdateForms({
-              options: {
-                className: style.main,
-              },
-            }).map(({ Form, DeleteForm }, i) => (
-              <Fragment key={`form-${i}`}>
-                <Form />
-                <DeleteForm />
-              </Fragment>
-            ))}
+            <EntriesForm options={{ className: style.main }}>
+              {({ UpdateForm, DeleteForm, data }) => {
+                return (
+                  <>
+                    <UpdateForm />
+                    <DeleteForm />
+                  </>
+                );
+              }}
+            </EntriesForm>
           </div>
         );
       }}
