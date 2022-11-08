@@ -106,16 +106,10 @@ export const CRUDAuto = <T, U = FormType<any>>({
           handleUpdate,
         } = crud;
 
-        if (error) return <div>{error}</div>;
-        if (loading) return <div>Loading...</div>;
-
-        const CreateForm = useMemo(
-          () =>
-            ({
-              options: opts = {},
-              attributes,
-              children,
-            }: FormCreate<any> = {}) => {
+        const forms: CRUDAutoForms<any, any> | undefined = useMemo(() => {
+          if (loading) return undefined;
+          return {
+            CreateForm({ options: opts = {}, attributes, children } = {}) {
               const { className, override = {}, ...options } = opts;
 
               const mergedType = Object.merge<FormType<any>>(
@@ -141,12 +135,6 @@ export const CRUDAuto = <T, U = FormType<any>>({
                 </form>
               );
             },
-          [type]
-        );
-
-        const forms: CRUDAutoForms<any, any> = useMemo(
-          () => ({
-            CreateForm,
             EntriesForm({ children, options: opts = {}, attributes }) {
               const {
                 deletable = <button type="submit">Delete</button>,
@@ -241,14 +229,16 @@ export const CRUDAuto = <T, U = FormType<any>>({
               console.log('Item type not supported yet');
               return <></>;
             },
-          }),
-          [type]
-        );
+          };
+        }, [type, loading]);
+
+        if (error) return <div>{error}</div>;
+        if (loading) return <div>Loading...</div>;
 
         if (children)
           return children({
             data: crud,
-            forms,
+            forms: forms!,
             forceRefresh,
           });
 
