@@ -29,6 +29,7 @@ interface CRUDAutoFormsEntries<T, U> {
   UpdateForm: (options?: PropsWithChildren) => JSX.Element;
   DeleteForm: (options?: PropsWithChildren) => JSX.Element;
   data: T extends Array<infer J> ? J : never;
+  index: number;
 }
 
 type FormProps = React.DetailedHTMLProps<
@@ -160,7 +161,7 @@ export const CRUDAuto = <T, U = FormType<any>>({
 
                   return (
                     <>
-                      {data.map((d, i) => {
+                      {data.map((d, index) => {
                         const value = d[pkName];
 
                         const UpdateForm = ({ children }: any = {}) => {
@@ -218,11 +219,12 @@ export const CRUDAuto = <T, U = FormType<any>>({
                         };
 
                         return (
-                          <Fragment key={`auto-${pkName}-${i}`}>
+                          <Fragment key={`auto-${pkName}-${index}`}>
                             {children?.({
                               UpdateForm,
                               DeleteForm,
                               data: d,
+                              index,
                             })}
                           </Fragment>
                         );
