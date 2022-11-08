@@ -1,4 +1,9 @@
-import React, { Fragment, FunctionComponent, PropsWithChildren } from 'react';
+import React, {
+  Fragment,
+  FunctionComponent,
+  PropsWithChildren,
+  useMemo,
+} from 'react';
 import { PartialDeep } from 'type-fest';
 import form from '../../../scss/form.module.scss';
 import {
@@ -104,138 +109,146 @@ export const CRUDAuto = <T, U = FormType<any>>({
         if (error) return <div>{error}</div>;
         if (loading) return <div>Loading...</div>;
 
-        const CreateForm = ({
-          options: opts = {},
-          attributes,
-          children,
-        }: FormCreate<any> = {}) => {
-          const { className, override = {}, ...options } = opts;
+        const CreateForm = useMemo(
+          () =>
+            ({
+              options: opts = {},
+              attributes,
+              children,
+            }: FormCreate<any> = {}) => {
+              const { className, override = {}, ...options } = opts;
 
-          const mergedType = Object.merge<FormType<any>>(
-            {},
-            type as any,
-            override as any
-          );
+              const mergedType = Object.merge<FormType<any>>(
+                {},
+                type as any,
+                override as any
+              );
 
-          return (
-            <form
-              {...attributes}
-              className={`${form.form} ${className} ${attributes?.className}`}
-              onSubmit={(e) => {
-                attributes?.onSubmit?.(e);
-                handleCreate(e);
-              }}
-            >
-              {createFormObject(mergedType, {
-                method: 'create',
-                formOptions: options,
-              })}
-              {children}
-            </form>
-          );
-        };
+              return (
+                <form
+                  {...attributes}
+                  className={`${form.form} ${className} ${attributes?.className}`}
+                  onSubmit={(e) => {
+                    attributes?.onSubmit?.(e);
+                    handleCreate(e);
+                  }}
+                >
+                  {createFormObject(mergedType, {
+                    method: 'create',
+                    formOptions: options,
+                  })}
+                  {children}
+                </form>
+              );
+            },
+          [type]
+        );
+
+        const forms: CRUDAutoForms<any, any> = useMemo(
+          () => ({
+            CreateForm,
+            EntriesForm({ children, options: opts = {}, attributes }) {
+              const {
+                deletable = <button type="submit">Delete</button>,
+                className,
+                override = {},
+                ...options
+              } = opts;
+
+              const mergedType = Object.merge<FormType<any>>(
+                {},
+                type as any,
+                override as any
+              );
+
+              if (Array.isArray(data)) {
+                const pkName = Object.entries<any>(mergedType)
+                  .filter(([_, value]) => value.pk)
+                  .map(([k, v]) => v.name ?? k)[0];
+
+                return (
+                  <>
+                    {data.map((d, index) => {
+                      const value = d[pkName];
+
+                      const UpdateForm = ({ children }: any = {}) => {
+                        return (
+                          <div className={className}>
+                            <form
+                              {...attributes}
+                              className={`${form.form} ${attributes?.className}`}
+                              onSubmit={(e) => {
+                                attributes?.onSubmit?.(e);
+                                handleUpdate(e);
+                              }}
+                            >
+                              <>
+                                {createFormObject(
+                                  mergedType,
+                                  {
+                                    method: 'update',
+                                    formOptions: options as any,
+                                  },
+                                  [d]
+                                )}
+                                {children}
+                              </>
+                            </form>
+                          </div>
+                        );
+                      };
+
+                      const DeleteForm = ({ children }: any) => {
+                        return (
+                          <form
+                            {...attributes}
+                            className={`${form.silent} ${attributes?.className}`}
+                            onSubmit={(e) => {
+                              attributes?.onSubmit?.(e);
+                              handleDelete(e, { name: pkName });
+                            }}
+                          >
+                            <input
+                              id={pkName}
+                              name={pkName}
+                              defaultValue={value}
+                              style={{ display: 'none' }}
+                            />
+                            <>
+                              {' '}
+                              {children ||
+                                ((typeof deletable != 'boolean' || deletable) &&
+                                  deletable)}
+                            </>
+                          </form>
+                        );
+                      };
+
+                      return (
+                        <Fragment key={`auto-${pkName}-${index}`}>
+                          {children?.({
+                            UpdateForm,
+                            DeleteForm,
+                            data: d,
+                            index,
+                          })}
+                        </Fragment>
+                      );
+                    })}
+                  </>
+                );
+              }
+              console.log('Item type not supported yet');
+              return <></>;
+            },
+          }),
+          [type]
+        );
 
         if (children)
           return children({
             data: crud,
-            forms: {
-              CreateForm,
-              EntriesForm({ children, options: opts = {}, attributes }) {
-                const {
-                  deletable = <button type="submit">Delete</button>,
-                  className,
-                  override = {},
-                  ...options
-                } = opts;
-
-                const mergedType = Object.merge<FormType<any>>(
-                  {},
-                  type as any,
-                  override as any
-                );
-
-                if (Array.isArray(data)) {
-                  const pkName = Object.entries<any>(mergedType)
-                    .filter(([_, value]) => value.pk)
-                    .map(([k, v]) => v.name ?? k)[0];
-
-                  return (
-                    <>
-                      {data.map((d, index) => {
-                        const value = d[pkName];
-
-                        const UpdateForm = ({ children }: any = {}) => {
-                          return (
-                            <div className={className}>
-                              <form
-                                {...attributes}
-                                className={`${form.form} ${attributes?.className}`}
-                                onSubmit={(e) => {
-                                  attributes?.onSubmit?.(e);
-                                  handleUpdate(e);
-                                }}
-                              >
-                                <>
-                                  {createFormObject(
-                                    mergedType,
-                                    {
-                                      method: 'update',
-                                      formOptions: options as any,
-                                    },
-                                    [d]
-                                  )}
-                                  {children}
-                                </>
-                              </form>
-                            </div>
-                          );
-                        };
-
-                        const DeleteForm = ({ children }: any) => {
-                          return (
-                            <form
-                              {...attributes}
-                              className={`${form.silent} ${attributes?.className}`}
-                              onSubmit={(e) => {
-                                attributes?.onSubmit?.(e);
-                                handleDelete(e, { name: pkName });
-                              }}
-                            >
-                              <input
-                                id={pkName}
-                                name={pkName}
-                                defaultValue={value}
-                                style={{ display: 'none' }}
-                              />
-                              <>
-                                {' '}
-                                {children ||
-                                  ((typeof deletable != 'boolean' ||
-                                    deletable) &&
-                                    deletable)}
-                              </>
-                            </form>
-                          );
-                        };
-
-                        return (
-                          <Fragment key={`auto-${pkName}-${index}`}>
-                            {children?.({
-                              UpdateForm,
-                              DeleteForm,
-                              data: d,
-                              index,
-                            })}
-                          </Fragment>
-                        );
-                      })}
-                    </>
-                  );
-                }
-                console.log('Item type not supported yet');
-                return <></>;
-              },
-            },
+            forms,
             forceRefresh,
           });
 
