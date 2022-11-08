@@ -36,8 +36,8 @@ export type FormRender<T = any> = PartialDeep<FormObject<T>> &
   FormObjectOptions & {
     oName: string;
     fName: string;
-    value?: any;
-    setValue?: Dispatch<SetStateAction<string>>;
+    value: any;
+    setValue: Dispatch<SetStateAction<string>>;
   };
 
 interface FormObjectSelect {
