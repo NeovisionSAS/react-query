@@ -12,6 +12,7 @@ import {
   KeysToFormType,
 } from '../../../utils/form';
 import { CRUD, CRUDObject, Endpoints } from '../CRUD';
+import { StateFunction } from '../StateFunction';
 
 export type FormCreateType = 'create' | 'read' | 'update';
 
@@ -87,7 +88,7 @@ export type FormOptionsInsertOrder<T> = [keyof T, () => JSX.Element];
 
 interface CRUDAutoProps<T, U> {
   endpoints: Endpoints;
-  children?: (children: CRUDChildren<T, U>) => JSX.Element;
+  children: (children: CRUDChildren<T, U>) => JSX.Element;
   type: U;
 }
 
@@ -203,7 +204,6 @@ export const CRUDAuto = <T, U = FormType<any>>({
                               style={{ display: 'none' }}
                             />
                             <>
-                              {' '}
                               {children ||
                                 ((typeof deletable != 'boolean' || deletable) &&
                                   deletable)}
@@ -230,29 +230,22 @@ export const CRUDAuto = <T, U = FormType<any>>({
               return <></>;
             },
           };
-        }, [type, loading]);
+        }, [type, loading, data]);
 
         if (error) return <div>{error}</div>;
         if (loading) return <div>Loading...</div>;
 
-        if (children)
-          return children({
-            data: crud,
-            forms: forms!,
-            forceRefresh,
-          });
-
-        if (Array.isArray(data)) {
-          return (
-            <>
-              {data.map<any>((d, i) => {
-                return <Fragment key={`d-${i}`}></Fragment>;
-              })}
-            </>
-          );
-        }
-        console.log('Item type not supported yet');
-        return <div>Item type not supported yet</div>;
+        return (
+          <StateFunction>
+            {() => {
+              return children({
+                data: crud,
+                forms: forms!,
+                forceRefresh,
+              });
+            }}
+          </StateFunction>
+        );
       }}
     </CRUD>
   );

@@ -1,4 +1,5 @@
-import React, { FormEvent, useEffect } from 'react';
+import objectHash from 'object-hash';
+import React, { FormEvent, useEffect, useMemo } from 'react';
 import { DataHandler, QueryParams } from '../../../hooks/query';
 import { Method, Rejectable, requestOptionsMerge } from '../../../utils/api';
 import { createCacheKey } from '../../../utils/cache';
@@ -165,8 +166,9 @@ export const CRUD = <T = any,>({
   override,
   ...options
 }: CRUDProps<T>): React.ReactElement<CRUDProps<T>> => {
+  const endpointsHash = objectHash(endpoints);
   const [createEndpoint, readEndpoint, updateEndpoint, deleteEndpoint] =
-    handleEndpoints(endpoints);
+    useMemo(() => handleEndpoints(endpoints), [endpointsHash]);
 
   const [queryOptionsState] = useQueryOptions();
   const queryOptions = requestOptionsMerge([queryOptionsState, options]);
@@ -186,7 +188,7 @@ export const CRUD = <T = any,>({
       `[U]${updateEndpoint.endpoint}`,
       `[D]${deleteEndpoint.endpoint}`
     );
-  }, [endpoints]);
+  }, [endpointsHash]);
 
   const { endpoint, ...rRest } = readEndpoint;
 
