@@ -96,7 +96,7 @@ export const createFormObjectRecursive = <T,>(
         {Object.entries(type as object).map(([fName, object]) => {
           return (
             <Form
-              key={fName}
+              key={`form-${fName}`}
               formObject={object as any}
               formObjectOptions={options}
               pkName={pkName}
@@ -135,9 +135,7 @@ export const createFormObjectRecursive = <T,>(
               );
             })}
             {method != 'read' && !noSubmit && (
-              <button key={`btn-${idValue}`} type="submit">
-                Submit
-              </button>
+              <button type="submit">Submit</button>
             )}
           </Fragment>
         );
