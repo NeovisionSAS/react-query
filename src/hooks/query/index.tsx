@@ -64,7 +64,9 @@ export const useQuery = <T = any,>({
     fetching: totalProgressInitialiser(),
   });
 
+  const [refresh, setRefresh] = useState(false);
   const forceRefresh = () => setRefresh(!refresh);
+
   const manualUpdate = useCallback(
     (data: T) =>
       setDataResolver({
@@ -91,7 +93,6 @@ export const useQuery = <T = any,>({
     request(domain, path, options);
 
   const [controller, setController] = useState<AbortController>();
-  const [refresh, setRefresh] = useState(false);
 
   // Check if the query prop has changed
   useEffect(() => {
