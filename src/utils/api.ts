@@ -98,7 +98,7 @@ export const request = function <T = any>(
     mode = 'production',
     onRejected,
     data,
-    cache = 0,
+    cache,
     ...rest
   } = options;
   const { body, contentType } = restructureData(data);

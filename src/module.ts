@@ -12,6 +12,7 @@ import {
   QueryOptionsProvider,
   useQueryOptions,
 } from './components/utils/QueryOptionsProvider';
+import { StateFunction } from './components/utils/StateFunction';
 import { useQuery } from './hooks/query';
 import { useRequest } from './hooks/request';
 import './scss/defaults.scss';
@@ -33,6 +34,7 @@ export {
   useRequest,
   CRUDObject,
   asFormTypes,
+  StateFunction,
   KeysToFormType,
   FormCreateType,
   FormBaseOptions,

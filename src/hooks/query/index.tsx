@@ -29,6 +29,7 @@ export interface QueryParams<T = any> extends RequestOptionsWithOptionalDomain {
   override?: boolean;
   disable?: boolean;
   data?: any;
+  effect?: any[];
 }
 
 export interface QueryHookParams<T = any>
@@ -54,6 +55,7 @@ export const useQuery = <T = any,>({
   cache: queryCache,
   data,
   override = false,
+  effect = [],
   ...queryOptions
 }: QueryHookParams<T>): QueryReturn<T> => {
   // The default data/load/error triple
@@ -106,8 +108,10 @@ export const useQuery = <T = any,>({
     );
     controller?.abort();
     const ctrl = new AbortController();
+    const cacheData = getCache(cacheHash);
     const timeout = window.setTimeout(() => {
       const { signal, ...others } = options;
+
       req(query, {
         signal: ctrl.signal,
         cache,
@@ -136,8 +140,6 @@ export const useQuery = <T = any,>({
     }, delay ?? 0);
     setController(ctrl);
 
-    const cacheData = getCache(cacheHash);
-
     setDataResolver({
       data: cacheData,
       loading: cacheData == undefined,
@@ -149,7 +151,7 @@ export const useQuery = <T = any,>({
       ctrl?.abort();
       window.clearTimeout(timeout);
     };
-  }, [query, refresh, data]);
+  }, [query, refresh, data, ...effect]);
 
   return {
     ...dataResolver,
