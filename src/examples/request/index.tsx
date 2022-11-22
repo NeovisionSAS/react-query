@@ -36,8 +36,8 @@ const UserList: FunctionComponent = () => {
 
   return (
     <div>
-      {users?.map((user: any) => {
-        return <p>user.name</p>;
+      {users?.map((user: any, i) => {
+        return <p key={i}>user.name</p>;
       })}
     </div>
   );

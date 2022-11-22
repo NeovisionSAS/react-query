@@ -45,11 +45,11 @@ import { CRUD, CRUDObject } from '../../components/utils';
     const { data: users } = read;
     return (
       <form onSubmit={(e) => handleUpdate(e, { method: 'PUT' })}>
-        {users.map((user) => {
+        {users.map((user, i) => {
           // It is important to give the attribute `name` with the value {attr}-{pk} like in this example.
           // You can replace the seperation with a " " or "_" if you want.
           return (
-            <div>
+            <div key={i}>
               <input type={`number`} name={`id-${user.id}`} value={user.id} />
               <input name={`name-${user.id}`} value={`Gerald`} />
             </div>

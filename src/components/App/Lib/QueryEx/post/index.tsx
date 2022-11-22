@@ -11,7 +11,7 @@ export const PostAllUsers: FunctionComponent = () => {
         return (
           <>
             {users.map((user, i) => {
-              return <div key={`user-${i}`}>{user.name}</div>;
+              return <div key={i}>{user.name}</div>;
             })}
           </>
         );

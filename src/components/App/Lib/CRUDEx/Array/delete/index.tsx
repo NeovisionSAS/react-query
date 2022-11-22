@@ -14,7 +14,7 @@ export const User: FunctionComponent = () => {
             {users.map((user, i) => {
               return (
                 <form
-                  key={`userDelete-${i}`}
+                  key={i}
                   onSubmit={(e) => handleDelete(e, { id: user.id })}
                 >
                   <input name="id" type={'number'} defaultValue={user.id} />

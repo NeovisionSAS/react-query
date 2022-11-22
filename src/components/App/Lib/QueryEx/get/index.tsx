@@ -1,3 +1,4 @@
+import { FunctionComponent, useState } from 'react';
 import { File } from '../../../../../interfaces/file';
 import { User as UserInterface } from '../../../../../interfaces/user';
 import { Query } from '../../../../utils';
@@ -5,7 +6,6 @@ import {
   QueryOptionsProvider,
   useQueryOptions,
 } from '../../../../utils/QueryOptionsProvider';
-import { FunctionComponent, useState } from 'react';
 
 export const AllUsers: FunctionComponent = () => {
   return (
@@ -18,7 +18,7 @@ export const AllUsers: FunctionComponent = () => {
           <div>
             {users.map((user, i) => {
               return (
-                <ul key={`allUsers-${i}`}>
+                <ul key={i}>
                   <li>ID : {user.id}</li>
                   <li>Name : {user.name}</li>
                   <li>Age : {user.age}</li>
@@ -90,7 +90,7 @@ export const AllUsersDelay: FunctionComponent = () => {
               <div>
                 {users.map((user, i) => {
                   return (
-                    <ul key={`allUsers-${i}`}>
+                    <ul key={i}>
                       <li>ID : {user.id}</li>
                       <li>Name : {user.name}</li>
                       <li>Age : {user.age}</li>
@@ -146,7 +146,7 @@ export const Files: FunctionComponent = () => {
             {files.length > 0 ? (
               files.map((file, i) => {
                 return (
-                  <ul key={`allUsers-${i}`}>
+                  <ul key={i}>
                     <li>File name : {file.name}</li>
                     <li>File size : {file.size} bytes</li>
                   </ul>

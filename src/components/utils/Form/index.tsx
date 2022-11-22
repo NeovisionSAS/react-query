@@ -6,6 +6,8 @@ import {
   FormObject,
   FormObjectOptions,
 } from '../../../utils/form';
+import { requestWarn } from '../../../utils/log';
+import { useQueryOptions } from '../QueryOptionsProvider';
 
 interface FormProps {
   formObject: FormObject<any>;
@@ -32,7 +34,7 @@ export const Form: FunctionComponent<FormProps> = ({
   fName = idValue ? `${typeKey}-${idValue}` : typeKey,
   type,
 }) => {
-  const [value, _setValue] = useState(dataLine?.[typeKey]);
+  const [{ mode, verbosity }] = useQueryOptions();
 
   const {
     className,
@@ -45,6 +47,20 @@ export const Form: FunctionComponent<FormProps> = ({
     onValueChanged,
     ...other
   } = formObject;
+
+  if (type == 'update' && !sub && dataLine && !(typeKey in dataLine)) {
+    requestWarn(
+      mode,
+      verbosity,
+      0,
+      `Key "${typeKey}" doesn't exist on received data`
+    );
+    return <></>;
+  }
+
+  const state = dataLine?.[typeKey] ?? '';
+
+  const [value, _setValue] = useState(state);
 
   const { method, formOptions = {} } = formObjectOptions;
 
@@ -59,27 +75,25 @@ export const Form: FunctionComponent<FormProps> = ({
     onValueChanged?.(v);
   };
 
+  const lineOptions = {
+    ...formObject,
+    oName,
+    fName,
+    value,
+    setValue,
+    data: dataLine,
+    ...formObjectOptions,
+  };
+
   useEffect(() => {
-    setValue(dataLine?.[typeKey]);
+    setValue(state);
   }, [dataLine, typeKey]);
 
-  if (render)
-    return (
-      <>
-        {render({
-          ...formObject,
-          oName,
-          fName,
-          value,
-          setValue,
-          ...formObjectOptions,
-        })}
-      </>
-    );
+  if (render) return <>{render(lineOptions)}</>;
 
   if (
-    (type == 'create' && sub) ||
-    (type == 'update' && !keys.includes(typeKey))
+    sub &&
+    (type == 'create' || (type == 'update' && keys && !keys.includes(typeKey)))
   ) {
     return (
       <div
@@ -89,7 +103,7 @@ export const Form: FunctionComponent<FormProps> = ({
         <div className={`${form.section}`}>
           <label>{oName}</label>
         </div>
-        <div {...other} className={`${form.sectionDeep} ${className}`}>
+        <div className={`${form.sectionDeep} ${className}`}>
           {createFormObjectRecursive(
             sub,
             { ...formObjectOptions, noSubmit: true },
@@ -98,38 +112,6 @@ export const Form: FunctionComponent<FormProps> = ({
           )}
         </div>
       </div>
-    );
-  }
-
-  if (type == 'create') {
-    if (pk) return <></>;
-
-    return (
-      <>
-        {extractInsert(before, fName)}
-        <div className={`${form.section} ${className}`}>
-          <label htmlFor={fName}>
-            {oName?.capitalize()} {required && '*'}
-          </label>
-          {select ? (
-            <select id={fName} name={fName}>
-              {select.options.map((option, i) => {
-                return (
-                  <option
-                    key={`${fName}-${i}`}
-                    value={option.value ?? option.text}
-                  >
-                    {option.text ?? option.value}
-                  </option>
-                );
-              })}
-            </select>
-          ) : (
-            <input {...other} id={fName} name={fName} />
-          )}
-        </div>
-        {extractInsert(after, fName)}
-      </>
     );
   }
 
@@ -142,12 +124,48 @@ export const Form: FunctionComponent<FormProps> = ({
         id={`${fName}`}
         name={`${fName}`}
         defaultValue={value}
+        readOnly
       />
     );
 
+  if (type == 'create') {
+    if (pk) return <></>;
+
+    return (
+      <>
+        <>{extractInsert(before, fName, lineOptions)}</>
+        <div className={`${form.section} ${className}`}>
+          <label htmlFor={fName}>
+            {oName?.capitalize()} {required && '*'}
+          </label>
+          {select ? (
+            <select id={fName} name={fName}>
+              {...select.options.map((option) => {
+                return (
+                  <option value={option.value ?? option.text}>
+                    {option.text ?? option.value}
+                  </option>
+                );
+              })}
+            </select>
+          ) : (
+            <input
+              {...other}
+              id={fName}
+              name={fName}
+              value={value}
+              onChange={(e) => setValue(e.target.value)}
+            />
+          )}
+        </div>
+        <>{extractInsert(after, fName, lineOptions)}</>
+      </>
+    );
+  }
+
   return (
     <>
-      {extractInsert(before, typeKey)}
+      <>{extractInsert(before, typeKey, lineOptions)}</>
       <div className={`${form.section} ${className}`}>
         <label htmlFor={fName}>
           {oName.capitalize()} {required && '*'}
@@ -156,12 +174,9 @@ export const Form: FunctionComponent<FormProps> = ({
           <div>{value}</div>
         ) : select ? (
           <select id={fName} name={fName} defaultValue={value}>
-            {select.options.map((option, i) => {
+            {...select.options.map((option) => {
               return (
-                <option
-                  key={`${fName}-${i}`}
-                  value={option.value ?? option.text}
-                >
+                <option value={option.value ?? option.text}>
                   {option.text ?? option.value}
                 </option>
               );
@@ -170,14 +185,14 @@ export const Form: FunctionComponent<FormProps> = ({
         ) : (
           <input
             {...other}
-            id={`${fName}`}
-            name={`${fName}`}
+            id={fName}
+            name={fName}
             value={value}
             onChange={(e) => setValue(e.target.value)}
           />
         )}
       </div>
-      {extractInsert(after, typeKey)}
+      <>{extractInsert(after, typeKey, lineOptions)}</>
     </>
   );
 };

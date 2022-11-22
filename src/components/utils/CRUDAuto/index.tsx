@@ -8,6 +8,7 @@ import { PartialDeep } from 'type-fest';
 import form from '../../../scss/form.module.scss';
 import {
   createFormObject,
+  FormLineOptions,
   FormType,
   KeysToFormType,
 } from '../../../utils/form';
@@ -84,7 +85,10 @@ export interface FormOptionsInsert<T = any> {
   after?: FormOptionsInsertOrder<T>[];
 }
 
-export type FormOptionsInsertOrder<T> = [keyof T, () => JSX.Element];
+export type FormOptionsInsertOrder<T> = [
+  keyof T,
+  (o: FormLineOptions) => JSX.Element
+];
 
 interface CRUDAutoProps<T, U> {
   endpoints: Endpoints;
@@ -157,7 +161,7 @@ export const CRUDAuto = <T, U = FormType<any>>({
 
                 return (
                   <>
-                    {data.map((d, index) => {
+                    {...data.map((d, i) => {
                       const value = d[pkName];
 
                       const UpdateForm = ({ children }: any = {}) => {
@@ -213,12 +217,12 @@ export const CRUDAuto = <T, U = FormType<any>>({
                       };
 
                       return (
-                        <Fragment key={`auto-${pkName}-${index}`}>
+                        <Fragment key={i}>
                           {children?.({
                             UpdateForm,
                             DeleteForm,
                             data: d,
-                            index,
+                            index: i,
                           })}
                         </Fragment>
                       );

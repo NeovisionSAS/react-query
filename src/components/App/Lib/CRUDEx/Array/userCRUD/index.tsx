@@ -18,7 +18,7 @@ export const UserCRUD: FunctionComponent = () => {
           <div>
             {users.map(({ id, name, age, nationality }, i) => {
               return (
-                <Fragment key={`allUsers-${i}`}>
+                <Fragment key={i}>
                   <form onSubmit={handleUpdate}>
                     <div>
                       <label htmlFor="id">ID : </label>

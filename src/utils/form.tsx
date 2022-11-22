@@ -1,4 +1,4 @@
-import { Dispatch, Fragment, SetStateAction } from 'react';
+import { Dispatch, SetStateAction } from 'react';
 import { PartialDeep } from 'type-fest';
 import {
   FormBaseOptions,
@@ -27,17 +27,18 @@ export interface FormObject<T> {
     | 'text';
   className?: string;
   select?: FormObjectSelect;
-  render?: (o: FormRender) => JSX.Element;
+  render?: (o: FormLineOptions) => JSX.Element;
   onValueChanged?: (v: any) => any;
   sub?: T;
 }
 
-export type FormRender<T = any> = PartialDeep<FormObject<T>> &
+export type FormLineOptions<T = any> = PartialDeep<FormObject<T>> &
   FormObjectOptions & {
     oName: string;
     fName: string;
     value: any;
     setValue: Dispatch<SetStateAction<string>>;
+    data: any;
   };
 
 interface FormObjectSelect {
@@ -93,10 +94,9 @@ export const createFormObjectRecursive = <T,>(
   if (method == 'create') {
     return (
       <>
-        {Object.entries(type as object).map(([fName, object]) => {
+        {...Object.entries(type as object).map(([fName, object]) => {
           return (
             <Form
-              key={`form-${fName}`}
               formObject={object as any}
               formObjectOptions={options}
               pkName={pkName}
@@ -112,17 +112,16 @@ export const createFormObjectRecursive = <T,>(
 
   return (
     <>
-      {data.map((line) => {
+      {...data.map((line) => {
         const idValue = line[pkName];
-
         const lineKeys = Object.keys(line);
+
         return (
-          <Fragment key={idValue}>
-            {Object.entries(type as any).map(([key, v], i) => {
+          <>
+            {...Object.entries(type as any).map(([key, v]) => {
               return (
                 <Form
                   type="update"
-                  key={`${key}-${idValue}-${i}`}
                   formObject={v as any}
                   formObjectOptions={options}
                   typeKey={key}
@@ -137,7 +136,7 @@ export const createFormObjectRecursive = <T,>(
             {method != 'read' && !noSubmit && (
               <button type="submit">Submit</button>
             )}
-          </Fragment>
+          </>
         );
       })}
     </>
@@ -146,7 +145,14 @@ export const createFormObjectRecursive = <T,>(
 
 export const extractInsert = (
   insert: FormOptionsInsertOrder<any>[],
-  s: string
+  s: string,
+  data: FormLineOptions
 ) => {
-  return insert.filter(([search]) => search == s).map(([, e]) => e?.());
+  return (
+    <>
+      {...insert
+        .filter(([search]) => search == s)
+        .map(([, e]) => <>{e?.(data)}</>)}
+    </>
+  );
 };

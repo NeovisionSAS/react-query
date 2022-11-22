@@ -1,6 +1,6 @@
+import { UploadedFile } from 'express-fileupload';
 import { Context } from '../context';
 import { File } from '../orm/file';
-import { UploadedFile } from 'express-fileupload';
 
 export class FileResolver {
   static async create(file: UploadedFile, { response }: Context) {

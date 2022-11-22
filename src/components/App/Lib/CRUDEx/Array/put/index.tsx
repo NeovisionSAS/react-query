@@ -15,7 +15,7 @@ export const User: FunctionComponent = () => {
               {users.map((user, i) => {
                 return (
                   <form
-                    key={`userPut-${i}`}
+                    key={i}
                     onSubmit={(e) => handleUpdate(e, { name: 'id' })}
                   >
                     <input

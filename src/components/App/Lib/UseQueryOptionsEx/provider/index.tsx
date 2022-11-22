@@ -1,9 +1,9 @@
+import { FunctionComponent } from 'react';
 import {
   QueryOptionsConsumer,
   QueryOptionsProvider,
   useQueryOptions,
 } from '../../../../utils/QueryOptionsProvider';
-import { FunctionComponent } from 'react';
 
 export const Provider: FunctionComponent = () => {
   const [options, setQueryOptions] = useQueryOptions();
@@ -19,7 +19,7 @@ export const Provider: FunctionComponent = () => {
       <tbody>
         {Object.entries(options).map((entry, i) => {
           return (
-            <tr key={`provider-${i}`}>
+            <tr key={i}>
               <td>{entry[0]}</td>
               <td>
                 <input
@@ -66,7 +66,7 @@ export const ProviderOverride: FunctionComponent = () => {
               <tbody>
                 {Object.entries(options).map((entry, i) => {
                   return (
-                    <tr key={`providerOverride-${i}`}>
+                    <tr key={i}>
                       <td>{entry[0]}</td>
                       <td>{`${entry[1]}`}</td>
                     </tr>

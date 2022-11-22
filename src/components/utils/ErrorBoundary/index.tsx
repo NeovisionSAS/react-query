@@ -34,10 +34,8 @@ class ErrorBoundary extends React.Component<
         <div>{error?.e?.message}</div>
         <hr />
         <div>
-          {error?.info?.componentStack.split('\n').map((v) => (
-            <>
-              <div>{v}</div>
-            </>
+          {error?.info?.componentStack.split('\n').map((v, i) => (
+            <div key={i}>{v}</div>
           ))}
         </div>
       </div>

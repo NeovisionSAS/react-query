@@ -13,7 +13,7 @@ export const AllUsers: FunctionComponent = () => {
           <div>
             {users.map((user, i) => {
               return (
-                <ul key={`allUsers-${i}`}>
+                <ul key={i}>
                   <li>ID : {user.id}</li>
                   <li>Name : {user.name}</li>
                   <li>Age : {user.age}</li>
