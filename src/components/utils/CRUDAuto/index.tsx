@@ -150,84 +150,90 @@ export const CRUDAuto = <T, U = FormType<any>>({
                 override as any
               );
 
-              if (Array.isArray(data)) {
-                const pkName = Object.entries<any>(mergedType)
-                  .filter(([_, value]) => value.pk)
-                  .map(([k, v]) => v.name ?? k)[0];
+              const pkName = Object.entries<any>(mergedType)
+                .filter(([_, value]) => value.pk)
+                .map(([k, v]) => v.name ?? k)[0];
 
+              const createForms = (
+                data: any,
+                value: any,
+                index: number = 0
+              ) => {
+                const UpdateForm = ({ children }: any = {}) => {
+                  return (
+                    <div className={className}>
+                      <form
+                        {...attributes}
+                        className={`${form.form} ${attributes?.className}`}
+                        onSubmit={(e) => {
+                          attributes?.onSubmit?.(e);
+                          handleUpdate(e);
+                        }}
+                      >
+                        <>
+                          {createFormObject(
+                            mergedType,
+                            {
+                              method: 'update',
+                              formOptions: options as any,
+                            },
+                            [data]
+                          )}
+                          {children}
+                        </>
+                      </form>
+                    </div>
+                  );
+                };
+
+                const DeleteForm = ({ children }: any) => {
+                  return (
+                    <form
+                      {...attributes}
+                      className={`${form.silent} ${attributes?.className}`}
+                      onSubmit={(e) => {
+                        attributes?.onSubmit?.(e);
+                        handleDelete(e, { name: pkName });
+                      }}
+                    >
+                      <input
+                        id={pkName}
+                        name={pkName}
+                        defaultValue={value}
+                        style={{ display: 'none' }}
+                      />
+                      <>
+                        {children ||
+                          ((typeof deletable != 'boolean' || deletable) &&
+                            deletable)}
+                      </>
+                    </form>
+                  );
+                };
+
+                return (
+                  <Fragment key={`auto-${pkName}-${index}`}>
+                    {children?.({
+                      UpdateForm,
+                      DeleteForm,
+                      data,
+                      index,
+                    })}
+                  </Fragment>
+                );
+              };
+
+              if (Array.isArray(data)) {
                 return (
                   <>
                     {data.map((d, index) => {
                       const value = d[pkName];
 
-                      const UpdateForm = ({ children }: any = {}) => {
-                        return (
-                          <div className={className}>
-                            <form
-                              {...attributes}
-                              className={`${form.form} ${attributes?.className}`}
-                              onSubmit={(e) => {
-                                attributes?.onSubmit?.(e);
-                                handleUpdate(e);
-                              }}
-                            >
-                              <>
-                                {createFormObject(
-                                  mergedType,
-                                  {
-                                    method: 'update',
-                                    formOptions: options as any,
-                                  },
-                                  [d]
-                                )}
-                                {children}
-                              </>
-                            </form>
-                          </div>
-                        );
-                      };
-
-                      const DeleteForm = ({ children }: any) => {
-                        return (
-                          <form
-                            {...attributes}
-                            className={`${form.silent} ${attributes?.className}`}
-                            onSubmit={(e) => {
-                              attributes?.onSubmit?.(e);
-                              handleDelete(e, { name: pkName });
-                            }}
-                          >
-                            <input
-                              id={pkName}
-                              name={pkName}
-                              defaultValue={value}
-                              style={{ display: 'none' }}
-                            />
-                            <>
-                              {children ||
-                                ((typeof deletable != 'boolean' || deletable) &&
-                                  deletable)}
-                            </>
-                          </form>
-                        );
-                      };
-
-                      return (
-                        <Fragment key={`auto-${pkName}-${index}`}>
-                          {children?.({
-                            UpdateForm,
-                            DeleteForm,
-                            data: d,
-                            index,
-                          })}
-                        </Fragment>
-                      );
+                      return createForms(d, value, index);
                     })}
                   </>
                 );
-              }
-              console.log('Item type not supported yet');
-              return <></>;
+              } else return createForms(data, (data as any)[pkName]);
             },
           };
         }, [type, loading, data]);

@@ -2,7 +2,7 @@ import { FunctionComponent } from 'react';
 import { User } from '../../../../../../interfaces';
 import { CRUD } from '../../../../../utils';
 
-export const Me: FunctionComponent = () => {
+export const MeCRUD: FunctionComponent = () => {
   return (
     <CRUD<User> endpoints={`me`}>
       {({ read: { data, loading }, handleUpdate }) => {
