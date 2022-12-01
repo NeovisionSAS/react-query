@@ -52,7 +52,7 @@ export const updateRequest = ({
 
     let newData: any;
     if (type == 'array') newData = [...(data as unknown as any[])];
-    else newData = data;
+    else newData = formDatas[0];
 
     const promises: Promise<any>[] = [];
     formDatas.forEach((formData) => {

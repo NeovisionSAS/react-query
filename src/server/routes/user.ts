@@ -54,6 +54,26 @@ export const routes: Routable[] = [
   },
   {
     method: 'GET',
+    path: '/me',
+    action() {
+      return Promise.resolve({
+        name: 'Alan',
+        age: 21,
+        nationality: 'french',
+        dateOfBirth: '2001-05-14',
+        id: -1,
+      });
+    },
+  },
+  {
+    method: 'PUT',
+    path: '/me',
+    action({ body }) {
+      return Promise.resolve(body);
+    },
+  },
+  {
+    method: 'GET',
     path: '/user/book',
     action(request, response) {
       return UserResolver.readUserBook(parseInt(request.body.id));
