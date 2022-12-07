@@ -1,4 +1,5 @@
-import { Query, QueryOptionsProvider } from '../../module';
+import { Query } from '../../components/utils';
+import { QueryOptionsProvider } from '../../components/utils/QueryOptionsProvider';
 
 <QueryOptionsProvider
   value={{

@@ -1,6 +1,6 @@
-import { FunctionComponent } from 'react';
 import { User } from '../../../../../../interfaces';
 import { CRUD } from '../../../../../utils';
+import { FunctionComponent } from 'react';
 
 export const MeCRUD: FunctionComponent = () => {
   return (

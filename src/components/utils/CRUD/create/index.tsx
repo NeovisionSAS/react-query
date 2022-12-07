@@ -1,7 +1,7 @@
-import { FormEvent } from 'react';
-import { FormRequestParams, PartialGeneralParams } from '..';
+import { CRUDEventHandler, FormRequestParams, PartialGeneralParams } from '..';
 import { request, requestOptionsMerge } from '../../../../utils/api';
 import { setCache } from '../../../../utils/cache';
+import { isFormEvent } from '../../../../utils/form';
 import { requestLog } from '../../../../utils/log';
 import { getFormData } from '../../../../utils/util';
 
@@ -9,7 +9,7 @@ export type CreateParams = PartialGeneralParams;
 
 type CreateFormRequestParams<T> = FormRequestParams<T>;
 
-export const createRequest = ({
+export const createRequest = <T, U = T extends Array<infer R> ? R : T>({
   endpoint: { endpoint, mode, verbosity, domain, headers, ...eRest },
   manualUpdate,
   onCompleted: onCreated,
@@ -17,15 +17,18 @@ export const createRequest = ({
   cacheKey,
   data,
 }: CreateFormRequestParams<any>) => {
-  return (e: FormEvent, params: CreateParams = { method: 'POST' }) => {
-    e.preventDefault();
-
+  return (e: CRUDEventHandler<U>, params: CreateParams = {}) => {
     const { method = 'POST', onRejected } = requestOptionsMerge([
       eRest,
       params,
     ]);
 
-    const formData = getFormData(e.target);
+    let formData;
+
+    if (isFormEvent(e)) {
+      e.preventDefault();
+      formData = getFormData(e.target);
+    } else formData = e;
 
     requestLog(
       mode,

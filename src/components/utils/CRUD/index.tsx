@@ -12,7 +12,7 @@ import { CreateParams, createRequest } from './create';
 import { DeleteParams, deleteRequest } from './delete';
 import { UpdateParams, updateRequest } from './update';
 
-interface CRUDProps<T> extends QueryParams<T> {
+interface CRUDProps<T extends object> extends QueryParams<T> {
   /**
    * This function is called whenever the query changes or if the state of the parameters have changed
    *
@@ -70,9 +70,9 @@ export type PartialIdentifiableGeneralParams =
   Partial<IdentifiableGeneralParams>;
 export type PartialGeneralParams = Partial<GeneralParams>;
 
-type FormRequest<T extends PartialIdentifiableGeneralParams> = (
-  e: FormEvent,
-  params?: T
+type FormRequest<T, U extends PartialIdentifiableGeneralParams> = (
+  e: CRUDEventHandler<T>,
+  params?: U
 ) => Promise<any>;
 
 export interface FormRequestParams<T> {
@@ -83,6 +83,10 @@ export interface FormRequestParams<T> {
   forceRefresh: () => any;
   cacheKey: string;
 }
+
+type CRUDEventHandlerObject<T> = Partial<T>;
+
+export type CRUDEventHandler<T> = FormEvent | CRUDEventHandlerObject<T>;
 
 /**
  * This interface is what types the object received in the children function
@@ -128,10 +132,10 @@ export interface FormRequestParams<T> {
  * }}
  * ```
  */
-export interface CRUDObject<T> {
-  handleCreate: FormRequest<CreateParams>;
+export interface CRUDObject<T, U = T extends Array<infer R> ? R : T> {
+  handleCreate: FormRequest<U, CreateParams>;
   read: QueryType<T>;
-  handleUpdate: FormRequest<UpdateParams>;
+  handleUpdate: FormRequest<U, UpdateParams>;
   /**
    * The Form handler to process deleting an item
    * @param {DeleteParams} params The params object takes :
@@ -141,10 +145,7 @@ export interface CRUDObject<T> {
    * - method : The method used for the request
    * - pathTail : What to put at the end of the request
    */
-  handleDelete: (
-    e: FormEvent | undefined,
-    params?: DeleteParams
-  ) => Promise<any>;
+  handleDelete: FormRequest<U, DeleteParams>;
 }
 
 /**
@@ -157,7 +158,7 @@ export interface CRUDObject<T> {
  *
  * Go to the [examples directory](https://bitbucket.org/neovision/react-query/src/master/src/examples) to see examples
  */
-export const CRUD = <T = any,>({
+export const CRUD = <T extends object = any>({
   children,
   endpoints,
   onCreated,
@@ -205,7 +206,7 @@ export const CRUD = <T = any,>({
             <>
               {children(
                 {
-                  handleCreate: createRequest({
+                  handleCreate: createRequest<T>({
                     endpoint: requestOptionsMerge<Required<Endpoint>>(
                       [queryOptions, createEndpoint],
                       createEndpoint.override ?? override

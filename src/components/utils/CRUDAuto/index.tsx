@@ -1,10 +1,4 @@
-import React, {
-  Fragment,
-  FunctionComponent,
-  PropsWithChildren,
-  useMemo,
-} from 'react';
-import { PartialDeep } from 'type-fest';
+import { QueryParams } from '../../../hooks/query';
 import form from '../../../scss/form.module.scss';
 import {
   createFormObject,
@@ -12,7 +6,12 @@ import {
   KeysToFormType,
 } from '../../../utils/form';
 import { CRUD, CRUDObject, Endpoints } from '../CRUD';
+import { getDeleteForm } from '../Form/Delete';
+import { getUpdateForm } from '../Form/Update';
 import { StateFunction } from '../StateFunction';
+import hash from 'object-hash';
+import React, { Fragment, FunctionComponent, useMemo } from 'react';
+import { PartialDeep } from 'type-fest';
 
 export type FormCreateType = 'create' | 'read' | 'update';
 
@@ -27,14 +26,14 @@ interface CRUDAutoForms<T, U> {
   EntriesForm: (props: EntriesProps<T, U>) => JSX.Element;
 }
 
-interface EntriesProps<T, U> extends FormBase<FormUpdateOptions<U>> {
+export interface EntriesProps<T, U> extends FormBase<FormUpdateOptions<U>> {
   children?: (children: CRUDAutoFormsEntries<T, U>) => JSX.Element;
 }
 
 interface CRUDAutoFormsEntries<T, U> {
-  UpdateForm: (options?: PropsWithChildren) => JSX.Element;
-  DeleteForm: (options?: PropsWithChildren) => JSX.Element;
-  data: T extends Array<infer J> ? J : never;
+  UpdateForm: ReturnType<typeof getUpdateForm>;
+  DeleteForm: ReturnType<typeof getDeleteForm>;
+  data: T extends Array<infer J> ? J : T;
   index: number;
 }
 
@@ -43,12 +42,12 @@ type FormProps = React.DetailedHTMLProps<
   HTMLFormElement
 >;
 
-interface FormBase<T> {
+export interface FormBase<T> {
   options?: T;
   attributes?: FormProps;
 }
 
-interface FormBaseProps<T> extends FormBase<T> {
+export interface FormBaseProps<T> extends FormBase<T> {
   children?: JSX.Element;
 }
 
@@ -56,6 +55,7 @@ export interface FormBaseOptions<T> {
   override?: PartialDeep<KeysToFormType<T>>;
   insert?: FormOptionsInsert<T>;
   className?: string;
+  updatable?: JSX.Element | boolean;
 }
 
 interface FormCreateOptions<T> extends FormBaseOptions<T> {}
@@ -66,19 +66,6 @@ export interface FormUpdateOptions<T> extends FormBaseOptions<T> {
 
 interface FormCreate<T> extends FormBaseProps<FormCreateOptions<T>> {}
 
-interface FormUpdate<T> extends FormBaseProps<FormUpdateOptions<T>> {
-  index?: number;
-}
-
-interface FormUpdateProps {
-  children?: JSX.Element | JSX.Element[];
-}
-
-interface FormUpdateReturn {
-  Form: (props: FormUpdateProps) => JSX.Element;
-  DeleteForm: (props: FormUpdateProps) => JSX.Element;
-}
-
 export interface FormOptionsInsert<T = any> {
   before?: FormOptionsInsertOrder<T>[];
   after?: FormOptionsInsertOrder<T>[];
@@ -86,25 +73,26 @@ export interface FormOptionsInsert<T = any> {
 
 export type FormOptionsInsertOrder<T> = [keyof T, () => JSX.Element];
 
-interface CRUDAutoProps<T, U> {
+interface CRUDAutoProps<T, U> extends QueryParams<T> {
   endpoints: Endpoints;
   children: (children: CRUDChildren<T, U>) => JSX.Element;
   type: U;
 }
 
-export const CRUDAuto = <T, U = FormType<any>>({
+export const CRUDAuto = <T extends object, U = FormType<any>>({
   children,
   endpoints,
   type,
+  ...options
 }: CRUDAutoProps<T, U>): React.ReactElement => {
   return (
-    <CRUD<T> endpoints={endpoints}>
+    <CRUD<T> endpoints={endpoints} {...options}>
       {(crud, forceRefresh) => {
         const {
           read: { data, loading, error },
           handleCreate,
-          handleDelete,
           handleUpdate,
+          handleDelete,
         } = crud;
 
         const forms: CRUDAutoForms<any, any> | undefined = useMemo(() => {
@@ -136,13 +124,8 @@ export const CRUDAuto = <T, U = FormType<any>>({
                 </form>
               );
             },
-            EntriesForm({ children, options: opts = {}, attributes }) {
-              const {
-                deletable = <button type="submit">Delete</button>,
-                className,
-                override = {},
-                ...options
-              } = opts;
+            EntriesForm({ children, ...props }) {
+              const { override = {} } = props.options ?? {};
 
               const mergedType = Object.merge<FormType<any>>(
                 {},
@@ -159,63 +142,22 @@ export const CRUDAuto = <T, U = FormType<any>>({
                 value: any,
                 index: number = 0
               ) => {
-                const UpdateForm = ({ children }: any = {}) => {
-                  return (
-                    <div className={className}>
-                      <form
-                        {...attributes}
-                        className={`${form.form} ${attributes?.className}`}
-                        onSubmit={(e) => {
-                          attributes?.onSubmit?.(e);
-                          handleUpdate(e);
-                        }}
-                      >
-                        <>
-                          {createFormObject(
-                            mergedType,
-                            {
-                              method: 'update',
-                              formOptions: options as any,
-                            },
-                            [data]
-                          )}
-                          {children}
-                        </>
-                      </form>
-                    </div>
-                  );
-                };
-
-                const DeleteForm = ({ children }: any) => {
-                  return (
-                    <form
-                      {...attributes}
-                      className={`${form.silent} ${attributes?.className}`}
-                      onSubmit={(e) => {
-                        attributes?.onSubmit?.(e);
-                        handleDelete(e, { name: pkName });
-                      }}
-                    >
-                      <input
-                        id={pkName}
-                        name={pkName}
-                        defaultValue={value}
-                        style={{ display: 'none' }}
-                      />
-                      <>
-                        {children ||
-                          ((typeof deletable != 'boolean' || deletable) &&
-                            deletable)}
-                      </>
-                    </form>
-                  );
-                };
-
                 return (
-                  <Fragment key={`auto-${pkName}-${index}`}>
+                  <Fragment key={index}>
                     {children?.({
-                      UpdateForm,
-                      DeleteForm,
+                      UpdateForm: getUpdateForm({
+                        data,
+                        handleUpdate,
+                        type: mergedType,
+                        ...props,
+                      }),
+                      DeleteForm: getDeleteForm({
+                        pkName,
+                        handleDelete,
+                        data,
+                        value,
+                        ...props,
+                      }),
                       data,
                       index,
                     })}
@@ -226,17 +168,17 @@ export const CRUDAuto = <T, U = FormType<any>>({
               if (Array.isArray(data)) {
                 return (
                   <>
-                    {data.map((d, index) => {
+                    {data.map((d, i) => {
                       const value = d[pkName];
 
-                      return createForms(d, value, index);
+                      return createForms(d, value, i);
                     })}
                   </>
                 );
               } else return createForms(data, (data as any)[pkName]);
             },
           };
-        }, [type, loading, data]);
+        }, [hash(type ?? {}), loading, data]);
 
         if (error) return <div>{error}</div>;
         if (loading) return <div>Loading...</div>;

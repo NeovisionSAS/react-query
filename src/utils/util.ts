@@ -69,7 +69,7 @@ const valueFromType = (type: string, possibleValues: any) => {
   }
 };
 
-interface FormExtractorData {
+export interface FormExtractorData {
   [key: string]: string | number;
 }
 

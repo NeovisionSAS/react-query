@@ -1,6 +1,6 @@
-import { FunctionComponent } from 'react';
 import { User as UserInterface } from '../../../../../../interfaces/user';
 import { CRUD } from '../../../../../utils';
+import { FunctionComponent } from 'react';
 
 export const User: FunctionComponent = () => {
   return (
@@ -13,14 +13,12 @@ export const User: FunctionComponent = () => {
           <>
             {users.map((user, i) => {
               return (
-                <form
-                  key={`userDelete-${i}`}
-                  onSubmit={(e) => handleDelete(e, { id: user.id })}
-                >
-                  <input name="id" type={'number'} defaultValue={user.id} />
+                <div key={`userDelete-${i}`}>
                   <div>{`Name : ${user.name}`}</div>
-                  <button>Delete</button>
-                </form>
+                  <button onClick={() => handleDelete({ id: user.id })}>
+                    Delete
+                  </button>
+                </div>
               );
             })}
           </>

@@ -1,14 +1,15 @@
 import equal from 'fast-deep-equal';
-import { FormEvent } from 'react';
 import {
+  CRUDEventHandler,
   FormRequestParams,
   PartialIdentifiableGeneralParams,
   SetType,
 } from '..';
 import { request, requestOptionsMerge } from '../../../../utils/api';
 import { setCache } from '../../../../utils/cache';
+import { isFormEvent } from '../../../../utils/form';
 import { requestError, requestLog } from '../../../../utils/log';
-import { formExtractor } from '../../../../utils/util';
+import { formExtractor, FormExtractorData } from '../../../../utils/util';
 
 interface UpdateFormRequestParams<T = any> extends FormRequestParams<T> {
   type: SetType;
@@ -18,7 +19,7 @@ export interface UpdateParams extends PartialIdentifiableGeneralParams {
   name?: string;
 }
 
-export const updateRequest = ({
+export const updateRequest = <T,>({
   endpoint: {
     endpoint,
     mode,
@@ -36,23 +37,24 @@ export const updateRequest = ({
   forceRefresh,
   cacheKey,
 }: UpdateFormRequestParams) => {
-  return (
-    e: FormEvent,
-    params: UpdateParams = { method: 'PUT', name: idName }
-  ) => {
-    e.preventDefault();
-
+  return (e: CRUDEventHandler<T>, params: UpdateParams = { name: idName }) => {
     const {
       method = 'PUT',
       name = idName,
       onRejected,
     } = requestOptionsMerge<UpdateParams>([eRest, params]);
 
-    const formDatas = formExtractor(e.target, name);
+    let formDatas: FormExtractorData[];
+    if (isFormEvent(e)) {
+      e.preventDefault();
+      formDatas = formExtractor(e.target, name);
+    } else {
+      formDatas = [e] as FormExtractorData[];
+    }
 
     let newData: any;
     if (type == 'array') newData = [...(data as unknown as any[])];
-    else newData = formDatas[0];
+    else newData = data;
 
     const promises: Promise<any>[] = [];
     formDatas.forEach((formData) => {
@@ -76,8 +78,8 @@ export const updateRequest = ({
         hasChanged = !equal(newData[index], mergedData);
         newData[index] = mergedData;
       } else {
-        hasChanged = !equal(newData, data);
         newData = { ...newData, ...formData };
+        hasChanged = !equal(newData, data);
       }
 
       if (hasChanged) {

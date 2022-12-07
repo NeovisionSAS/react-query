@@ -7,7 +7,7 @@ import { XHRFetch } from './xhr';
 import { XHRProgress } from './xhr/progress';
 
 export type Method = 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'GET';
-export type QueryParamType = 'path' | 'queryString';
+export type QueryParamType = 'path' | 'queryString' | 'none';
 
 interface LoaderOptions {
   loader?: JSX.Element;

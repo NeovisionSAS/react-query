@@ -1,7 +1,9 @@
 import { CRUD, CRUDObject } from '../../components/utils';
 
-<CRUD endpoints={`users/`}>
-  {(data: CRUDObject<string>) => {
+type Name = { name: string };
+
+<CRUD<Name> endpoints={`users/`}>
+  {(data) => {
     const { read, handleCreate, handleUpdate, handleDelete } = data;
     if (read.loading) return <div>Loading...</div>;
 
@@ -15,8 +17,8 @@ import { CRUD, CRUDObject } from '../../components/utils';
   }}
 </CRUD>;
 
-<CRUD endpoints={`users/`}>
-  {(data: CRUDObject<string>) => {
+<CRUD<Name> endpoints={`users/`}>
+  {(data) => {
     const { read, handleUpdate } = data;
     if (read.loading) return <div>Loading...</div>;
 

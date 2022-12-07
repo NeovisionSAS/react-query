@@ -1,11 +1,11 @@
-import { Dispatch, Fragment, SetStateAction } from 'react';
-import { PartialDeep } from 'type-fest';
 import {
   FormBaseOptions,
   FormCreateType,
   FormOptionsInsertOrder,
 } from '../components/utils/CRUDAuto';
 import { Form } from '../components/utils/Form';
+import { Dispatch, FormEvent, Fragment, SetStateAction } from 'react';
+import { PartialDeep } from 'type-fest';
 
 export interface FormObject<T> {
   pk?: boolean;
@@ -26,6 +26,8 @@ export interface FormObject<T> {
     | 'tel'
     | 'text';
   className?: string;
+  min?: number;
+  max?: number;
   select?: FormObjectSelect;
   render?: (o: FormRender) => JSX.Element;
   onValueChanged?: (v: any) => any;
@@ -82,7 +84,8 @@ export const createFormObjectRecursive = <T,>(
   data: any[] = [],
   idName?: string
 ): JSX.Element => {
-  const { method, noSubmit = false } = options;
+  const { method, noSubmit = false, formOptions = {} } = options;
+  const { updatable = <button type="submit">Submit</button> } = formOptions;
 
   const pkName =
     idName ??
@@ -93,10 +96,10 @@ export const createFormObjectRecursive = <T,>(
   if (method == 'create') {
     return (
       <>
-        {Object.entries(type as object).map(([fName, object]) => {
+        {Object.entries(type as object).map(([fName, object], i) => {
           return (
             <Form
-              key={`form-${fName}`}
+              key={i}
               formObject={object as any}
               formObjectOptions={options}
               pkName={pkName}
@@ -105,38 +108,43 @@ export const createFormObjectRecursive = <T,>(
             />
           );
         })}
-        {!noSubmit && <button type="submit">Submit</button>}
+        {!noSubmit && (typeof updatable != 'boolean' || updatable) && updatable}
       </>
     );
   }
 
   return (
     <>
-      {data.map((line) => {
+      {data.map((line, i) => {
         const idValue = line[pkName];
 
         const lineKeys = Object.keys(line);
         return (
-          <Fragment key={idValue}>
-            {Object.entries(type as any).map(([key, v], i) => {
-              return (
-                <Form
-                  type="update"
-                  key={`${key}-${idValue}-${i}`}
-                  formObject={v as any}
-                  formObjectOptions={options}
-                  typeKey={key}
-                  keys={lineKeys}
-                  pkName={pkName}
-                  idValue={idValue}
-                  dataLine={line}
-                  data={data}
-                />
-              );
-            })}
-            {method != 'read' && !noSubmit && (
-              <button type="submit">Submit</button>
-            )}
+          <Fragment key={i}>
+            <>
+              {Object.entries(type as any).map(([key, v], i) => {
+                return (
+                  <Form
+                    type="update"
+                    key={i}
+                    formObject={v as any}
+                    formObjectOptions={options}
+                    typeKey={key}
+                    keys={lineKeys}
+                    pkName={pkName}
+                    idValue={idValue}
+                    dataLine={line}
+                    data={data}
+                  />
+                );
+              })}
+            </>
+            <>
+              {method != 'read' &&
+                !noSubmit &&
+                (typeof updatable != 'boolean' || updatable) &&
+                updatable}
+            </>
           </Fragment>
         );
       })}
@@ -148,5 +156,12 @@ export const extractInsert = (
   insert: FormOptionsInsertOrder<any>[],
   s: string
 ) => {
-  return insert.filter(([search]) => search == s).map(([, e]) => e?.());
+  return insert
+    .filter(([search]) => search == s)
+    .map(([, e], i) => <Fragment key={i}>{e?.()}</Fragment>);
+};
+
+export const isFormEvent = (e: object): e is FormEvent => {
+  if ('target' in e) return true;
+  return false;
 };

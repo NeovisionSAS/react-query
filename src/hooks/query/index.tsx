@@ -30,6 +30,7 @@ export interface QueryParams<T = any> extends RequestOptionsWithOptionalDomain {
   disable?: boolean;
   data?: any;
   effect?: any[];
+  active?: boolean;
 }
 
 export interface QueryHookParams<T = any>
@@ -56,6 +57,7 @@ export const useQuery = <T = any,>({
   data,
   override = false,
   effect = [],
+  active = true,
   ...queryOptions
 }: QueryHookParams<T>): QueryReturn<T> => {
   // The default data/load/error triple
@@ -98,60 +100,62 @@ export const useQuery = <T = any,>({
 
   // Check if the query prop has changed
   useEffect(() => {
-    requestLog(
-      mode,
-      verbosity,
-      8,
-      `[read][${method}]`,
-      `${domain}/${query}`,
-      data ?? ''
-    );
-    controller?.abort();
-    const ctrl = new AbortController();
-    const cacheData = getCache(cacheHash);
-    const timeout = window.setTimeout(() => {
-      const { signal, ...others } = options;
+    if (!!active) {
+      requestLog(
+        mode,
+        verbosity,
+        8,
+        `[read][${method}]`,
+        `${domain}/${query}`,
+        data ?? ''
+      );
+      controller?.abort();
+      const ctrl = new AbortController();
+      const cacheData = getCache(cacheHash);
+      const timeout = window.setTimeout(() => {
+        const { signal, ...others } = options;
 
-      req(query, {
-        signal: ctrl.signal,
-        cache,
-        ...others,
-        data,
-      })
-        .then((res) => {
-          if (res != undefined) {
+        req(query, {
+          signal: ctrl.signal,
+          cache,
+          ...others,
+          data,
+        })
+          .then((res) => {
+            if (res != undefined) {
+              setDataResolver({
+                data: res,
+                loading: false,
+                error: undefined,
+                fetching: false,
+              });
+              onRead?.(res);
+            }
+          })
+          .catch((err) => {
             setDataResolver({
-              data: res,
+              data: undefined,
               loading: false,
-              error: undefined,
+              error: err.statusText,
               fetching: false,
             });
-            onRead?.(res);
-          }
-        })
-        .catch((err) => {
-          setDataResolver({
-            data: undefined,
-            loading: false,
-            error: err.statusText,
-            fetching: false,
           });
-        });
-    }, delay ?? 0);
-    setController(ctrl);
+      }, delay ?? 0);
+      setController(ctrl);
 
-    setDataResolver({
-      data: cacheData,
-      loading: cacheData == undefined,
-      error: undefined,
-      fetching: true,
-    });
+      setDataResolver({
+        data: cacheData,
+        loading: cacheData == undefined,
+        error: undefined,
+        fetching: true,
+      });
 
-    return () => {
-      ctrl?.abort();
-      window.clearTimeout(timeout);
-    };
-  }, [query, refresh, data, ...effect]);
+      return () => {
+        ctrl?.abort();
+        window.clearTimeout(timeout);
+      };
+    }
+  }, [query, refresh, data, !!active, ...effect]);
 
   return {
     ...dataResolver,

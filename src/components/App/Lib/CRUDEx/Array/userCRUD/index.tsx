@@ -1,6 +1,6 @@
-import { Fragment, FunctionComponent } from 'react';
 import { User as UserInterface } from '../../../../../../interfaces/user';
 import { CRUD } from '../../../../../utils';
+import { Fragment, FunctionComponent } from 'react';
 
 export const UserCRUD: FunctionComponent = () => {
   return (
@@ -8,8 +8,8 @@ export const UserCRUD: FunctionComponent = () => {
       {({
         read: { data: users, loading, error },
         handleCreate,
-        handleDelete,
         handleUpdate,
+        handleDelete,
       }) => {
         if (loading) return <div>Loading...</div>;
         if (error) return <div>{error}</div>;

@@ -1,11 +1,12 @@
-import { FormEvent } from 'react';
 import {
+  CRUDEventHandler,
   FormRequestParams,
   PartialIdentifiableGeneralParams,
   SetType,
 } from '..';
 import { request, requestOptionsMerge } from '../../../../utils/api';
 import { setCache } from '../../../../utils/cache';
+import { isFormEvent } from '../../../../utils/form';
 import { requestError, requestLog } from '../../../../utils/log';
 import { getFormData } from '../../../../utils/util';
 
@@ -13,11 +14,9 @@ interface DeleteFormRequestParams<T = any> extends FormRequestParams<T> {
   type: SetType;
 }
 
-export interface DeleteParams extends PartialIdentifiableGeneralParams {
-  id?: number | string;
-}
+export interface DeleteParams extends PartialIdentifiableGeneralParams {}
 
-export const deleteRequest = ({
+export const deleteRequest = <T,>({
   data,
   endpoint: {
     endpoint,
@@ -35,21 +34,21 @@ export const deleteRequest = ({
   type,
   cacheKey,
 }: DeleteFormRequestParams) => {
-  return (
-    e: FormEvent | undefined,
-    params: DeleteParams = { method: 'DELETE', name: idName }
-  ) => {
-    e?.preventDefault();
-    e?.stopPropagation();
-    const formData = e && getFormData(e.target);
+  return (e: CRUDEventHandler<T>, params: DeleteParams = { name: idName }) => {
+    let formData;
+    if (isFormEvent(e)) {
+      e.preventDefault();
+      e.stopPropagation();
+      formData = getFormData(e.target);
+    } else formData = e;
 
     const {
       method = 'DELETE',
       name = idName,
-      id = formData?.[name],
       onRejected,
     } = requestOptionsMerge<DeleteParams>([eRest, params]);
 
+    const id = (formData as any)[idName];
     const endpointId = `${endpoint}/${parameterType == 'path' ? `${id}/` : ''}`;
 
     requestLog(

@@ -1,4 +1,3 @@
-import { FunctionComponent, useEffect, useState } from 'react';
 import form from '../../../scss/form.module.scss';
 import {
   createFormObjectRecursive,
@@ -6,6 +5,8 @@ import {
   FormObject,
   FormObjectOptions,
 } from '../../../utils/form';
+import { requestWarn } from '../../../utils/log';
+import { FunctionComponent, useEffect, useState } from 'react';
 
 interface FormProps {
   formObject: FormObject<any>;
@@ -32,7 +33,9 @@ export const Form: FunctionComponent<FormProps> = ({
   fName = idValue ? `${typeKey}-${idValue}` : typeKey,
   type,
 }) => {
-  const [value, _setValue] = useState(dataLine?.[typeKey]);
+  const lineTypeKey = dataLine?.[typeKey];
+
+  const [value, _setValue] = useState(lineTypeKey ?? '');
 
   const {
     className,
@@ -60,10 +63,10 @@ export const Form: FunctionComponent<FormProps> = ({
   };
 
   useEffect(() => {
-    setValue(dataLine?.[typeKey]);
+    setValue(lineTypeKey ?? '');
   }, [dataLine, typeKey]);
 
-  if (render)
+  if (render && method != 'read')
     return (
       <>
         {render({
@@ -81,6 +84,17 @@ export const Form: FunctionComponent<FormProps> = ({
     (type == 'create' && sub) ||
     (type == 'update' && !keys.includes(typeKey))
   ) {
+    if (type == 'update' && !sub) {
+      requestWarn(
+        'development',
+        0,
+        0,
+        `type key "${typeKey}" doesn't exist on received data`,
+        dataLine
+      );
+      return <></>;
+    }
+
     return (
       <div
         className={`${className}`}
@@ -89,7 +103,7 @@ export const Form: FunctionComponent<FormProps> = ({
         <div className={`${form.section}`}>
           <label>{oName}</label>
         </div>
-        <div {...other} className={`${form.sectionDeep} ${className}`}>
+        <div {...other} className={`${form.sectionDeep}`}>
           {createFormObjectRecursive(
             sub,
             { ...formObjectOptions, noSubmit: true },
@@ -115,10 +129,7 @@ export const Form: FunctionComponent<FormProps> = ({
             <select id={fName} name={fName}>
               {select.options.map((option, i) => {
                 return (
-                  <option
-                    key={`${fName}-${i}`}
-                    value={option.value ?? option.text}
-                  >
+                  <option key={i} value={option.value ?? option.text}>
                     {option.text ?? option.value}
                   </option>
                 );
@@ -152,30 +163,29 @@ export const Form: FunctionComponent<FormProps> = ({
         <label htmlFor={fName}>
           {oName.capitalize()} {required && '*'}
         </label>
-        {method == 'read' ? (
-          <div>{value}</div>
-        ) : select ? (
-          <select id={fName} name={fName} defaultValue={value}>
-            {select.options.map((option, i) => {
-              return (
-                <option
-                  key={`${fName}-${i}`}
-                  value={option.value ?? option.text}
-                >
-                  {option.text ?? option.value}
-                </option>
-              );
-            })}
-          </select>
-        ) : (
-          <input
-            {...other}
-            id={`${fName}`}
-            name={`${fName}`}
-            value={value}
-            onChange={(e) => setValue(e.target.value)}
-          />
-        )}
+        <>
+          {method == 'read' ? (
+            <div>{value}</div>
+          ) : select ? (
+            <select id={fName} name={fName} defaultValue={value}>
+              {select.options.map((option, i) => {
+                return (
+                  <option key={i} value={option.value ?? option.text}>
+                    {option.text ?? option.value}
+                  </option>
+                );
+              })}
+            </select>
+          ) : (
+            <input
+              {...other}
+              id={`${fName}`}
+              name={`${fName}`}
+              value={value}
+              onChange={(e) => setValue(e.target.value)}
+            />
+          )}
+        </>
       </div>
       {extractInsert(after, typeKey)}
     </>
