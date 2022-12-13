@@ -1,7 +1,7 @@
-import { BaseSyntheticEvent, FormEvent, useReducer } from 'react';
 import { QueryParamType, RequestData } from './api';
 import { requestError } from './log';
 import { TotalProgress } from './xhr/progress';
+import { BaseSyntheticEvent, FormEvent, useReducer } from 'react';
 
 type TypedTarget = EventTarget & {
   [key: string]: {
@@ -33,7 +33,9 @@ export const getFormData = <T = { [key: string]: string | number }>(
       // Keep named input and select
       .filter((v) => {
         const tag = v.tagName?.toLocaleLowerCase?.();
-        return v.name && (tag == 'input' || tag == 'select');
+        return (
+          v.name && (tag == 'input' || tag == 'select' || tag == 'textarea')
+        );
       })
       .reduce((acc, cur) => {
         const { name, value, checked, type, required, files } = cur;

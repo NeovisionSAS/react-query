@@ -1,4 +1,3 @@
-import equal from 'fast-deep-equal';
 import {
   CRUDEventHandler,
   FormRequestParams,
@@ -10,6 +9,7 @@ import { setCache } from '../../../../utils/cache';
 import { isFormEvent } from '../../../../utils/form';
 import { requestError, requestLog } from '../../../../utils/log';
 import { formExtractor, FormExtractorData } from '../../../../utils/util';
+import equal from 'fast-deep-equal';
 
 interface UpdateFormRequestParams<T = any> extends FormRequestParams<T> {
   type: SetType;
