@@ -1,10 +1,10 @@
-import { FormEvent } from 'react';
 import { PartialBy, RequiredBy } from '../types/global';
 import { createCacheKey, setCache } from './cache';
 import { requestError, requestWarn } from './log';
 import { buildHeader, restructureData } from './util';
 import { XHRFetch } from './xhr';
 import { XHRProgress } from './xhr/progress';
+import { FormEvent } from 'react';
 
 export type Method = 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'GET';
 export type QueryParamType = 'path' | 'queryString' | 'none';
@@ -60,8 +60,14 @@ interface Cacheable {
   cache?: number;
 }
 
-export interface QueryOptions extends BaseQueryOptions, Domain, Cacheable {
-  loader?: LoaderOptions;
+export interface QueryOptions
+  extends BaseQueryOptions,
+    Domain,
+    Cacheable,
+    Loadable {}
+
+export interface Loadable {
+  loader?: LoaderOptions | boolean;
 }
 
 export type RealQueryOptions = RequiredBy<
@@ -127,4 +133,12 @@ export const request = function <T = any>(
   };
 
   return headers ? headers().then(req) : req({});
+};
+
+export const parseLoader = (
+  loader?: LoaderOptions | boolean
+): LoaderOptions => {
+  if (loader == undefined) return {};
+  if (typeof loader == 'boolean') return { autoload: true };
+  return loader;
 };

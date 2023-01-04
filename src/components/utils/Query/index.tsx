@@ -1,9 +1,11 @@
-import React from 'react';
 import { QueryHookParams, QueryReturn, useQuery } from '../../../hooks/query';
+import { Loadable, parseLoader } from '../../../utils/api';
 import ErrorBoundary from '../ErrorBoundary';
 import { useQueryOptions } from '../QueryOptionsProvider';
+import { StateFunction } from '../StateFunction';
+import React from 'react';
 
-export interface QueryProps<T = any> extends QueryHookParams<T> {
+export interface QueryProps<T = any> extends QueryHookParams<T>, Loadable {
   children: (qReturn: QueryReturn<T>) => JSX.Element;
 }
 
@@ -12,19 +14,22 @@ export interface QueryProps<T = any> extends QueryHookParams<T> {
  */
 export const Query: <T = any>(
   p: QueryProps<T>
-) => React.ReactElement<QueryProps<T>> = ({ children, ...qRest }) => {
-  const [{ loader }] = useQueryOptions();
+) => React.ReactElement<QueryProps<T>> = ({
+  children,
+  loader: qLoader,
+  ...qRest
+}) => {
+  const [{ loader: oLoader }] = useQueryOptions();
   const { loading, ...qData } = useQuery(qRest);
 
-  // Always call to maintain the hooks
-  const render = children({ loading, ...qData });
+  const loader = Object.merge(parseLoader(oLoader), parseLoader(qLoader));
 
   return (
     <ErrorBoundary>
-      {loading && loader && loader.autoload ? (
+      {loading && loader.autoload ? (
         <>{loader.loader ?? <div>Loading data...</div>}</>
       ) : (
-        render
+        <StateFunction>{() => children({ loading, ...qData })}</StateFunction>
       )}
     </ErrorBoundary>
   );

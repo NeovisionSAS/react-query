@@ -1,4 +1,3 @@
-import { useCallback, useEffect, useState } from 'react';
 import { useQueryOptions } from '../../components/utils/QueryOptionsProvider';
 import { RequiredBy } from '../../types/global';
 import {
@@ -15,6 +14,7 @@ import {
   TotalProgress,
   totalProgressInitialiser,
 } from '../../utils/xhr/progress';
+import { useCallback, useEffect, useState } from 'react';
 
 export type DataHandler<T> = (data: T) => any;
 
