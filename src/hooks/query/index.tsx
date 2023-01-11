@@ -31,6 +31,7 @@ export interface QueryParams<T = any> extends RequestOptionsWithOptionalDomain {
   data?: any;
   effect?: any[];
   active?: boolean;
+  ignore?: boolean;
 }
 
 export interface QueryHookParams<T = any>
@@ -58,6 +59,7 @@ export const useQuery = <T = any,>({
   override = false,
   effect = [],
   active = true,
+  ignore = false,
   ...queryOptions
 }: QueryHookParams<T>): QueryReturn<T> => {
   // The default data/load/error triple
@@ -100,7 +102,7 @@ export const useQuery = <T = any,>({
 
   // Check if the query prop has changed
   useEffect(() => {
-    if (!!active) {
+    if (!!active && !ignore) {
       requestLog(
         mode,
         verbosity,
@@ -155,7 +157,15 @@ export const useQuery = <T = any,>({
         window.clearTimeout(timeout);
       };
     }
-  }, [query, refresh, data, !!active, ...effect]);
+    if (ignore) {
+      setDataResolver({
+        data: undefined,
+        fetching: false,
+        loading: false,
+        error: undefined,
+      });
+    }
+  }, [query, refresh, data, !!active, ignore, ...effect]);
 
   return {
     ...dataResolver,
