@@ -10,6 +10,7 @@ import {
 interface XHROptions {
   progress?: XHRProgress;
   progressCenterRatio?: number;
+  responseType?: XMLHttpRequestResponseType;
 }
 
 export const XHRFetch = (
@@ -23,6 +24,7 @@ export const XHRFetch = (
     progress,
     headers,
     progressCenterRatio = 0.5,
+    responseType = 'text',
   } = init ?? {};
 
   const xhrProgress = totalProgressInitialiser();
@@ -32,6 +34,7 @@ export const XHRFetch = (
   return new Promise((resolve, reject) => {
     const r = new XMLHttpRequest();
     r.open(method, url.toString(), true);
+    r.responseType = responseType;
     setRequestHeaders(r, headers ?? {});
     r.addEventListener('load', () => {
       const headers = parseHeaders(r.getAllResponseHeaders());
