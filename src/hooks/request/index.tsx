@@ -1,4 +1,3 @@
-import { DependencyList, useEffect, useMemo, useState } from 'react';
 import { useQueryOptions } from '../../components/utils/QueryOptionsProvider';
 import {
   Reject,
@@ -6,6 +5,7 @@ import {
   RequestOptionsWithDomain,
   RequestOptionsWithOptionalDomain,
 } from '../../utils/api';
+import { DependencyList, useEffect, useMemo, useState } from 'react';
 
 export const useRequest = (
   rRest: RequestOptionsWithOptionalDomain = {
@@ -37,6 +37,11 @@ export const useRequest = (
         rRest.onRejected?.(rej);
         qRest.onRejected?.(rej);
       },
+      headers: () => {
+        return Promise.all([rRest.headers?.(), qRest.headers?.()]).then(
+          ([t1 = {}, t2 = {}]) => Object.merge({}, t1, t2)
+        );
+      },
     });
 
     return <T = any,>(
@@ -50,6 +55,11 @@ export const useRequest = (
         onRejected: (rej: Reject) => {
           options.onRejected?.(rej);
           merged.onRejected?.(rej);
+        },
+        headers: () => {
+          return Promise.all([options.headers?.(), merged.headers?.()]).then(
+            ([t1 = {}, t2 = {}]) => Object.merge({}, t1, t2)
+          );
         },
       });
       return request<T>(domain, path, {

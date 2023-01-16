@@ -1,9 +1,3 @@
-import {
-  HashRouter as Router,
-  Navigate,
-  Route,
-  Routes,
-} from 'react-router-dom';
 import { backend } from '../../config';
 import { QueryOptions } from '../../utils/api';
 import { ErrorBoundary } from '../utils';
@@ -13,6 +7,12 @@ import { CRUDEx } from './Lib/CRUDEx';
 import { QueryEx } from './Lib/QueryEx';
 import { UseQueryOptionsEx } from './Lib/UseQueryOptionsEx';
 import { UseRequestEx } from './Lib/UseRequestEx';
+import {
+  HashRouter as Router,
+  Navigate,
+  Route,
+  Routes,
+} from 'react-router-dom';
 
 function App(): JSX.Element {
   const storageQueryOptions = JSON.parse(
@@ -31,6 +31,8 @@ function App(): JSX.Element {
             onRejected(rej) {
               console.error('Received rejection', rej);
             },
+            headers: () =>
+              new Promise((resolve) => resolve({ customHeader: 'true' })),
           },
           storageQueryOptions
         )}

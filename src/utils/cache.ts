@@ -1,5 +1,5 @@
-import hash from 'object-hash';
 import { requestLog } from './log';
+import hash from 'object-hash';
 
 const createKey = (k: string = '') => `react-query-${k}`;
 
@@ -57,8 +57,11 @@ const cleanCache = () => {
 
 export const createCacheKey = (s: string, data?: any) => {
   if (data) {
-    if (data.constructor?.name == 'FormData')
+    const name = data.constructor?.name;
+    if (name == 'FormData')
       return hash(hash(s) + hash(new URLSearchParams(data).toString()));
+    if (name == 'SyntheticBaseEvent')
+      return hash(hash(s) + hash(data.toString()));
     return hash(hash(s) + hash(data));
   }
   return hash(s);

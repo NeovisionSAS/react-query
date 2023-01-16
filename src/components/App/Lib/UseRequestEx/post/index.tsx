@@ -1,6 +1,6 @@
-import { FormEvent, FunctionComponent, useState } from 'react';
 import { useRequest } from '../../../../../hooks/request';
 import { File as FileInterface } from '../../../../../interfaces/file';
+import { FormEvent, FunctionComponent, useState } from 'react';
 
 export const File: FunctionComponent = () => {
   const [loading, setLoading] = useState<number>(0);
@@ -14,6 +14,9 @@ export const File: FunctionComponent = () => {
       data: e,
       progress: ({ upload: { percentage } }) => {
         setLoading(percentage);
+      },
+      headers() {
+        return new Promise((resolve) => resolve({ FileCustomHeader: 'true' }));
       },
     }).then((f) => {
       console.log('Sent file', f);
