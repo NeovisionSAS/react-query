@@ -1,6 +1,4 @@
-import objectHash from 'object-hash';
-import React, { FormEvent, useEffect, useMemo } from 'react';
-import { DataHandler, QueryParams } from '../../../hooks/query';
+import { DataHandler, QueryParams, QueryReturn } from '../../../hooks/query';
 import { Method, Rejectable, requestOptionsMerge } from '../../../utils/api';
 import { createCacheKey } from '../../../utils/cache';
 import { requestLog } from '../../../utils/log';
@@ -11,6 +9,8 @@ import { useQueryOptions } from '../QueryOptionsProvider';
 import { CreateParams, createRequest } from './create';
 import { DeleteParams, deleteRequest } from './delete';
 import { UpdateParams, updateRequest } from './update';
+import objectHash from 'object-hash';
+import React, { FormEvent, useEffect, useMemo } from 'react';
 
 interface CRUDProps<T extends object> extends QueryParams<T> {
   /**
@@ -146,6 +146,7 @@ export interface CRUDObject<T, U = T extends Array<infer R> ? R : T> {
    * - pathTail : What to put at the end of the request
    */
   handleDelete: FormRequest<U, DeleteParams>;
+  manualUpdate: QueryReturn<T>['manualUpdate'];
 }
 
 /**
@@ -236,6 +237,7 @@ export const CRUD = <T extends object = any>({
                     onCompleted: onDeleted,
                     ...res,
                   }),
+                  manualUpdate: res.manualUpdate,
                 },
                 forceRefresh
               )}
