@@ -50,6 +50,7 @@ export const createRequest = <T, U = T extends Array<infer R> ? R : T>({
       if (data) manualUpdate?.(newData);
       setCache(cacheKey, newData);
       onCreated?.() && forceRefresh?.();
+      return created;
     });
   };
 };

@@ -106,6 +106,7 @@ export const updateRequest = <T,>({
       manualUpdate?.(newData as any);
       setCache(cacheKey, newData);
       onUpdated?.() && forceRefresh?.();
+      return newData;
     });
   };
 };

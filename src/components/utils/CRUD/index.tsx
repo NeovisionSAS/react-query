@@ -70,10 +70,10 @@ export type PartialIdentifiableGeneralParams =
   Partial<IdentifiableGeneralParams>;
 export type PartialGeneralParams = Partial<GeneralParams>;
 
-type FormRequest<T, U extends PartialIdentifiableGeneralParams> = (
+type FormRequest<T, U extends PartialIdentifiableGeneralParams, F = T> = (
   e: CRUDEventHandler<T>,
   params?: U
-) => Promise<any>;
+) => Promise<F>;
 
 export interface FormRequestParams<T> {
   endpoint: Required<Endpoint>;
@@ -145,7 +145,7 @@ export interface CRUDObject<T, U = T extends Array<infer R> ? R : T> {
    * - method : The method used for the request
    * - pathTail : What to put at the end of the request
    */
-  handleDelete: FormRequest<U, DeleteParams>;
+  handleDelete: FormRequest<U, DeleteParams, boolean>;
   manualUpdate: QueryReturn<T>['manualUpdate'];
 }
 

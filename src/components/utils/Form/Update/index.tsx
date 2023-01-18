@@ -10,7 +10,7 @@ interface UpdateFormBase extends FormBase<FormBaseOptions<any>> {
 }
 
 interface UpdateFormParams extends UpdateFormBase {
-  handleUpdate: CRUDObject<any>['handleDelete'];
+  handleUpdate: CRUDObject<any>['handleUpdate'];
   data: any;
   type: FormType<any>;
 }

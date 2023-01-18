@@ -94,6 +94,7 @@ export const deleteRequest = <T,>({
         manualUpdate?.(data as any);
       }
       onDeleted?.() && forceRefresh?.();
+      return true;
     });
   };
 };
