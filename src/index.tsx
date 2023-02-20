@@ -1,9 +1,9 @@
-import '@generalizers/prototype-expansion';
-import React from 'react';
-import { createRoot } from 'react-dom/client';
 import App from './components/App';
 import './scss/defaults.scss';
 import './scss/dev.scss';
+import '@generalizers/prototype-expansion';
+import React from 'react';
+import { createRoot } from 'react-dom/client';
 
 const root = createRoot(document.getElementById('root')!);
 

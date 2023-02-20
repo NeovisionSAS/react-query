@@ -30,6 +30,7 @@ export interface QueryParams<T = any> extends RequestOptionsWithOptionalDomain {
   disable?: boolean;
   data?: any;
   effect?: any[];
+  memoizedLoading?: boolean;
   active?: boolean;
   ignore?: boolean;
 }
@@ -59,6 +60,7 @@ export const useQuery = <T = any,>({
   override = false,
   effect = [],
   active = true,
+  memoizedLoading = false,
   ignore = false,
   ...queryOptions
 }: QueryHookParams<T>): QueryReturn<T> => {
@@ -145,12 +147,13 @@ export const useQuery = <T = any,>({
       }, delay ?? 0);
       setController(ctrl);
 
-      setDataResolver({
-        data: cacheData,
-        loading: cacheData == undefined,
-        error: undefined,
-        fetching: true,
-      });
+      if (!memoizedLoading || dataResolver.data == undefined)
+        setDataResolver({
+          data: cacheData,
+          loading: cacheData == undefined,
+          error: undefined,
+          fetching: true,
+        });
 
       return () => {
         ctrl?.abort();
