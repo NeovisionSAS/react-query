@@ -1,0 +1,58 @@
+.main {
+  label + input,
+  label + div {
+    padding: 8px;
+    border-radius: 5px;
+    box-sizing: border-box;
+    border: none;
+    outline: none;
+    transition: 0.3s box-shadow;
+    box-shadow: inset 0px 0px 0px 1px #000;
+
+    &:hover {
+      box-shadow: inset 0px 0px 0px 3px #333;
+    }
+
+    &:focus {
+      box-shadow: inset 0px 0px 0px 3px #444;
+    }
+  }
+
+  label {
+    align-self: center;
+  }
+
+  input[type='submit'],
+  button[type='submit'],
+  select {
+    background-color: white;
+    border-radius: 5px;
+    border: none;
+    padding: 8px 10px;
+    transition: 0.3s background-color, 0.3s color;
+    cursor: pointer;
+    outline: none;
+    box-shadow: inset 0px 0px 0px 1px #000;
+    align-self: flex-end;
+
+    &:hover {
+      box-shadow: inset 0px 0px 0px 3px #333;
+      background-color: #444;
+      color: white;
+    }
+  }
+
+  input[disabled] {
+    color: grey;
+  }
+
+  select {
+    padding: 8px 10px;
+    box-sizing: border-box;
+
+    > * {
+      background-color: white;
+      color: black;
+    }
+  }
+}

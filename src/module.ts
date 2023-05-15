@@ -14,7 +14,6 @@ import {
 import { StateFunction } from './components/utils/StateFunction';
 import { useQuery } from './hooks/query';
 import { useRequest } from './hooks/request';
-import './scss/defaults.scss';
 import { request } from './utils/api';
 import {
   FormType,

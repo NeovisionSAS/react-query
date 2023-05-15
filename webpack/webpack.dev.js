@@ -30,7 +30,7 @@ module.exports = merge(common, {
         test: /\.(png|jpe?g|svg)$/,
         exclude: /node_modules/,
         use: ['file-loader'],
-      },
+      }
     ],
   },
   plugins: [

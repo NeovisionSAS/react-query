@@ -1,4 +1,5 @@
 import { backend } from '../../config';
+import styles from '../../scss/default.module.scss';
 import { QueryOptions } from '../../utils/api';
 import { ErrorBoundary } from '../utils';
 import { QueryOptionsProvider } from '../utils/QueryOptionsProvider';
@@ -22,34 +23,39 @@ function App(): JSX.Element {
 
   return (
     <ErrorBoundary>
-      <QueryOptionsProvider
-        value={Object.merge<QueryOptions>(
-          {
-            domain: backend.url,
-            parameterType: 'queryString',
-            mode: 'development',
-            verbosity: 10,
-            onRejected(rej) {
-              console.error('Received rejection', rej);
+      <div className={styles.main}>
+        <QueryOptionsProvider
+          value={Object.merge<QueryOptions>(
+            {
+              domain: backend.url,
+              parameterType: 'queryString',
+              mode: 'development',
+              verbosity: 10,
+              onRejected(rej) {
+                console.error('Received rejection', rej);
+              },
+              headers: () =>
+                new Promise((resolve) => resolve({ customHeader: 'true' })),
             },
-            headers: () =>
-              new Promise((resolve) => resolve({ customHeader: 'true' })),
-          },
-          storageQueryOptions
-        )}
-      >
-        <Router>
-          <Header />
-          <Routes>
-            <Route path="/query/*" element={<QueryEx />} />
-            <Route path="/crud/*" element={<CRUDEx />} />
-            <Route path="/useRequest/*" element={<UseRequestEx />} />
-            <Route path="/useQueryOptions/*" element={<UseQueryOptionsEx />} />
-            <Route path="/error/*" element={<ErrorEx />} />
-            <Route path="/*" element={<Navigate to={`/query`} />} />
-          </Routes>
-        </Router>
-      </QueryOptionsProvider>
+            storageQueryOptions
+          )}
+        >
+          <Router>
+            <Header />
+            <Routes>
+              <Route path="/query/*" element={<QueryEx />} />
+              <Route path="/crud/*" element={<CRUDEx />} />
+              <Route path="/useRequest/*" element={<UseRequestEx />} />
+              <Route
+                path="/useQueryOptions/*"
+                element={<UseQueryOptionsEx />}
+              />
+              <Route path="/error/*" element={<ErrorEx />} />
+              <Route path="/*" element={<Navigate to={`/query`} />} />
+            </Routes>
+          </Router>
+        </QueryOptionsProvider>
+      </div>
     </ErrorBoundary>
   );
 }
