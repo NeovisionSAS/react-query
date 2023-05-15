@@ -4,13 +4,14 @@ import { ErrorBoundary } from '../utils';
 import { QueryOptionsProvider } from '../utils/QueryOptionsProvider';
 import { Header } from './Header';
 import { CRUDEx } from './Lib/CRUDEx';
+import { ErrorEx } from './Lib/ErrorEx';
 import { QueryEx } from './Lib/QueryEx';
 import { UseQueryOptionsEx } from './Lib/UseQueryOptionsEx';
 import { UseRequestEx } from './Lib/UseRequestEx';
 import {
-  HashRouter as Router,
   Navigate,
   Route,
+  HashRouter as Router,
   Routes,
 } from 'react-router-dom';
 
@@ -44,6 +45,7 @@ function App(): JSX.Element {
             <Route path="/crud/*" element={<CRUDEx />} />
             <Route path="/useRequest/*" element={<UseRequestEx />} />
             <Route path="/useQueryOptions/*" element={<UseQueryOptionsEx />} />
+            <Route path="/error/*" element={<ErrorEx />} />
             <Route path="/*" element={<Navigate to={`/query`} />} />
           </Routes>
         </Router>

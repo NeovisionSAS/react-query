@@ -2,7 +2,6 @@
 /* eslint-disable no-undef */
 const common = require('./webpack.common');
 const { merge } = require('webpack-merge');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const path = require('path');
 
@@ -37,16 +36,11 @@ module.exports = merge(
               },
             },
           ],
-        },
-        {
-          test: /\.s?css$/,
-          use: [MiniCssExtractPlugin.loader, 'css-loader', 'sass-loader'],
-        },
+        }
       ],
     },
     plugins: [
-      new CleanWebpackPlugin(),
-      new MiniCssExtractPlugin({ filename: '[name].[contenthash].css' }),
+      new CleanWebpackPlugin()
     ],
     externals: {
       react: 'react',

@@ -195,7 +195,7 @@ export const CRUD = <T extends object = any>({
   const { endpoint, ...rRest } = readEndpoint;
 
   return (
-    <ErrorBoundary>
+    <ErrorBoundary detail={mode == 'development'}>
       <Query<T> query={endpoint} {...options} {...rRest}>
         {(res) => {
           const { forceRefresh } = res;

@@ -19,13 +19,13 @@ export const Query: <T = any>(
   loader: qLoader,
   ...qRest
 }) => {
-  const [{ loader: oLoader }] = useQueryOptions();
+  const [{ loader: oLoader, mode }] = useQueryOptions();
   const { loading, ...qData } = useQuery(qRest);
 
   const loader = Object.merge(parseLoader(oLoader), parseLoader(qLoader));
 
   return (
-    <ErrorBoundary>
+    <ErrorBoundary detail={mode == 'development'}>
       {loading && loader.autoload ? (
         <>{loader.loader ?? <div>Loading data...</div>}</>
       ) : (

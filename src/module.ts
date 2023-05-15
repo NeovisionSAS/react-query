@@ -1,5 +1,4 @@
-import '@generalizers/prototype-expansion';
-import { CRUD, CRUDObject } from './components/utils/CRUD';
+import { CRUD, CRUDObject, ErrorBoundary } from './components/utils';
 import {
   CRUDAuto,
   FormBaseOptions,
@@ -18,11 +17,12 @@ import { useRequest } from './hooks/request';
 import './scss/defaults.scss';
 import { request } from './utils/api';
 import {
-  asFormTypes,
-  createFormObject,
   FormType,
   KeysToFormType,
+  asFormTypes,
+  createFormObject,
 } from './utils/form';
+import '@generalizers/prototype-expansion';
 
 export {
   CRUD,
@@ -35,6 +35,7 @@ export {
   CRUDObject,
   asFormTypes,
   StateFunction,
+  ErrorBoundary,
   KeysToFormType,
   FormCreateType,
   FormBaseOptions,

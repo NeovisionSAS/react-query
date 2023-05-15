@@ -1,6 +1,6 @@
 {
   "name": "@neovision/react-query",
-  "version": "2.9.8",
+  "version": "2.9.9",
   "private": false,
   "author": {
     "email": "alan.blanchet@neovision.fr",
@@ -51,8 +51,8 @@
     "express-fileupload": "^1.4.0",
     "file-loader": "^6.2.0",
     "html-webpack-plugin": "^5.4.0",
-    "mini-css-extract-plugin": "^2.6.0",
     "object-hash": "^3.0.0",
+    "prettier": "2.8.8",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router": "^6.4.3",

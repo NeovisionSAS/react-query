@@ -27,10 +27,6 @@ module.exports = merge(common, {
         ],
       },
       {
-        test: /\.(s?css)$/,
-        use: ['style-loader', 'css-loader', 'sass-loader'],
-      },
-      {
         test: /\.(png|jpe?g|svg)$/,
         exclude: /node_modules/,
         use: ['file-loader'],
