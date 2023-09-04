@@ -1,8 +1,16 @@
-import { requestLog } from './log';
-import hash from 'object-hash';
+import { requestLog } from "./log";
+import hash from "object-hash";
 
-const createKey = (k: string = '') => `react-query-${k}`;
+const createKey = (k: string = "") => `react-query-${k}`;
 
+/**
+ * Add cache to browser
+ *
+ * @param key
+ * @param value
+ * @param expires the number of seconds the data will be held in cache
+ * @returns data
+ */
 export const setCache = (key: string, value: any, expires: number = 300) => {
   if (expires == 0) return;
   const date = new Date();
@@ -18,6 +26,12 @@ export const setCache = (key: string, value: any, expires: number = 300) => {
   } catch (e) {}
 };
 
+/**
+ * Get the cache from browser
+ *
+ * @param key
+ * @returns data
+ */
 export const getCache = (key: string) => {
   const k = createKey(key);
   let v = localStorage.getItem(k);
@@ -32,10 +46,20 @@ export const getCache = (key: string) => {
   return data;
 };
 
+/**
+ * Clear item from cache
+ *
+ * @param key
+ */
 export const clearCache = (key: string) => {
   localStorage.removeItem(key);
 };
 
+/**
+ * Try cleaning the cache.
+ *
+ * It looks for expired cache items
+ */
 const cleanCache = () => {
   const p = createKey();
   let total = 0;
@@ -48,19 +72,25 @@ const cleanCache = () => {
     total += (k.length + v.length) * 2;
   }
   requestLog(
-    'development',
+    "development",
     0,
     0,
     `Cleaned ${(total / 1024).toFixed(2)} KB from localStorage`
   );
 };
 
+/**
+ * Create a key for the cache from the data
+ * @param s
+ * @param data
+ * @returns string
+ */
 export const createCacheKey = (s: string, data?: any) => {
   if (data) {
     const name = data.constructor?.name;
-    if (name == 'FormData')
+    if (name == "FormData")
       return hash(hash(s) + hash(new URLSearchParams(data).toString()));
-    if (name == 'SyntheticBaseEvent')
+    if (name == "SyntheticBaseEvent")
       return hash(hash(s) + hash(data.toString()));
     return hash(hash(s) + hash(data));
   }

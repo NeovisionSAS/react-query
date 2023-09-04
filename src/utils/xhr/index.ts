@@ -1,11 +1,11 @@
-import { AbortError } from './abort';
-import { applyHeaders, parseHeaders, setRequestHeaders } from './headers';
+import { AbortError } from "./abort";
+import { applyHeaders, parseHeaders, setRequestHeaders } from "./headers";
 import {
+  XHRProgress,
   handleDownloadProgress,
   handleUploadProgress,
   totalProgressInitialiser,
-  XHRProgress,
-} from './progress';
+} from "./progress";
 
 interface XHROptions {
   progress?: XHRProgress;
@@ -13,18 +13,27 @@ interface XHROptions {
   responseType?: XMLHttpRequestResponseType;
 }
 
+/**
+ * XHR wrapper for deap request. Meaning that we want to know the loading state of the request.
+ *
+ * @info fetch did not have a streaming API to know the state of the sending request
+ *
+ * @param url
+ * @param init
+ * @returns Promise
+ */
 export const XHRFetch = (
   url: RequestInfo | URL,
   init?: RequestInit & XHROptions
 ): Promise<any> => {
   const {
-    method = 'GET',
+    method = "GET",
     signal,
     body,
     progress,
     headers,
     progressCenterRatio = 0.5,
-    responseType = 'text',
+    responseType = "text",
   } = init ?? {};
 
   const xhrProgress = totalProgressInitialiser();
@@ -36,7 +45,7 @@ export const XHRFetch = (
     r.open(method, url.toString(), true);
     r.responseType = responseType;
     setRequestHeaders(r, headers ?? {});
-    r.addEventListener('load', () => {
+    r.addEventListener("load", () => {
       const headers = parseHeaders(r.getAllResponseHeaders());
       const parsedData = applyHeaders(headers, r.response);
       const { status, statusText } = r;
@@ -45,15 +54,15 @@ export const XHRFetch = (
       }
       resolve(parsedData);
     });
-    signal?.addEventListener('abort', () => {
+    signal?.addEventListener("abort", () => {
       r.abort();
       reject(new AbortError());
     });
     if (progress) {
-      r.upload.addEventListener('progress', (e) => {
+      r.upload.addEventListener("progress", (e) => {
         handleUploadProgress(e, xhrProgress, progress, progressCenterRatio);
       });
-      r.addEventListener('progress', (e) => {
+      r.addEventListener("progress", (e) => {
         handleDownloadProgress(e, xhrProgress, progress, progressCenterRatio);
       });
     }

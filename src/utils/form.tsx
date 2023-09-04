@@ -1,11 +1,14 @@
+/**
+ * This file is used to try and generalize the concept of forms along with the querying features of react-query
+ */
 import {
   FormBaseOptions,
   FormCreateType,
   FormOptionsInsertOrder,
-} from '../components/utils/CRUDAuto';
-import { Form } from '../components/utils/Form';
-import { Dispatch, FormEvent, Fragment, SetStateAction } from 'react';
-import { PartialDeep } from 'type-fest';
+} from "../components/utils/CRUDAuto";
+import { Form } from "../components/utils/Form";
+import { Dispatch, FormEvent, Fragment, SetStateAction } from "react";
+import { PartialDeep } from "type-fest";
 
 export interface FormObject<T> {
   pk?: boolean;
@@ -14,17 +17,17 @@ export interface FormObject<T> {
   required?: boolean;
   visible?: boolean;
   type?:
-    | 'number'
-    | 'checkbox'
-    | 'color'
-    | 'date'
-    | 'email'
-    | 'file'
-    | 'password'
-    | 'radio'
-    | 'submit'
-    | 'tel'
-    | 'text';
+    | "number"
+    | "checkbox"
+    | "color"
+    | "date"
+    | "email"
+    | "file"
+    | "password"
+    | "radio"
+    | "submit"
+    | "tel"
+    | "text";
   className?: string;
   min?: number;
   max?: number;
@@ -70,6 +73,14 @@ export interface FormObjectOptions {
   noSubmit?: boolean;
 }
 
+/**
+ * Function used to create a Form element from form options
+ *
+ * @param type
+ * @param options
+ * @param data
+ * @returns JSX.Element
+ */
 export const createFormObject = <T,>(
   type: T,
   options: FormObjectOptions,
@@ -93,7 +104,7 @@ export const createFormObjectRecursive = <T,>(
       .filter(([_, value]) => value.pk)
       .map(([k, v]) => v.name ?? k)[0];
 
-  if (method == 'create') {
+  if (method == "create") {
     return (
       <>
         {Object.entries(type as object).map(([fName, object], i) => {
@@ -108,7 +119,7 @@ export const createFormObjectRecursive = <T,>(
             />
           );
         })}
-        {!noSubmit && (typeof updatable != 'boolean' || updatable) && updatable}
+        {!noSubmit && (typeof updatable != "boolean" || updatable) && updatable}
       </>
     );
   }
@@ -140,9 +151,9 @@ export const createFormObjectRecursive = <T,>(
               })}
             </>
             <>
-              {method != 'read' &&
+              {method != "read" &&
                 !noSubmit &&
-                (typeof updatable != 'boolean' || updatable) &&
+                (typeof updatable != "boolean" || updatable) &&
                 updatable}
             </>
           </Fragment>
@@ -162,6 +173,6 @@ export const extractInsert = (
 };
 
 export const isFormEvent = (e: object): e is FormEvent => {
-  if ('target' in e) return true;
+  if ("target" in e) return true;
   return false;
 };

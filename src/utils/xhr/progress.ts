@@ -1,13 +1,19 @@
-import { PartialBy } from '../../types/global';
+import { PartialBy } from "../../types/global";
 
 export type XHRProgress = (progress: TotalProgress) => any;
 
+/**
+ * Progress info for each state
+ */
 export interface TotalProgress {
   download: Progress;
   upload: Progress;
   total: Progress;
 }
 
+/**
+ * Progress state object
+ */
 interface Progress {
   readonly loaded: number;
   readonly total: number;
@@ -16,7 +22,7 @@ interface Progress {
 
 type PartialProgress<T extends Progress = Progress> = PartialBy<
   T,
-  'percentage'
+  "percentage"
 >;
 
 type ProgressWithoutTotal = {
@@ -25,6 +31,14 @@ type ProgressWithoutTotal = {
   >;
 };
 
+/**
+ * Calculate the current state from the ProgressEvent
+ *
+ * @param e ProgressEvent
+ * @param totalProgress TotalProgress
+ * @param xhrProgress XHRProgress
+ * @param center The center percentage. Usually at the middle (50/100)
+ */
 export const handleUploadProgress = (
   e: ProgressEvent,
   totalProgress: TotalProgress,
@@ -37,6 +51,14 @@ export const handleUploadProgress = (
   );
 };
 
+/**
+ * Calculate the current state from the ProgressEvent
+ *
+ * @param e ProgressEvent
+ * @param totalProgress TotalProgress
+ * @param xhrProgress XHRProgress
+ * @param center The center percentage. Usually at the middle (50/100)
+ */
 export const handleDownloadProgress = (
   e: ProgressEvent,
   totalProgress: TotalProgress,
@@ -49,6 +71,16 @@ export const handleDownloadProgress = (
   );
 };
 
+/**
+ * Calculate the current states from the ProgressEvent
+ *
+ * @param e ProgressEvent
+ * @param totalProgress TotalProgress
+ * @param xhrProgress XHRProgress
+ * @param center The center percentage. Usually at the middle (50/100)
+ *
+ * @returns TotalProgress
+ */
 export const calculateProgress = (
   base: TotalProgress,
   addon: ProgressWithoutTotal,
@@ -76,6 +108,12 @@ export const calculateProgress = (
   };
 };
 
+/**
+ * Calcuate inner progress without changing the other progresses
+ * @param progress
+ * @param addon
+ * @returns Progress
+ */
 export const calculateInnerProgress = (
   progress: PartialProgress,
   addon?: PartialProgress
@@ -90,12 +128,22 @@ export const calculateInnerProgress = (
   };
 };
 
+/**
+ * Initialize the progress objects
+ *
+ * @returns TotalProgress
+ */
 export const totalProgressInitialiser = (): TotalProgress => ({
   upload: progressInitialiser(),
   download: progressInitialiser(),
   total: progressInitialiser(),
 });
 
+/**
+ * Initialize the progress object
+ *
+ * @returns Progress
+ */
 export const progressInitialiser = () => ({
   loaded: 0,
   percentage: 0,

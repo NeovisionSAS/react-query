@@ -1,9 +1,9 @@
-import { QueryHookParams, QueryReturn, useQuery } from '../../../hooks/query';
-import { Loadable, parseLoader } from '../../../utils/api';
-import ErrorBoundary from '../ErrorBoundary';
-import { useQueryOptions } from '../QueryOptionsProvider';
-import { StateFunction } from '../StateFunction';
-import React from 'react';
+import { QueryHookParams, QueryReturn, useQuery } from "../../../hooks/query";
+import { Loadable, parseLoader } from "../../../utils/api";
+import ErrorBoundary from "../ErrorBoundary";
+import { useQueryOptions } from "../QueryOptionsProvider";
+import { StateFunction } from "../StateFunction";
+import React from "react";
 
 export interface QueryProps<T = any> extends QueryHookParams<T>, Loadable {
   children: (qReturn: QueryReturn<T>) => JSX.Element;
@@ -11,6 +11,8 @@ export interface QueryProps<T = any> extends QueryHookParams<T>, Loadable {
 
 /**
  * The query component is a fetch wrapper that allows to directly add logic in the design of the react DOM architecture
+ *
+ * Go to the [examples directory](https://github.com/NeovisionSAS/react-query/tree/main/src/examples) to see examples
  */
 export const Query: <T = any>(
   p: QueryProps<T>
@@ -25,7 +27,7 @@ export const Query: <T = any>(
   const loader = Object.merge(parseLoader(oLoader), parseLoader(qLoader));
 
   return (
-    <ErrorBoundary detail={mode == 'development'}>
+    <ErrorBoundary detail={mode == "development"}>
       {loading && loader.autoload ? (
         <>{loader.loader ?? <div>Loading data...</div>}</>
       ) : (

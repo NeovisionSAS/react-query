@@ -1,16 +1,16 @@
-import { DataHandler, QueryParams, QueryReturn } from '../../../hooks/query';
-import { Method, Rejectable, requestOptionsMerge } from '../../../utils/api';
-import { createCacheKey } from '../../../utils/cache';
-import { requestLog } from '../../../utils/log';
-import { Query as QueryType } from '../../../utils/util';
-import ErrorBoundary from '../ErrorBoundary';
-import { Query } from '../Query';
-import { useQueryOptions } from '../QueryOptionsProvider';
-import { CreateParams, createRequest } from './create';
-import { DeleteParams, deleteRequest } from './delete';
-import { UpdateParams, updateRequest } from './update';
-import objectHash from 'object-hash';
-import React, { FormEvent, useEffect, useMemo } from 'react';
+import { DataHandler, QueryParams, QueryReturn } from "../../../hooks/query";
+import { Method, Rejectable, requestOptionsMerge } from "../../../utils/api";
+import { createCacheKey } from "../../../utils/cache";
+import { requestLog } from "../../../utils/log";
+import { Query as QueryType } from "../../../utils/util";
+import ErrorBoundary from "../ErrorBoundary";
+import { Query } from "../Query";
+import { useQueryOptions } from "../QueryOptionsProvider";
+import { CreateParams, createRequest } from "./create";
+import { DeleteParams, deleteRequest } from "./delete";
+import { UpdateParams, updateRequest } from "./update";
+import objectHash from "object-hash";
+import React, { FormEvent, useEffect, useMemo } from "react";
 
 interface CRUDProps<T extends object> extends QueryParams<T> {
   /**
@@ -56,7 +56,7 @@ interface Endpoint extends QueryParams {
   endpoint: string;
 }
 
-export type SetType = 'array' | 'item';
+export type SetType = "array" | "item";
 
 interface GeneralParams extends Rejectable {
   method: Method;
@@ -146,7 +146,7 @@ export interface CRUDObject<T, U = T extends Array<infer R> ? R : T> {
    * - pathTail : What to put at the end of the request
    */
   handleDelete: FormRequest<U, DeleteParams, boolean>;
-  manualUpdate: QueryReturn<T>['manualUpdate'];
+  manualUpdate: QueryReturn<T>["manualUpdate"];
 }
 
 /**
@@ -157,7 +157,7 @@ export interface CRUDObject<T, U = T extends Array<infer R> ? R : T> {
  *
  * Make sure to define the QueryOptions param with the `QueryOptionsProvider` component
  *
- * Go to the [examples directory](https://bitbucket.org/neovision/react-query/src/master/src/examples) to see examples
+ * Go to the [examples directory](https://github.com/NeovisionSAS/react-query/tree/main/src/examples) to see examples
  */
 export const CRUD = <T extends object = any>({
   children,
@@ -195,11 +195,11 @@ export const CRUD = <T extends object = any>({
   const { endpoint, ...rRest } = readEndpoint;
 
   return (
-    <ErrorBoundary detail={mode == 'development'}>
+    <ErrorBoundary detail={mode == "development"}>
       <Query<T> query={endpoint} {...options} {...rRest}>
         {(res) => {
           const { forceRefresh } = res;
-          const type: SetType = Array.isArray(res.data) ? 'array' : 'item';
+          const type: SetType = Array.isArray(res.data) ? "array" : "item";
 
           const cacheKey = createCacheKey(endpoint, data);
 
@@ -251,12 +251,12 @@ export const CRUD = <T extends object = any>({
 
 const handleEndpoints = (endpoints: Endpoints) => {
   const endpointsOrStrings =
-    typeof endpoints == 'string'
+    typeof endpoints == "string"
       ? new Array<EndpointOrString>(4).fill(endpoints)
       : [endpoints.create, endpoints.read, endpoints.update, endpoints.delete];
 
   return endpointsOrStrings.map((endpointOrString) => {
-    if (typeof endpointOrString == 'string')
+    if (typeof endpointOrString == "string")
       return {
         endpoint: endpointOrString,
       };

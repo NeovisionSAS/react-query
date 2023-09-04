@@ -1,19 +1,19 @@
-import { QueryParams } from '../../../hooks/query';
-import form from '../../../scss/form.module.scss';
+import { QueryParams } from "../../../hooks/query";
+import form from "../../../scss/form.module.scss";
 import {
   createFormObject,
   FormType,
   KeysToFormType,
-} from '../../../utils/form';
-import { CRUD, CRUDObject, Endpoints } from '../CRUD';
-import { getDeleteForm } from '../Form/Delete';
-import { getUpdateForm } from '../Form/Update';
-import { StateFunction } from '../StateFunction';
-import hash from 'object-hash';
-import React, { Fragment, FunctionComponent, useMemo } from 'react';
-import { PartialDeep } from 'type-fest';
+} from "../../../utils/form";
+import { CRUD, CRUDObject, Endpoints } from "../CRUD";
+import { getDeleteForm } from "../Form/Delete";
+import { getUpdateForm } from "../Form/Update";
+import { StateFunction } from "../StateFunction";
+import hash from "object-hash";
+import React, { Fragment, FunctionComponent, useMemo } from "react";
+import { PartialDeep } from "type-fest";
 
-export type FormCreateType = 'create' | 'read' | 'update';
+export type FormCreateType = "create" | "read" | "update";
 
 interface CRUDChildren<T, U> {
   data: CRUDObject<T>;
@@ -66,6 +66,9 @@ export interface FormUpdateOptions<T> extends FormBaseOptions<T> {
 
 interface FormCreate<T> extends FormBaseProps<FormCreateOptions<T>> {}
 
+/**
+ * Where to insert an element in the form element
+ */
 export interface FormOptionsInsert<T = any> {
   before?: FormOptionsInsertOrder<T>[];
   after?: FormOptionsInsertOrder<T>[];
@@ -79,6 +82,9 @@ interface CRUDAutoProps<T, U> extends QueryParams<T> {
   type: U;
 }
 
+/**
+ * Go to the [examples directory](https://github.com/NeovisionSAS/react-query/tree/main/src/examples) to see examples
+ */
 export const CRUDAuto = <T extends object, U = FormType<any>>({
   children,
   endpoints,
@@ -117,7 +123,7 @@ export const CRUDAuto = <T extends object, U = FormType<any>>({
                   }}
                 >
                   {createFormObject(mergedType, {
-                    method: 'create',
+                    method: "create",
                     formOptions: options,
                   })}
                   {children}
