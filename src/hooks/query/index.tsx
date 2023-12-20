@@ -61,6 +61,10 @@ export interface QueryParams<T = any> extends RequestOptionsWithOptionalDomain {
    * The request is ignored and hook function gets called
    */
   ignore?: boolean;
+  /**
+   * The date format to use. Null considers the date as a string
+   */
+  dateFormat?: "string" | "iso";
 }
 
 /**

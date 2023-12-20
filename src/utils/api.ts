@@ -100,6 +100,7 @@ export interface RequestOptions extends BaseQueryOptions {
   signal?: AbortSignal;
   progress?: XHRProgress;
   responseType?: XMLHttpRequestResponseType;
+  
 }
 
 interface Domain {

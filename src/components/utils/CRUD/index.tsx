@@ -39,6 +39,10 @@ interface CRUDProps<T extends object> extends QueryParams<T> {
    * Callback function whenever the component finished deleting the object
    */
   onDeleted?: () => any;
+  /**
+   * The date format to use. Null considers the date as a string
+   */
+  dateFormat: "string" | "iso";
 }
 
 export type Endpoints =

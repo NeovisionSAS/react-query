@@ -3,13 +3,13 @@ import {
   FormRequestParams,
   PartialIdentifiableGeneralParams,
   SetType,
-} from '..';
-import { request, requestOptionsMerge } from '../../../../utils/api';
-import { setCache } from '../../../../utils/cache';
-import { isFormEvent } from '../../../../utils/form';
-import { requestError, requestLog } from '../../../../utils/log';
-import { formExtractor, FormExtractorData } from '../../../../utils/util';
-import equal from 'fast-deep-equal';
+} from "..";
+import { request, requestOptionsMerge } from "../../../../utils/api";
+import { setCache } from "../../../../utils/cache";
+import { isFormEvent } from "../../../../utils/form";
+import { requestError, requestLog } from "../../../../utils/log";
+import { FormExtractorData, formExtractor } from "../../../../utils/util";
+import equal from "fast-deep-equal";
 
 interface UpdateFormRequestParams<T = any> extends FormRequestParams<T> {
   type: SetType;
@@ -28,6 +28,7 @@ export const updateRequest = <T,>({
     headers,
     idName,
     parameterType,
+    dateFormat,
     ...eRest
   },
   manualUpdate,
@@ -39,7 +40,7 @@ export const updateRequest = <T,>({
 }: UpdateFormRequestParams) => {
   return (e: CRUDEventHandler<T>, params: UpdateParams = { name: idName }) => {
     const {
-      method = 'PUT',
+      method = "PUT",
       name = idName,
       onRejected,
     } = requestOptionsMerge<UpdateParams>([eRest, params]);
@@ -47,13 +48,13 @@ export const updateRequest = <T,>({
     let formDatas: FormExtractorData[];
     if (isFormEvent(e)) {
       e.preventDefault();
-      formDatas = formExtractor(e.target, name);
+      formDatas = formExtractor(e.target, name, { dateFormat });
     } else {
       formDatas = [e] as FormExtractorData[];
     }
 
     let newData: any;
-    if (type == 'array') newData = [...(data as unknown as any[])];
+    if (type == "array") newData = [...(data as unknown as any[])];
     else newData = data;
 
     const promises: Promise<any>[] = [];
@@ -61,11 +62,11 @@ export const updateRequest = <T,>({
       const id = formData[name];
 
       const endpointId = `${endpoint}/${
-        parameterType == 'path' ? `${id}/` : ''
+        parameterType == "path" ? `${id}/` : ""
       }`;
 
       let hasChanged = false;
-      if (type == 'array') {
+      if (type == "array") {
         const index = (newData as any[]).findIndex((val) => val[name] == id);
         if (index < 0) {
           requestError(`Element with ${name} ${id} not found.`);

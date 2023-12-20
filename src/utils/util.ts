@@ -1,7 +1,7 @@
-import { QueryParamType, RequestData } from './api';
-import { requestError } from './log';
-import { TotalProgress } from './xhr/progress';
-import { BaseSyntheticEvent, FormEvent, useReducer } from 'react';
+import { QueryParamType, RequestData } from "./api";
+import { requestError } from "./log";
+import { TotalProgress } from "./xhr/progress";
+import { BaseSyntheticEvent, FormEvent, useReducer } from "react";
 
 type TypedTarget = EventTarget & {
   [key: string]: {
@@ -22,7 +22,8 @@ type TypedTarget = EventTarget & {
  * @returns An object of type T by default with key value pairs
  */
 export const getFormData = <T = { [key: string]: string | number }>(
-  target: EventTarget
+  target: EventTarget,
+  config: any = {}
 ): T => {
   const typedTarget = target as TypedTarget;
   return (
@@ -34,18 +35,23 @@ export const getFormData = <T = { [key: string]: string | number }>(
       .filter((v) => {
         const tag = v.tagName?.toLocaleLowerCase?.();
         return (
-          v.name && (tag == 'input' || tag == 'select' || tag == 'textarea')
+          v.name && (tag == "input" || tag == "select" || tag == "textarea")
         );
       })
       .reduce((acc, cur) => {
         const { name, value, checked, type, required, files } = cur;
 
-        const isValEmpty = value == '' || value == null;
+        const isValEmpty = value == "" || value == null;
 
         if (required && isValEmpty)
           throw new Error(`Can't use an empty value for ${name}`);
 
-        const typeValue = valueFromType(type, { checked, value, files });
+        const typeValue = valueFromType(
+          type,
+          { checked, value, files },
+          cur,
+          config
+        );
 
         return {
           ...acc,
@@ -55,16 +61,26 @@ export const getFormData = <T = { [key: string]: string | number }>(
   );
 };
 
-const valueFromType = (type: string, possibleValues: any) => {
+const valueFromType = (
+  type: string,
+  possibleValues: any,
+  target: any,
+  config: any = {}
+) => {
+  const { dateFormat = "string" } = config;
   const { value, checked, files } = possibleValues;
   switch (type) {
-    case 'checkbox':
+    case "checkbox":
       return checked;
-    case 'number':
-      return value == '' || value == null ? null : new Number(value).valueOf();
-    case 'date':
-      return value == '' || value == null ? null : value;
-    case 'file':
+    case "number":
+      return value == "" || value == null ? null : new Number(value).valueOf();
+    case "date":
+      return value == "" || value == null
+        ? null
+        : dateFormat == "string"
+        ? value
+        : target.valueAsDate.toISOString();
+    case "file":
       return files ?? value;
     default:
       return value;
@@ -108,10 +124,11 @@ export interface FormExtractorData {
  */
 export const formExtractor = (
   target: EventTarget,
-  name?: string
+  name?: string,
+  config: any = {}
 ): FormExtractorData[] => {
   // Get all the data from the form
-  const formData = getFormData(target);
+  const formData = getFormData(target, config);
 
   // Simply check if there is no id for each formData
   if (name == undefined || formData[name] != null) return [formData];
@@ -152,7 +169,7 @@ export const seperateAndKeepIds = (strs: string[]) => {
   return seperate(strs).map<[string, string]>((v) => {
     const seperated = v[1];
     const id = seperated[seperated.length - 1];
-    return [v[0].replace(new RegExp(`(-|_)?${id}$`), ''), id];
+    return [v[0].replace(new RegExp(`(-|_)?${id}$`), ""), id];
   });
 };
 
@@ -178,13 +195,13 @@ export const seperate = (strs: string[]): [string, string[]][] => {
     return [
       str,
       str
-        .replace(/([0-9]+)/, ' $1')
-        .replace(/(-|_)/g, ' ')
-        .replace(/([A-Z])/g, ' $1')
+        .replace(/([0-9]+)/, " $1")
+        .replace(/(-|_)/g, " ")
+        .replace(/([A-Z])/g, " $1")
         .trim()
         .toLocaleLowerCase()
-        .split(' ')
-        .filter((s) => s != ''),
+        .split(" ")
+        .filter((s) => s != ""),
     ];
   });
 };
@@ -196,7 +213,7 @@ export const getId = (
   pathTail?: string | number
 ) => {
   const id = data[name];
-  if (id != '' && id != null) return id;
+  if (id != "" && id != null) return id;
   else if (pathTail) return pathTail;
   requestError(`Cannot identify the form ${name} from`, data);
   throw new Error(`Cannot identify the form ${name}`);
@@ -209,32 +226,32 @@ export const useForceUpdate = (): (() => void) => {
 interface StructuredData {
   body?: Exclude<RequestData, FormEvent | object> | FormData;
   contentType?:
-    | 'multipart/form-data'
-    | 'application/x-www-form-urlencoded'
-    | 'application/json';
+    | "multipart/form-data"
+    | "application/x-www-form-urlencoded"
+    | "application/json";
 }
 
 export const restructureData = (data?: RequestData): StructuredData => {
-  if (data == undefined || typeof data == 'string') return { body: data };
-  else if (data.constructor.name == 'FormData')
+  if (data == undefined || typeof data == "string") return { body: data };
+  else if (data.constructor.name == "FormData")
     return { body: data as FormData };
-  else if (data.constructor.name == 'SyntheticBaseEvent')
+  else if (data.constructor.name == "SyntheticBaseEvent")
     // We received the event on its own. We need to determine the type of the request to be sent
     return parseEvent(data as BaseSyntheticEvent);
   return {
     body: JSON.stringify(data),
-    contentType: 'application/json',
+    contentType: "application/json",
   };
 };
 
 const parseEvent = (e: BaseSyntheticEvent): StructuredData => {
   const data = getFormData((e as FormEvent).target);
   if (
-    Object.values(data).some((value) => value.constructor.name == 'FileList')
+    Object.values(data).some((value) => value.constructor.name == "FileList")
   ) {
     const formData = new FormData();
     Object.entries(data).forEach(([key, value]) => {
-      if (value.constructor.name == 'FileList')
+      if (value.constructor.name == "FileList")
         Array.from(value as unknown as File[]).forEach((v) =>
           formData.append(key, v)
         );
@@ -246,7 +263,7 @@ const parseEvent = (e: BaseSyntheticEvent): StructuredData => {
   }
   return {
     body: JSON.stringify(data),
-    contentType: 'application/x-www-form-urlencoded',
+    contentType: "application/x-www-form-urlencoded",
   };
 };
 
@@ -256,10 +273,10 @@ export const buildHeader = (
 ): HeadersInit => {
   return contentType
     ? Object.merge(headers, {
-        'Content-Type': contentType,
+        "Content-Type": contentType,
       })
-    : contentType == 'multipart/form-data'
-    ? Object.exclude(headers, 'Content-Type' as any)
+    : contentType == "multipart/form-data"
+    ? Object.exclude(headers, "Content-Type" as any)
     : headers;
 };
 
