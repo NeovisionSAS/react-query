@@ -42,7 +42,7 @@ interface CRUDProps<T extends object> extends QueryParams<T> {
   /**
    * The date format to use. Null considers the date as a string
    */
-  dateFormat: "string" | "iso";
+  dateFormat?: "string" | "iso";
 }
 
 export type Endpoints =
