@@ -10,7 +10,7 @@ export type CreateParams = PartialGeneralParams;
 type CreateFormRequestParams<T> = FormRequestParams<T>;
 
 export const createRequest = <T, U = T extends Array<infer R> ? R : T>({
-  endpoint: { endpoint, mode, verbosity, domain, headers, ...eRest },
+  endpoint: { endpoint, mode, verbosity, domain, headers, dateFormat, ...eRest },
   manualUpdate,
   onCompleted: onCreated,
   forceRefresh,
@@ -27,7 +27,7 @@ export const createRequest = <T, U = T extends Array<infer R> ? R : T>({
 
     if (isFormEvent(e)) {
       e.preventDefault();
-      formData = getFormData(e.target);
+      formData = getFormData(e.target, { dateFormat });
     } else formData = e;
 
     requestLog(
